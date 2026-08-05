@@ -42,5 +42,6 @@ dataset/
 *.jpeg
 *.png
 .env
+docker-compose.override.yml
 .idea/
 .vscode/

@@ -1,0 +1,27 @@
+name: CI - MS3 User & Analytics Service
+
+on:
+  push:
+    paths:
+      - 'ms3_user/**'
+      - 'shared/**'
+  pull_request:
+    paths:
+      - 'ms3_user/**'
+      - 'shared/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ms3_user/requirements.txt
+      - name: Run tests
+        run: pytest ms3_user/tests/ -v

@@ -1,0 +1,11 @@
+# Copy this to docker-compose.override.yml and fill in real LAN IPs for multi-machine deployment
+version: '3.8'
+
+services:
+  ms1-cv:
+    environment:
+      MS2_LLM_URL: http://192.168.1.102:8003   # IP of the machine running MS2
+  ms4-agents:
+    environment:
+      MS2_LLM_URL: http://192.168.1.102:8003
+      MS1_CV_URL:  http://192.168.1.101:8001
