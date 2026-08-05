@@ -64,7 +64,7 @@ def run_retraining(epochs: int = 1):
         device="cpu",
         workers=0,  # avoid multiprocessing issues during simple local tests on Windows
         project=os.path.join(base_dir, "runs"),
-        name="calcount_retrain",
+        name="nutrix_retrain",
         # Custom augmentations for top-down fixed-arm plate setting
         degrees=180.0,    # Maximize rotational invariance (food can be rotated any way)
         scale=0.2,        # Scale down/up by 20% to simulate portion sizes
@@ -74,7 +74,7 @@ def run_retraining(epochs: int = 1):
     )
 
     # Save the retrained model weights to our ingestion engine
-    best_weights_path = os.path.join(base_dir, "runs", "calcount_retrain", "weights", "best.pt")
+    best_weights_path = os.path.join(base_dir, "runs", "nutrix_retrain", "weights", "best.pt")
     target_weights_path = os.path.join(os.path.dirname(__file__), "yolov8_retrained.pt")
     
     if os.path.exists(best_weights_path):
@@ -83,7 +83,7 @@ def run_retraining(epochs: int = 1):
         print(f"[Retraining] Training complete! Best weights saved to: {target_weights_path}")
         return True
     else:
-        print("[Retraining] Error: Could not locate trained weights at runs/calcount_retrain/weights/best.pt")
+        print("[Retraining] Error: Could not locate trained weights at runs/nutrix_retrain/weights/best.pt")
         return False
 
 if __name__ == "__main__":

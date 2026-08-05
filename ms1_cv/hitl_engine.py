@@ -3,7 +3,7 @@ import shutil
 from typing import Dict, Any, List, Optional
 from backend.services.ingestion.cv_engine import MealSession
 
-class CalCountHitlEngine:
+class NutriXHitlEngine:
     def __init__(self):
         self.dataset_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../dataset"))
         self.pending_dir = os.path.join(self.dataset_dir, "pending")

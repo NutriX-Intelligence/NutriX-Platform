@@ -39,7 +39,7 @@ def main():
         device=device,
         workers=4 if cuda_available else 0, # Utilize multi-core dataloading on GPU
         project=os.path.join(base_dir, "runs"),
-        name="calcount_custom_model",
+        name="nutrix_custom_model",
         # Hyperparameter overrides for fixed-arm overhead camera:
         degrees=180.0,    # Maximize rotational invariance (360 degrees)
         scale=0.2,        # Scale images up/down by 20% to simulate portion sizes
@@ -49,11 +49,11 @@ def main():
     )
 
     print("\n🎉 Training complete!")
-    best_weights = os.path.join(base_dir, "runs", "calcount_custom_model", "weights", "best.pt")
+    best_weights = os.path.join(base_dir, "runs", "nutrix_custom_model", "weights", "best.pt")
     if os.path.exists(best_weights):
         print(f"Your fine-tuned model weights are saved at: {best_weights}")
         # Copy to ingestion service for deployment
-        target_path = os.path.join(base_dir, "backend", "services", "ingestion", "calcount_yolo_custom.pt")
+        target_path = os.path.join(base_dir, "backend", "services", "ingestion", "nutrix_yolo_custom.pt")
         import shutil
         shutil.copy(best_weights, target_path)
         print(f"Deployed weights to ingestion service: {target_path}")

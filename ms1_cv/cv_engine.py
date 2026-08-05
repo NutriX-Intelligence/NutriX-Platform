@@ -60,7 +60,7 @@ class MockResults:
         self.boxes = boxes
         self.names = names
 
-class CalCountCVEngine:
+class NutriXCVEngine:
     def __init__(self, model_path: str = "yolov8n.pt", confidence_threshold: float = 0.8, mock_mode: bool = False):
         self.model_path = model_path
         self.confidence_threshold = confidence_threshold

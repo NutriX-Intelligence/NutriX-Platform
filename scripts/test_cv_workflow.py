@@ -1,7 +1,7 @@
 import os
 import shutil
-from backend.services.ingestion.cv_engine import CalCountCVEngine, MealSession
-from backend.services.ingestion.hitl_engine import CalCountHitlEngine
+from backend.services.ingestion.cv_engine import NutriXCVEngine, MealSession
+from backend.services.ingestion.hitl_engine import NutriXHitlEngine
 from backend.services.ingestion.retrain_yolo import run_retraining
 
 # Setup paths
@@ -32,8 +32,8 @@ def run_curriculum_tests():
     
     # Initialize engines with mock_mode=False to use real pretrained YOLOv8
     print("\n[Test Harness] Initializing Real YOLOv8 Model (mock_mode=False)...")
-    cv_engine = CalCountCVEngine(confidence_threshold=0.75, mock_mode=False)
-    hitl_engine = CalCountHitlEngine()
+    cv_engine = NutriXCVEngine(confidence_threshold=0.75, mock_mode=False)
+    hitl_engine = NutriXHitlEngine()
 
     print("\n--- LEVEL 1 & 2: REAL WHOLE FOODS IDENTIFICATION ---")
     session = MealSession()
