@@ -1,0 +1,32 @@
+# Phase 1 Execution Tasks
+
+- [x] 1.1 Update `shared/db.py` with PostgreSQL + SQLite fallback
+- [x] 1.2 Migrate & Extend `shared/models.py` (30 MS3 models + 5 new NutriX models)
+- [x] 1.3 Alembic Migration Setup & Execution
+  - [x] 1.3.1 Initialize Alembic environment in `shared/alembic/`
+  - [x] 1.3.2 Configure `alembic.ini` and `env.py`
+  - [x] 1.3.3 Generate migration revision `001_initial_schema.py` (including all 39 tables + trigger)
+  - [x] 1.3.4 Set up upgrade / downgrade routines
+- [x] 1.4 Database Seeder Scripts (`shared/seeders/`)
+  - [x] 1.4.1 Create `seed_foods.py` (ICMR + USDA)
+  - [x] 1.4.2 Create `seed_recipes.py` (recipes + nutrition + ingredients + steps)
+  - [x] 1.4.3 Create `seed_aliases.py` (Indian regional synonyms)
+  - [x] 1.4.4 Create `seed_portions.py` (Units.xlsx + household volumetric portions)
+  - [x] 1.4.5 Create `seed_rules.py` (Jain/Vegan/dietary rules & Homely meals)
+  - [x] 1.4.6 Create `seed_prompts.py` (LLM system prompt registry)
+  - [x] 1.4.7 Create `run_all_seeders.py` master orchestrator
+- [x] 1.5 PostgreSQL Trigger & Redis Pipeline
+  - [x] 1.5.1 Create `ms3_user/services/macro_listener.py` (psycopg2 LISTEN → Redis stream/hash)
+  - [x] 1.5.2 Hook listener into `ms3_user/main.py` lifespan
+  - [x] 1.5.3 Trigger definition in `001_initial_schema.py`
+- [x] 1.6 Redis Connection & Shared Client
+  - [x] 1.6.1 Create `shared/redis_client.py` with in-memory fallback
+  - [x] 1.6.2 Verify Redis connection and pub/sub capabilities
+- [x] 1.7 Health Check Endpoints & Observability
+  - [x] 1.7.1 Create `shared/health.py` (synchronous PostgreSQL & Redis check)
+  - [x] 1.7.2 Create `shared/audit.py` (MS1, MS2, MS4 structured audit logger)
+  - [x] 1.7.3 Update `/health` routes in all 5 services (gateway, ms1, ms2, ms3, ms4)
+  - [x] 1.7.4 Update `ms3_user/requirements.txt` with `asyncpg`, `pandas`, `openpyxl`
+- [x] 1.8 Verification and Integration Tests
+  - [x] 1.8.1 Create `tests/test_database_schema.py` covering schema, relationships, adapters, audit, redis, health
+- [x] 1.9 Final Phase 1 Documentation & Status Update

@@ -1,0 +1,7 @@
+analysis_type,group_name,precision,recall,ap50_or_f1
+Original Class,brinjal (ID 22),1.0000,0.0000,0.0000
+Original Class,eggplant (ID 46),0.9207,0.7141,0.8714
+Semantically Normalized,brinjal / eggplant combined,0.9207,0.7141,F1: 0.8044
+Original Class,capsicum (ID 28),1.0000,0.0000,0.3961
+Original Class,bell pepper (ID 12),0.8877,0.8627,0.8885
+Semantically Normalized,capsicum / bell pepper combined,0.8877,0.8627,F1: 0.8750

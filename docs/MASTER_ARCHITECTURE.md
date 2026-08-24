@@ -600,6 +600,28 @@ flowchart TB
 ### Flow 1: Automatic Scale Ingestion
 `ESP32-S3 Scale` $\rightarrow$ HX711 stable at 180g for 500ms $\rightarrow$ OV2640 captures JPEG $\rightarrow$ POST Multipart to Gateway (`:8000`) $\rightarrow$ Gateway routes to MS1 (`:8001`) $\rightarrow$ YOLOv8 detects "apple" at 94% confidence $\rightarrow$ Fetch macros from PostgreSQL $\rightarrow$ INSERT `meal_log` $\rightarrow$ Trigger updates Redis (`user:101:daily_calories = 95`) $\rightarrow$ Flutter App reads Redis (<10ms) $\rightarrow$ UI updates live.
 
+```mermaid
+flowchart TD
+    ESP["1. ESP32-S3 Scale\n(Captures 180g weight + JPEG image)"]
+    GW["2. API Gateway (Port 8000)\n(Validates token & routes request)"]
+    CV["3. Microservice 1: CV & Ingestion (Port 8001)\n(Runs YOLOv8 -> Identifies 'apple' @ 94%)"]
+    PG[("4. PostgreSQL Master DB\n(Stores food database & meal logs)")]
+    RD[("5. Redis Cache (Port 6379)\n(Stores live daily calorie total)")]
+    ANA["6. Microservice 3: Analytics (Port 8002)\n(Reads Redis cache)"]
+    APP["7. Flutter Mobile App\n(Displays updated macro rings)"]
+
+    ESP -->|"HTTP POST Multipart\nweight=180g + image.jpg"| GW
+    GW -->|"Forward request"| CV
+    CV -->|"Query macros for 'apple'"| PG
+    PG -->|"Return 52 kcal/100g"| CV
+    CV -->|"Calculate: 1.8 * 52 = 93.6 kcal\nINSERT INTO meal_logs"| PG
+    PG -->|"Async trigger updates total"| RD
+    APP -->|"GET /v1/user/daily-summary"| GW
+    GW -->|"Forward read request"| ANA
+    ANA -->|"Fast Redis Read (<10ms)"| RD
+    ANA -->|"Return total to app"| APP
+```
+
 ### Flow 2: Low-Confidence HitL Retraining & User Adapter Fine-Tuning
 `ESP32-S3 Scale` $\rightarrow$ YOLO detects food at 41% (below 80%) $\rightarrow$ Frame saved to `/dataset/pending/` $\rightarrow$ Flutter app notifies user $\rightarrow$ User inputs "paneer tikka" $\rightarrow$ `hitl_engine.py` generates `.txt` bounding box annotation $\rightarrow$ Move pair to `/dataset/trained/user_101/` $\rightarrow$ `retrain_yolo.py` executes with `freeze=10` (freezing Layers 0-9 backbone, updating ONLY classification head) $\rightarrow$ 3-epoch fine-tuning completes in ~3s on GPU $\rightarrow$ Saves lightweight adapter weights `user_101_head.pt` (~400KB) to `user_adapters` table $\rightarrow$ Next scan with `User-ID: 101` dynamically swaps `user_101_head.pt` and auto-recognizes paneer tikka.
 

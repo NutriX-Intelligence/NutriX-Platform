@@ -1,0 +1,9 @@
+metric,min,max,mean,median,std
+train_images,0,5014,767.95,165,1248.15
+val_images,0,164,21.41,3,30.52
+test_images,0,141,19.44,7,28.05
+total_images,1,5137,808.8,183,1291.67
+train_annotations,0,48708,3378.05,474,6869.47
+val_annotations,0,581,49.67,6,86.13
+test_annotations,0,1049,63.16,21,131.72
+total_annotations,1,48785,3490.88,541,6969.38

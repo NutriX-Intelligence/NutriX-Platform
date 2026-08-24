@@ -1,0 +1,128 @@
+# NutriX Core Platform — Exact 123 Food Class Inventory
+# Source: dataset/custom_training_data/data.yaml & runs/class_accuracies.txt
+
+ID   | Class Name
+--------------------------------------------------
+0    | almond
+1    | aloogobi
+2    | aloomasala
+3    | apple
+4    | artichoke
+5    | ash gourd -kubhindo-
+6    | asparagus
+7    | avocado
+8    | bamboo shoots -tama-
+9    | banana
+10   | beans
+11   | beet
+12   | bell pepper
+13   | bhatura
+14   | bhindimasala
+15   | biryani
+16   | bitter gourd
+17   | black beans
+18   | blackberry
+19   | blueberry
+20   | bottle gourd -lauka-
+21   | bread
+22   | brinjal
+23   | broad beans -bakullo-
+24   | broccoli
+25   | brussels sprouts
+26   | buff meat
+27   | cabbage
+28   | capsicum
+29   | carrot
+30   | cauliflower
+31   | celery
+32   | chai
+33   | cherry
+34   | chicken
+35   | chicken gizzards
+36   | chickpeas
+37   | chili pepper -khursani-
+38   | chole
+39   | coconutchutney
+40   | corn
+41   | cucumber
+42   | dal
+43   | dosa
+44   | dumaloo
+45   | egg
+46   | eggplant
+47   | farsi ko munta
+48   | fiddlehead ferns -niguro-
+49   | fish
+50   | fishcurry
+51   | garlic
+52   | ghevar
+53   | grape
+54   | green bean
+55   | green brinjal
+56   | green gram
+57   | green lentils
+58   | green onion
+59   | green peas
+60   | green soyabean -hariyo bhatmas-
+61   | greenchutney
+62   | gulabjamun
+63   | gundruk
+64   | hot pepper
+65   | idli
+66   | jack fruit
+67   | jalebi
+68   | kebab
+69   | kheer
+70   | kiwi
+71   | kulfi
+72   | lassi
+73   | lemon
+74   | lettuce
+75   | lime
+76   | long beans -bodi-
+77   | mandarin
+78   | masyaura
+79   | minced meat
+80   | mushroom
+81   | mutton
+82   | muttoncurry
+83   | onion
+84   | onionpakoda
+85   | orange
+86   | palakpaneer
+87   | papaya
+88   | pattypan squash
+89   | pea
+90   | peach
+91   | pear
+92   | pineapple
+93   | poha
+94   | potato
+95   | pumpkin
+96   | pumpkin -farsi-
+97   | radish
+98   | rahar ko daal
+99   | rajmacurry
+100  | rasmalai
+101  | raspberry
+102  | red beans
+103  | red lentils
+104  | rice -chamal-
+105  | samosa
+106  | shahipaneer
+107  | soyabean-bhatmas-
+108  | sponge gourd -ghiraula-
+109  | squash -iskus-
+110  | stinging nettle -sisnu-
+111  | strawberry
+112  | sweet potato -suthuni-
+113  | tomato
+114  | tree tomato -rukh tamatar-
+115  | turnip
+116  | vegetable marrow
+117  | wallnut
+118  | watermelon
+119  | wheat
+120  | whiterice
+121  | yam -pidalu-
+122  | yellow lentils

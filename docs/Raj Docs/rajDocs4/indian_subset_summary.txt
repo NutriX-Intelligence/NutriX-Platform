@@ -1,0 +1,9 @@
+INDIAN DISH SUBSET EVALUATION SUMMARY
+======================================
+Checkpoint Used: \\wsl.localhost\Ubuntu\home\harsh\Nutrix\runs\nutrix_custom_model-2\weights\best.pt
+Dataset YAML: \\wsl.localhost\Ubuntu\home\harsh\Nutrix\dataset\custom_training_data\data.yaml
+Total Indian Classes Evaluated: 31
+Overall Precision: 0.7894
+Overall Recall: 0.7470
+Overall mAP50: 0.8156
+Overall mAP50-95: 0.6333

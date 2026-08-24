@@ -1,0 +1,9 @@
+Validation Image Distribution Brackets:
+Zero Validation Images (37 classes): almond, apple, artichoke, ash gourd -kubhindo-, asparagus, bamboo shoots -tama-, banana, blackberry, blueberry, bread, broad beans -bakullo-, cherry, fiddlehead ferns -niguro-, grape, green bean, green onion, green soyabean -hariyo bhatmas-, gundruk, jack fruit, kiwi, lemon, lime, long beans -bodi-, mandarin, masyaura, orange, peach, pear, pineapple, raspberry, sponge gourd -ghiraula-, squash -iskus-, stinging nettle -sisnu-, strawberry, turnip, wallnut, watermelon
+
+<5 Validation Images (30 classes): bitter gourd, black beans, bottle gourd -lauka-, brinjal, buff meat, capsicum, chicken, chicken gizzards, chickpeas, chili pepper -khursani-, farsi ko munta, fish, green brinjal, green gram, green lentils, green peas, minced meat, mushroom, mutton, papaya, rahar ko daal, red beans, red lentils, rice -chamal-, soyabean-bhatmas-, sweet potato -suthuni-, tree tomato -rukh tamatar-, wheat, yam -pidalu-, yellow lentils
+
+5-20 Validation Images (5 classes): egg, gulabjamun, kebab, pumpkin -farsi-, samosa
+
+>20 Validation Images (51 classes): aloogobi, aloomasala, avocado, beans, beet, bell pepper, bhatura, bhindimasala, biryani, broccoli, brussels sprouts, cabbage, carrot, cauliflower, celery, chai, chole, coconutchutney, corn, cucumber, dal, dosa, dumaloo, eggplant, fishcurry, garlic, ghevar, greenchutney, hot pepper, idli, jalebi, kheer, kulfi, lassi, lettuce, muttoncurry, onion, onionpakoda, palakpaneer, pattypan squash, pea, poha, potato, pumpkin, radish, rajmacurry, rasmalai, shahipaneer, tomato, vegetable marrow, whiterice
+

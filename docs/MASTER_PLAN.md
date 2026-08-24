@@ -246,3 +246,29 @@ flowchart TD
 | MS4: Agent Service | 8004 | Any CPU machine |
 | PostgreSQL | 5432 | Any machine with persistent storage |
 | Redis | 6379 | Same machine as PostgreSQL or dedicated |
+
+---
+
+## Phase 1 Audit Deferred Technical Debt & Issues
+> The following issues were identified during the Phase 1 architectural audit and intentionally deferred to later phases.
+
+### 🟡 Phase 3 / Phase 5: Nutrient Normalization
+- **Issue:** Nutrient values in `food_nutrients` are not explicitly normalized to per-100g. Different datasets use different units (per serving vs per 100g).
+- **Required Action:** Add `per_100g` boolean or `basis_grams` float column. Seeders must normalize data during ingestion to prevent MS1 from making incorrect math assumptions.
+
+### 🟡 Phase 5: SQLAlchemy ORM Cleanups
+- **Issue:** `Recipe` relationships join on `recipe_code` (String FK) instead of `id` (Integer FK), which is slow.
+- **Issue:** `User.profile` is loaded with `lazy="joined"`, which will cause N+1 query amplification if batched.
+- **Issue:** All 30+ MS3 models use `default=datetime.utcnow` which is deprecated in Python 3.12+.
+- **Required Action:** Clean these up when MS3 is fully integrated and tested.
+
+### 🟡 Phase 5 / Phase 6: `HomelyMeal` vs `Recipe` Merge
+- **Issue:** Massive architectural duplication. `HomelyMeal` (user-created) and `Recipe` (system dataset) have parallel ORM structures for ingredients, nutrition, tags, etc.
+- **Required Action:** Refactor into a single polymorphic `Recipe` table with `creator_id` and `is_community` flags. This requires a major rewrite of the MS3 engine (`homely_meals_engine.py`, `optimization_engine.py`).
+
+### 🟡 Phase 6: Redis Streams vs Pub/Sub
+- **Issue:** The `macro_listener` publishes macro updates using Redis Pub/Sub, but the architecture (Tier 2A Guardian Agent) requires Redis Streams (`XREAD`) for reliable event processing.
+- **Required Action:** Add `XADD` stream publishing to the macro listener to support MS4.
+
+### 🟡 Minor Config Fix
+- **Issue:** `alembic.ini` contains a placeholder URL, but might be confusing if team members try to edit it directly instead of `.env`.

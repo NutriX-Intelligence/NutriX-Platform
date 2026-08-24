@@ -1,0 +1,124 @@
+Core_Class_ID,Core_Class_Name,Potential_Regional_Equivalent,Cuisine,Match_Type,Confidence,Evidence
+0,almond,Almond / Badam,Global / Raw Ingredient,No Match,High,Raw nut ingredient in dataset/custom_training_data/data.yaml
+1,aloogobi,Aloo Gobi,Punjabi,Partial Match,High,North Indian potato-cauliflower curry; recipe in recipes.xlsx
+2,aloomasala,Aloo Masala,South Indian / Punjabi,Partial Match,High,Potato stuffing for Dosa / Paratha; recipe in recipes.xlsx
+3,apple,Apple,Global / Raw Ingredient,No Match,High,Fresh fruit ingredient
+4,artichoke,Artichoke,Global / Raw Ingredient,No Match,High,International vegetable ingredient
+5,ash gourd -kubhindo-,Kubhindo / Petha Gourd,Regional / Nepali,No Match,High,Regional specialty vegetable
+6,asparagus,Asparagus,Global / Raw Ingredient,No Match,High,International vegetable ingredient
+7,avocado,Avocado,Global / Raw Ingredient,No Match,High,International fruit ingredient
+8,bamboo shoots -tama-,Tama / Bamboo Shoot,Regional / Nepali,No Match,High,Regional specialty ingredient
+9,banana,Banana,Global / Raw Ingredient,No Match,High,Fresh fruit ingredient
+10,beans,Green Beans / Poriyal ingredient,South Indian / Global,Partial Match,Medium,Common side dish ingredient
+11,beet,Beetroot,Global / Raw Ingredient,No Match,High,Fresh root vegetable ingredient
+12,bell pepper,Capsicum / Shimla Mirch,Global / North Indian,Alias,High,Synonym for capsicum in ingredient_matcher.py
+13,bhatura,Bhatura,Punjabi,Partial Match,High,Deep-fried bread paired with Chole; recipe in recipes.xlsx
+14,bhindimasala,Bhindi Masala / Okra Fry,Punjabi,Partial Match,High,North Indian okra dish; recipe in recipes.xlsx
+15,biryani,Biryani (Hyderabadi / Lucknowi / Kolkata),South Indian / Punjabi / Bengali,Partial Match,High,Spiced rice dish across regional cuisines; recipe in recipes.xlsx
+16,bitter gourd,Karela,North Indian / South Indian,Partial Match,High,Regional vegetable curry ingredient
+17,black beans,Black Beans,Global / Mexican,Partial Match,Medium,Ingredient in Mexican cuisine (tacos burritos)
+18,blackberry,Blackberry,Global / Raw Ingredient,No Match,High,International fruit ingredient
+19,blueberry,Blueberry,Global / Raw Ingredient,No Match,High,International fruit ingredient
+20,bottle gourd -lauka-,Lauki / Dudhi,North Indian / Gujarati,Partial Match,High,Gourd vegetable used in curries and halwa
+21,bread,Bread / Toast,Global / Continental,No Match,High,Western staple food item
+22,brinjal,Baingan / Eggplant,South Indian / Bengali / Maharashtrian,Alias,High,Synonym for eggplant in ingredient_matcher.py
+23,broad beans -bakullo-,Bakullo / Broad Beans,Regional / Nepali,No Match,High,Regional specialty legume
+24,broccoli,Broccoli,Global / Italian,No Match,High,International vegetable ingredient
+25,brussels sprouts,Brussels Sprouts,Global / Raw Ingredient,No Match,High,International vegetable ingredient
+26,buff meat,Water Buffalo Meat,Regional / South Asian,No Match,High,Regional meat ingredient
+27,cabbage,Cabbage / Patta Gobi,Global / Indian,Partial Match,Medium,Ingredient in South Indian poriyal and Indo-Chinese chow mein
+28,capsicum,Bell Pepper / Shimla Mirch,Global / North Indian,Alias,High,Synonym for bell pepper in ingredient_matcher.py
+29,carrot,Gajar,Global / North Indian,Partial Match,Medium,Raw ingredient in Gajar Halwa salads stir-fries
+30,cauliflower,Phool Gobi,Global / Punjabi,Partial Match,Medium,Raw ingredient in Aloo Gobi Paratha
+31,celery,Celery,Global / Italian,No Match,High,Western soup/salad ingredient
+32,chai,Masala Chai,North Indian / General Indian,Partial Match,High,Indian spiced tea beverage
+33,cherry,Cherry,Global / Raw Ingredient,No Match,High,International fruit ingredient
+34,chicken,Chicken,Global / Indian,Partial Match,Medium,Base protein ingredient across chicken curries
+35,chicken gizzards,Chicken Gizzard,Regional / Specialty,No Match,High,Meat offal ingredient
+36,chickpeas,Chana / Kabuli Chana,Punjabi / Middle Eastern,Partial Match,High,Base ingredient for Chole and Hummus
+37,chili pepper -khursani-,Khursani / Green Chili,Regional / South Asian,Partial Match,High,Hot pepper spice ingredient
+38,chole,Chole / Amritsari Chole,Punjabi,Exact Match,High,Traditional Punjabi chickpea curry; recipe in recipes.xlsx
+39,coconutchutney,Coconut Chutney,South Indian,Exact Match,High,Traditional South Indian condiment for Dosa/Idli; recipe in recipes.xlsx
+40,corn,Sweet Corn,Global / Mexican / American,Partial Match,Medium,Ingredient in tacos soups street snacks
+41,cucumber,Cucumber / Kakdi,Global / Indian,Partial Match,Medium,Raw salad/raita ingredient
+42,dal,Dal (Tadka / Makhani / Fry),Punjabi / Gujarati / South Indian,Partial Match,High,Staple lentil soup across all Indian regional cuisines; recipe in recipes.xlsx
+43,dosa,Dosa (Plain / Masala),South Indian,Exact Match,High,Traditional South Indian fermented crepe; recipe in recipes.xlsx
+44,dumaloo,Dum Aloo (Kashmiri / Punjabi / Bengali),Bengali / Punjabi,Partial Match,High,Potato curry prepared across regional styles; recipe in recipes.xlsx
+45,egg,Egg (Boiled / Omlette / Bhurji),Global / Eggetarian,Partial Match,Medium,Common breakfast protein
+46,eggplant,Baingan / Aubergine,South Indian / Bengali / Maharashtrian,Alias,High,Synonym for brinjal in ingredient_matcher.py
+47,farsi ko munta,Farsi Ko Munta (Pumpkin Shoots),Regional / Nepali,No Match,High,Regional specialty green leafy vegetable
+48,fiddlehead ferns -niguro-,Niguro / Fiddlehead Fern,Regional / Nepali,No Match,High,Wild edible fern specialty
+49,fish,Fish,Global / Bengali / South Indian,Partial Match,Medium,Raw seafood protein ingredient
+50,fishcurry,Fish Curry (Machher Jhol / Meen Kuzhambu),Bengali / South Indian,Partial Match,High,Regional fish curry dish; recipe in recipes.xlsx
+51,garlic,Lahsun,Global / Indian,Partial Match,High,Universal aromatic ingredient
+52,ghevar,Ghevar,Rajasthani,Exact Match,High,Traditional Rajasthani sweet disc cake; recipe in recipes.xlsx
+53,grape,Grapes,Global / Raw Ingredient,No Match,High,Fresh fruit ingredient
+54,green bean,Green Beans,Global / South Indian,Partial Match,Medium,Vegetable ingredient in South Indian poriyal
+55,green brinjal,Green Eggplant,South Indian / Regional,Partial Match,Medium,Regional green aubergine variant
+56,green gram,Moong Dal,Indian,Partial Match,Medium,Lentil legume ingredient
+57,green lentils,Green Lentils,Global / Indian,Partial Match,Medium,Legume ingredient
+58,green onion,Spring Onion / Scallion,Global / Chinese,Partial Match,Medium,Aromatic ingredient in Chinese stir-fries
+59,green peas,Matar,Global / Punjabi,Partial Match,High,Ingredient in Matar Paneer Aloo Matar
+60,green soyabean -hariyo bhatmas-,Hariyo Bhatmas,Regional / Nepali,No Match,High,Fresh green soybean specialty
+61,greenchutney,Hari Chutney (Mint-Coriander),North Indian / Punjabi / Gujarati,Partial Match,High,Standard Indian condiment for Samosa/Pakoda
+62,gulabjamun,Gulab Jamun,North Indian / General Indian,Exact Match,High,Traditional Indian milk-solid sweet dessert; recipe in recipes.xlsx
+63,gundruk,Gundruk (Fermented Leafy Green),Regional / Nepali,No Match,High,Regional fermented green leafy specialty
+64,hot pepper,Chili / Pepper,Global / Mexican / Indian,Partial Match,Medium,Spicy pepper ingredient
+65,idli,Idli,South Indian,Exact Match,High,Traditional South Indian steamed rice cake; recipe in recipes.xlsx
+66,jack fruit,Kathal,South Indian / North Indian,Partial Match,High,Tropical fruit/vegetable ingredient
+67,jalebi,Jalebi,North Indian / Rajasthani / Gujarati,Exact Match,High,Traditional deep-fried spiral sweet; recipe in recipes.xlsx
+68,kebab,Kebab (Seekh / Shami),Punjabi / Mughlai,Partial Match,High,Grilled meat patty dish
+69,kheer,Kheer / Payasam,North Indian / South Indian,Exact Match,High,Traditional Indian rice pudding dessert; recipe in recipes.xlsx
+70,kiwi,Kiwi Fruit,Global / Raw Ingredient,No Match,High,International fruit ingredient
+71,kulfi,Kulfi,Punjabi / North Indian,Exact Match,High,Traditional Indian frozen dairy dessert; recipe in recipes.xlsx
+72,lassi,Sweet / Salted Lassi,Punjabi,Exact Match,High,Traditional Punjabi yogurt beverage; recipe in recipes.xlsx
+73,lemon,Nimbu,Global / Indian,Partial Match,High,Citrus ingredient
+74,lettuce,Lettuce,Global / Western,No Match,High,Salad greens ingredient
+75,lime,Lime,Global / Indian,Partial Match,High,Citrus ingredient
+76,long beans -bodi-,Bodi / Yardlong Bean,Regional / Nepali,No Match,High,Regional long green bean variant
+77,mandarin,Mandarin Orange,Global / Raw Ingredient,No Match,High,Citrus fruit ingredient
+78,masyaura,Masyaura (Sun-dried Black Lentil Balls),Regional / Nepali,No Match,High,Regional dried legume nugget specialty
+79,minced meat,Keema,Punjabi / Mughlai,Partial Match,High,Minced meat ingredient for Keema curry
+80,mushroom,Mushroom,Global / Italian / Chinese,Partial Match,Medium,Fungi ingredient used in Chinese/Italian cooking
+81,mutton,Mutton / Goat Meat,Indian,Partial Match,Medium,Raw meat protein ingredient
+82,muttoncurry,Mutton Curry / Kosha Mangsho,Punjabi / Bengali,Partial Match,High,Regional mutton curry dish; recipe in recipes.xlsx
+83,onion,Pyaaz,Global / Indian,Partial Match,High,Base aromatic vegetable ingredient
+84,onionpakoda,Kanda Bhajji / Onion Pakora,Maharashtrian / Punjabi,Exact Match,High,Deep-fried onion fritters; recipe in recipes.xlsx
+85,orange,Orange,Global / Raw Ingredient,No Match,High,Fresh fruit ingredient
+86,palakpaneer,Palak Paneer,Punjabi,Exact Match,High,Traditional Punjabi spinach-cottage cheese curry; recipe in recipes.xlsx
+87,papaya,Papaya,Global / Raw Ingredient,No Match,High,Tropical fruit ingredient
+88,pattypan squash,Pattypan Squash,Global / Raw Ingredient,No Match,High,International squash vegetable
+89,pea,Green Pea,Global / Indian,Partial Match,Medium,Legume vegetable ingredient
+90,peach,Peach,Global / Raw Ingredient,No Match,High,International fruit ingredient
+91,pear,Pear,Global / Raw Ingredient,No Match,High,International fruit ingredient
+92,pineapple,Pineapple,Global / Raw Ingredient,No Match,High,Tropical fruit ingredient
+93,poha,Poha (Kanda Poha / Batata Poha),Maharashtrian / Gujarati,Exact Match,High,Flattened rice breakfast dish; recipe in recipes.xlsx
+94,potato,Aloo,Global / Indian,Partial Match,High,Staple tuber vegetable ingredient
+95,pumpkin,Kaddu / Pumpkin,Global / Indian,Partial Match,Medium,Vegetable ingredient
+96,pumpkin -farsi-,Farsi / Pumpkin,Regional / Nepali,Partial Match,Medium,Regional pumpkin variant
+97,radish,Mooli,Global / Indian,Partial Match,High,Root vegetable ingredient
+98,rahar ko daal,Toor Dal / Arhar Dal,Regional / North Indian,Alias,High,Synonym for Toor Dal in ingredient_matcher.py
+99,rajmacurry,Rajma Chawal / Kidney Bean Curry,Punjabi,Exact Match,High,Traditional Punjabi red kidney bean curry; recipe in recipes.xlsx
+100,rasmalai,Rasmalai,Bengali / North Indian,Exact Match,High,Traditional Bengali cottage cheese dessert; recipe in recipes.xlsx
+101,raspberry,Raspberry,Global / Raw Ingredient,No Match,High,International fruit ingredient
+102,red beans,Rajma,Global / Mexican / Indian,Partial Match,Medium,Kidney bean legume ingredient
+103,red lentils,Masoor Dal,Global / Indian,Partial Match,Medium,Red lentil legume ingredient
+104,rice -chamal-,Chamal / Uncooked Rice,Regional / Nepali,Alias,High,Raw rice grain ingredient
+105,samosa,Samosa,Punjabi / North Indian / Gujarati,Exact Match,High,Traditional deep-fried savory pastry; recipe in recipes.xlsx
+106,shahipaneer,Shahi Paneer,Punjabi,Exact Match,High,Traditional Punjabi rich cottage cheese curry; recipe in recipes.xlsx
+107,soyabean-bhatmas-,Bhatmas / Soybean,Regional / Nepali,No Match,High,Dried soybean legume ingredient
+108,sponge gourd -ghiraula-,Ghiraula / Sponge Gourd,Regional / Nepali,No Match,High,Regional gourd vegetable ingredient
+109,squash -iskus-,Iskus / Chayote Squash,Regional / Nepali,No Match,High,Regional chayote squash ingredient
+110,stinging nettle -sisnu-,Sisnu / Stinging Nettle,Regional / Nepali,No Match,High,Wild Himalayan herb specialty
+111,strawberry,Strawberry,Global / Raw Ingredient,No Match,High,International fruit ingredient
+112,sweet potato -suthuni-,Suthuni / Sweet Potato,Regional / Nepali,Partial Match,High,Tuber vegetable ingredient
+113,tomato,Tomato,Global / Indian,Partial Match,High,Universal base vegetable ingredient
+114,tree tomato -rukh tamatar-,Rukh Tamatar / Tamarillo,Regional / Nepali,No Match,High,Himalayan tree tomato fruit ingredient
+115,turnip,Shalgam,Global / North Indian,Partial Match,Medium,Root vegetable ingredient
+116,vegetable marrow,Marrow / Zucchini,Global / Italian,Partial Match,Medium,Summer squash vegetable ingredient
+117,wallnut,Walnut,Global / Raw Ingredient,No Match,High,Tree nut ingredient
+118,watermelon,Watermelon,Global / Raw Ingredient,No Match,High,Fresh fruit ingredient
+119,wheat,Gehun,Global / Indian,Partial Match,High,Staple cereal grain ingredient
+120,whiterice,Cooked White Rice / Chawal,Global / South Indian / Bengali,Exact Match,High,Steamed white rice staple; recipe in recipes.xlsx
+121,yam -pidalu-,Pidalu / Yam,Regional / Nepali,Partial Match,High,Starchy root tuber ingredient
+122,yellow lentils,Moong Dal / Arhar Dal,Indian,Partial Match,High,Yellow lentil legume ingredient
