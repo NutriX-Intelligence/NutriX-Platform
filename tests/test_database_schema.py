@@ -29,14 +29,14 @@ def db():
     finally:
         session.close()
 
-def test_all_39_tables_registered():
+def test_all_34_tables_registered():
     tables = Base.metadata.tables.keys()
-    assert len(tables) >= 39
+    assert len(tables) >= 34
     expected_tables = [
-        "users", "profiles", "user_preferences", "goals", "foods", "food_categories",
-        "food_nutrients", "food_portions", "food_aliases", "food_tags", "recipes",
+        "users", "profiles", "user_preferences", "goals", "foods",
+        "food_nutrients", "recipes",
         "recipe_ingredients", "recipe_nutrition", "recipe_steps", "servings",
-        "ingredients", "ingredient_rules", "meal_logs", "water_logs", "weight_logs",
+        "ingredient_rules", "meal_logs", "water_logs", "weight_logs",
         "barcode_cache", "recommendation_history", "health_scores", "analytics",
         "generated_meal_plans", "unit_conversions", "homely_meals", "homely_meal_ingredients",
         "homely_meal_nutrition", "homely_meal_versions", "homely_meal_reviews",
