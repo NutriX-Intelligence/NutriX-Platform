@@ -22,8 +22,8 @@ def main():
 
     # 2. Resolve paths for the model weights
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    retrained_weights = os.path.join(base_dir, "backend", "services", "ingestion", "yolov8_retrained.pt")
-    custom_weights = os.path.join(base_dir, "backend", "services", "ingestion", "nutrix_yolo_custom.pt")
+    retrained_weights = os.path.join(base_dir, "backend", "services", "ingestion", "best.pt")
+    custom_weights = os.path.join(base_dir, "backend", "services", "ingestion", "best.pt")
 
     # Select model (prioritizing custom baseline, then retrained, then coco default)
     if os.path.exists(custom_weights):

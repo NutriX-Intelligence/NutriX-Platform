@@ -77,15 +77,15 @@
 **What is missing:**
 
 - [ ] 3.1 Wrap CV Engine in a FastAPI app (`ms1/main.py`) exposing:
-  - `POST /v1/ingest/weight-frame` (receives multipart from gateway)
-  - `POST /api/hitl/confirm` (user confirms/edits unidentified item)
-  - `GET /api/barcode/{barcode}` (barcode lookup handler)
-  - `POST /api/ocr/upload` (OCR image to macros)
+  - `POST /api/v1/ingest/weight-frame` (receives multipart from gateway)
+  - `POST /api/v1/hitl/confirm` (user confirms/edits unidentified item)
+  - `GET /api/v1/barcode/{barcode}` (barcode lookup handler)
+  - `POST /api/v1/ocr/upload` (OCR image to macros)
 - [ ] 3.2 Add OpenCV barcode decode path inside `cv_engine.py` (using `pyzbar`)
 - [ ] 3.3 Add PostgreSQL food lookup after identification (check `foods` table before calling MS2)
 - [ ] 3.4 Add OpenFoodFacts / USDA API fallback lookup (for barcode misses)
-- [ ] 3.5 Add MS2 LLM nutrition lookup call (`POST http://llm-service:8003/v1/llm/lookup`) for unknown foods
-- [ ] 3.6 Add MS2 Pre-HitL Vision call (`POST http://llm-service:8003/v1/llm/vision-infer`) when YOLO < 80%
+- [ ] 3.5 Add MS2 LLM nutrition lookup call (`POST http://llm-service:8003/api/v1/llm/lookup`) for unknown foods
+- [ ] 3.6 Add MS2 Pre-HitL Vision call (`POST http://llm-service:8003/api/v1/llm/vision-infer`) when YOLO < 80%
 - [ ] 3.7 Add PostgreSQL `meal_logs` INSERT after food confirmed
 - [ ] 3.8 Modify `retrain_yolo.py` to support `freeze=10` adapter-only retraining with per-user output path
 - [ ] 3.9 Modify `hitl_engine.py` to save adapter weights path to `user_adapters` table after retraining
@@ -101,16 +101,16 @@
 
 - [ ] 4.1 Choose and pull local model: Qwen2.5-7B-Instruct via Ollama (dev) or vLLM (production)
 - [ ] 4.2 Create FastAPI app (`ms2/main.py`) exposing:
-  - `POST /v1/llm/lookup` — text nutrition generation (food name to JSON macros)
-  - `POST /v1/llm/vision-infer` — image to food candidate name + macro estimate
-  - `POST /v1/llm/generate` — raw prompt to completion (used by MS4 agents)
+  - `POST /api/v1/llm/lookup` — text nutrition generation (food name to JSON macros)
+  - `POST /api/v1/llm/vision-infer` — image to food candidate name + macro estimate
+  - `POST /api/v1/llm/generate` — raw prompt to completion (used by MS4 agents)
 - [ ] 4.3 Implement structured prompt template for nutrition lookup (strict JSON output enforcement)
 - [ ] 4.4 Implement multimodal vision prompt for pre-HitL image inference (Qwen2.5-VL or Gemini Vision fallback)
 - [ ] 4.5 Add 10-second timeout handling and `llm-timeout` fallback response
 - [ ] 4.6 Add INSERT to `foods` + `food_nutrients` table for newly inferred foods
 - [ ] 4.7 Add execution trace logging to `audit_logs`
 - [ ] 4.8 Write Dockerfile for MS2 (GPU base: Ollama Docker image or `nvidia/cuda`)
-- [ ] 4.9 Integration test: `POST /v1/llm/lookup` returns valid macro JSON; vision call returns a plausible food name
+- [ ] 4.9 Integration test: `POST /api/v1/llm/lookup` returns valid macro JSON; vision call returns a plausible food name
 
 ---
 
@@ -121,10 +121,10 @@
 
 - [ ] 5.1 Audit all MS3 endpoints against the route table in `MASTER_ARCHITECTURE.md`
 - [ ] 5.2 Verify Auth endpoints: `register`, `login` (Bcrypt), Google OAuth, `me` (JWT decode)
-- [ ] 5.3 Verify Profile endpoints: `GET/PUT /api/users/{id}`, dietary preferences write
-- [ ] 5.4 Verify Analytics: `GET /v1/user/daily-summary` reads from Redis correctly
-- [ ] 5.5 Verify OR-Tools Meal Planner: `POST /api/meal-plans/generate` runs LP solver correctly
-- [ ] 5.6 Verify Recipe Recommendation: `POST /api/recipes/recommend` queries seeded recipe DB
+- [ ] 5.3 Verify Profile endpoints: `GET/PUT /api/v1/users/{id}`, dietary preferences write
+- [ ] 5.4 Verify Analytics: `GET /api/v1/user/daily-summary` reads from Redis correctly
+- [ ] 5.5 Verify OR-Tools Meal Planner: `POST /api/v1/meal-plans/generate` runs LP solver correctly
+- [ ] 5.6 Verify Recipe Recommendation: `POST /api/v1/recipes/recommend` queries seeded recipe DB
 - [ ] 5.7 Verify Homely Meal Builder: unit-to-gram conversion and `homely_meal_nutrition` write
 - [ ] 5.8 Verify Barcode Alternatives and Dietary Classifier endpoints
 - [ ] 5.9 Switch DB from SQLite (dev) to PostgreSQL if not already done
@@ -136,9 +136,9 @@
 ## Phase 6 — MS4: Multi-Agent System Service (Port 8004)
 > **Goal:** All 4 agent tiers run as async background workers and respond to real events.
 
-- [ ] 6.1 Create FastAPI app (`ms4/main.py`) exposing `POST /api/agent/query`
+- [ ] 6.1 Create FastAPI app (`ms4/main.py`) exposing `POST /api/v1/agent/query`
 - [ ] 6.2 Tier 1: Orchestrator Interface Agent
-  - Intent classifier (calls MS2 `/v1/llm/generate` with a routing prompt)
+  - Intent classifier (calls MS2 `/api/v1/llm/generate` with a routing prompt)
   - Tool registry: `query_macros`, `log_meal`, `get_daily_summary`, `recommend_recipes`, `generate_meal_plan`
   - Route classified intent to correct tool function and return response
 - [ ] 6.3 Tier 2A: Outlier Guardian Agent
@@ -165,13 +165,13 @@
 
 - [ ] 7.1 Set gateway base URL in `ApiClient` (configurable env variable for local IP)
 - [ ] 7.2 Auth flow: Register / Login / Google OAuth → store JWT in Android Keystore
-- [ ] 7.3 Home Dashboard: Macro progress rings from `GET /v1/user/daily-summary`
-- [ ] 7.4 Meal History: Pull from `GET /v1/user/history`
-- [ ] 7.5 Barcode Scanner screen: Call `GET /api/barcode/{barcode}`
-- [ ] 7.6 HitL Confirmation screen: Push notification → show AI candidate → user confirms/edits → `POST /api/hitl/confirm`
-- [ ] 7.7 Recipe Discovery: `POST /api/recipes/recommend` with pantry ingredients
-- [ ] 7.8 AI Coach: `POST /api/agent/query` with text/voice input
-- [ ] 7.9 Meal Plan Generator: `POST /api/meal-plans/generate` → display 4-slot plan
+- [ ] 7.3 Home Dashboard: Macro progress rings from `GET /api/v1/user/daily-summary`
+- [ ] 7.4 Meal History: Pull from `GET /api/v1/user/history`
+- [ ] 7.5 Barcode Scanner screen: Call `GET /api/v1/barcode/{barcode}`
+- [ ] 7.6 HitL Confirmation screen: Push notification → show AI candidate → user confirms/edits → `POST /api/v1/hitl/confirm`
+- [ ] 7.7 Recipe Discovery: `POST /api/v1/recipes/recommend` with pantry ingredients
+- [ ] 7.8 AI Coach: `POST /api/v1/agent/query` with text/voice input
+- [ ] 7.9 Meal Plan Generator: `POST /api/v1/meal-plans/generate` → display 4-slot plan
 - [ ] 7.10 Homely Builder screen: Ingredient + unit entry → real-time macro calculation
 - [ ] 7.11 Integration test: Full happy path — login → scale event → meal logged → dashboard updated
 

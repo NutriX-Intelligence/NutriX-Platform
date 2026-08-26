@@ -47,13 +47,13 @@ flowchart TB
     APP -->|"HTTP GET/POST + JWT"| GW
     APP -->|"Natural Language Queries\nSpeech / Text"| GW
 
-    GW -->|"POST /v1/ingest/weight-frame"| MS1
-    GW -->|"/api/users, /api/auth, /v1/user"| MS3
-    GW -->|"/api/agent/* (NL Queries)"| MS4
+    GW -->|"POST /api/v1/ingest/weight-frame"| MS1
+    GW -->|"/api/v1/users, /api/v1/auth, /api/v1/user"| MS3
+    GW -->|"/api/v1/agent/* (NL Queries)"| MS4
 
     MS1 -->|"YOLO < 80%: Pre-HitL Vision Call"| MS2
     MS2 -->|"Candidate Food Suggestion"| APP
-    MS1 -->|"POST /v1/llm/lookup (unknown food)"| MS2
+    MS1 -->|"POST /api/v1/llm/lookup (unknown food)"| MS2
     MS1 -->|"INSERT meal records"| PG
     MS2 -->|"INSERT new food records"| PG
     MS3 -->|"READ/WRITE Profiles & Goals"| PG
@@ -81,7 +81,7 @@ $$\sigma_{\text{weight}} < 0.5\text{g} \quad \text{sustained continuously for } 
 This prevents false capture triggers from hand movements or mechanical settle vibrations.
 
 ### 2. HTTP Multipart Form-Data Payload Specification
-Once weight stability is confirmed, the ESP32-S3 captures a JPEG image buffer from the OV2640 camera and transmits a single atomic **HTTP POST Multipart Form-Data** request to the API Gateway (`POST /v1/ingest/weight-frame`):
+Once weight stability is confirmed, the ESP32-S3 captures a JPEG image buffer from the OV2640 camera and transmits a single atomic **HTTP POST Multipart Form-Data** request to the API Gateway (`POST /api/v1/ingest/weight-frame`):
 
 | Payload Field | Data Type | Example Value | Description |
 |---|---|---|---|
@@ -103,30 +103,31 @@ Once weight stability is confirmed, the ESP32-S3 captures a JPEG image buffer fr
 - **Request Routing**: Directs heavy vision uploads to MS1 and application/user management endpoints to MS3.
 - **Security Boundary**: Isolates internal Docker microservice ports (8001, 8002, 8003, 8004, 5432, 6379) from direct external network exposure.
 
-### Complete Gateway Route Table
+### Complete Gateway Route Table (Standardized `/api/v1/` Convention)
 
 | Method | Route | Target Service | Purpose |
 |---|---|---|---|
-| `POST` | `/v1/ingest/weight-frame` | MS1: CV & Ingestion | Scale telemetry upload (Vision + Weight) |
-| `POST` | `/api/auth/register`, `/login`, `/google` | MS3: User & Analytics | User authentication & JWT generation |
-| `GET` | `/api/auth/me` | MS3: User & Analytics | Currently authenticated user profile |
-| `GET`, `PUT` | `/api/users/{id}` | MS3: User & Analytics | Profile demographics (age, height, weight, goals) |
-| `POST` | `/api/users/{id}/preferences` | MS3: User & Analytics | Dietary rules (Vegan, Jain, allergies) |
-| `GET` | `/v1/user/daily-summary` | MS3: User & Analytics | Fast Redis read for today's macro progress |
-| `GET` | `/v1/user/history` | MS3: User & Analytics | Timestamped meal log history |
-| `GET` | `/v1/user/targets` | MS3: User & Analytics | Daily BMR/TDEE target breakdown |
-| `POST` | `/api/recipes/recommend` | MS3: User & Analytics | Ingredient-based recipe ranking |
-| `POST` | `/api/recipes/generate-instructions` | MS3: User & Analytics | Step-by-step cooking guidance |
-| `GET` | `/api/barcode/{barcode}` | MS1: CV & Ingestion | Product lookup via cache / OpenFoodFacts |
-| `POST` | `/api/barcode/alternatives` | MS3: User & Analytics | Healthier & cheaper alternative suggestions |
-| `POST` | `/api/classify` | MS3: User & Analytics | Ingredient dietary compliance classification |
-| `POST` | `/api/ocr/upload` | MS1: CV & Ingestion | Nutrition label text extraction |
-| `POST` | `/api/meal-logs` | MS3: User & Analytics | Manual meal entry logging |
-| `POST` | `/api/meal-plans/generate` | MS3: User & Analytics | Google OR-Tools 4-slot meal plan solver |
-| `POST` | `/api/ai/coach` | MS3: User & Analytics | Conversational diet coaching |
-| `POST` | `/api/agent/query` | MS4: Multi-Agent System | Natural Language intent parsing & tool execution (Tier 1) |
-| `POST` | `/v1/llm/lookup` | MS2: LLM Nutrition & Vision | Internal text-to-nutrition generation for unknown foods |
-| `POST` | `/v1/llm/vision-infer` | MS2: LLM Nutrition & Vision | Internal image vision inference for pre-HitL food suggestions |
+| `POST` | `/api/v1/ingest/weight-frame` | MS1: CV & Ingestion | Scale telemetry upload (Vision + Weight) |
+| `POST` | `/api/v1/auth/register`, `/login`, `/google` | MS3: User & Analytics | User authentication & JWT generation |
+| `GET` | `/api/v1/auth/me` | MS3: User & Analytics | Currently authenticated user profile |
+| `GET`, `PUT` | `/api/v1/users/{id}` | MS3: User & Analytics | Profile demographics (age, height, weight, goals) |
+| `POST` | `/api/v1/users/{id}/preferences` | MS3: User & Analytics | Dietary rules (Vegan, Jain, allergies) |
+| `GET` | `/api/v1/user/daily-summary` | MS3: User & Analytics | Fast Redis read for today's macro progress |
+| `GET` | `/api/v1/user/history` | MS3: User & Analytics | Timestamped meal log history |
+| `GET` | `/api/v1/user/targets` | MS3: User & Analytics | Daily BMR/TDEE target breakdown |
+| `POST` | `/api/v1/recipes/recommend` | MS3: User & Analytics | Ingredient-based recipe ranking |
+| `POST` | `/api/v1/recipes/generate-instructions` | MS3: User & Analytics | Step-by-step cooking guidance |
+| `GET` | `/api/v1/barcode/{barcode}` | MS1: CV & Ingestion | Product lookup via cache / OpenFoodFacts |
+| `POST` | `/api/v1/barcode/alternatives` | MS3: User & Analytics | Healthier & cheaper alternative suggestions |
+| `POST` | `/api/v1/classify` | MS3: User & Analytics | Ingredient dietary compliance classification |
+| `POST` | `/api/v1/ocr/upload` | MS1: CV & Ingestion | Nutrition label text extraction |
+| `POST` | `/api/v1/meal-logs` | MS3: User & Analytics | Manual meal entry logging |
+| `POST` | `/api/v1/meal-plans/generate` | MS3: User & Analytics | Google OR-Tools 4-slot meal plan solver |
+| `POST` | `/api/v1/ai/coach` | MS3: User & Analytics | Conversational diet coaching |
+| `POST` | `/api/v1/agent/query` | MS4: Multi-Agent System | Natural Language intent parsing & tool execution (Tier 1) |
+| `POST` | `/api/v1/llm/lookup` | MS2: LLM Nutrition & Vision | Internal text-to-nutrition generation for unknown foods |
+| `POST` | `/api/v1/llm/vision-infer` | MS2: LLM Nutrition & Vision | Internal image vision inference for pre-HitL food suggestions |
+| `POST` | `/api/v1/hitl/confirm` | MS1: CV & Ingestion | User confirmation/edit for HitL retraining |
 
 ---
 
@@ -166,7 +167,7 @@ flowchart TD
     YOLO["YOLOv8 Object Detection\nNutriX_yolo_custom.pt + user head"]
     CONF{"Confidence\n≥ 80%?"}
     
-    LLM_VIS["POST /v1/llm/vision-infer (MS2)\nLLM Vision Inference on Image\n(Qwen2.5-VL / Gemini Vision)"]
+    LLM_VIS["POST /api/v1/llm/vision-infer (MS2)\nLLM Vision Inference on Image\n(Qwen2.5-VL / Gemini Vision)"]
     SUGGEST["Push AI Candidate Suggestion → Flutter App\ne.g., 'Paneer Tikka (240 kcal) — Confirm?'"]
     CONFIRM{"User Confirms\nor Edits?"}
     
@@ -174,7 +175,7 @@ flowchart TD
     PGRET["Return Macros\nfrom Local DB"]
     EXTDB["Query OpenFoodFacts\nor USDA FoodData Central"]
     EXTFOUND{"Found in\nExternal DB?"}
-    LLMCALL["POST /v1/llm/lookup\n→ Local LLM Service (MS2)"]
+    LLMCALL["POST /api/v1/llm/lookup\n→ Local LLM Service (MS2)"]
     SAVE["INSERT record → PostgreSQL\nTrigger Redis Cache Sync"]
     RETRAIN["Trigger retrain_yolo.py (freeze=10)\nSave user_{id}_head.pt (~400KB)"]
     LOG["Append Execution Trace\nto audit_logs Table"]
@@ -236,7 +237,7 @@ flowchart TD
 
 #### Pre-HitL LLM Vision Fallback & Adapter Retraining (`hitl_engine.py` & `retrain_yolo.py`)
 When a scale frame fails auto-confirmation (<80% confidence):
-1. **Pre-HitL Vision Inference**: MS1 passes the image to MS2 (`POST /v1/llm/vision-infer`) running Qwen2.5-VL / Gemini Vision API to infer the food identity and estimate initial macros.
+1. **Pre-HitL Vision Inference**: MS1 passes the image to MS2 (`POST /api/v1/llm/vision-infer`) running Qwen2.5-VL / Gemini Vision API to infer the food identity and estimate initial macros.
 2. **One-Tap User Confirmation**: The Flutter app presents an AI candidate suggestion (*"We think this is Paneer Tikka (240 kcal) — Confirm or Edit?"*), reducing user friction to a single tap.
 3. **Annotation Generation**: Upon user confirmation/editing, `hitl_engine.py` auto-generates the bounding box annotation (`.txt`) and saves the image to `/dataset/trained/user_{user_id}/`.
 4. **Adapter Retraining**: `retrain_yolo.py` executes with **`freeze=10`** (freezing Backbone & Neck, updating ONLY the final head layer in 2–5 seconds).
@@ -254,8 +255,8 @@ Provides dual LLM intelligence capabilities: 1) Text-based structured nutritiona
 
 | Endpoint | Input Payload | Output Format | Purpose |
 |---|---|---|---|
-| `POST /v1/llm/lookup` | `{ "food_name": "murgh makhani" }` | Structured JSON (`calories_per_100g`, `protein_g`, `carbs_g`, `fat_g`) | Text-to-nutrition generation for unknown foods |
-| `POST /v1/llm/vision-infer` | JPEG Frame Buffer + Weight | Candidate Food Name + Initial Macro Estimates | Pre-HitL candidate food suggestion when YOLO confidence < 80% |
+| `POST /api/v1/llm/lookup` | `{ "food_name": "murgh makhani" }` | Structured JSON (`calories_per_100g`, `protein_g`, `carbs_g`, `fat_g`) | Text-to-nutrition generation for unknown foods |
+| `POST /api/v1/llm/vision-infer` | JPEG Frame Buffer + Weight | Candidate Food Name + Initial Macro Estimates | Pre-HitL candidate food suggestion when YOLO confidence < 80% |
 
 #### Prompt Engineering Specification
 The LLM is invoked as a deterministic structured JSON generator, not a conversational chatbot:
@@ -295,13 +296,13 @@ Manages application logic, user profiles, authentication, diet plan optimization
 
 | Endpoint Category | Endpoint | Storage Operation | Description |
 |---|---|---|---|
-| **User Profile** | `PUT /api/users/{id}` | PostgreSQL **WRITE** | Updates height, weight, age, activity level, fitness goal |
-| **Preferences** | `POST /api/users/{id}/preferences` | PostgreSQL **WRITE** | Sets dietary exclusions (Vegan, Jain, Gluten-Free, Allergies) |
-| **Auth** | `POST /api/auth/register`, `/login` | PostgreSQL **WRITE** | User credential registration & Bcrypt password hashing |
-| **Analytics** | `GET /v1/user/daily-summary` | Redis **READ** (<10ms) | Live daily calories + protein/carbs/fat rings vs target |
-| **Meal Log History**| `GET /v1/user/history` | PostgreSQL / Redis | Chronological meal diary log |
-| **Meal Optimization**| `POST /api/meal-plans/generate` | PostgreSQL **READ** | Executes Google OR-Tools LP solver for 4-slot daily plan |
-| **Homely Builder** | `POST /api/homely/calculate` | PostgreSQL **READ** | Household unit to gram conversion (`katori`, `tbsp` → grams) |
+| **User Profile** | `PUT /api/v1/users/{id}` | PostgreSQL **WRITE** | Updates height, weight, age, activity level, fitness goal |
+| **Preferences** | `POST /api/v1/users/{id}/preferences` | PostgreSQL **WRITE** | Sets dietary exclusions (Vegan, Jain, Gluten-Free, Allergies) |
+| **Auth** | `POST /api/v1/auth/register`, `/login` | PostgreSQL **WRITE** | User credential registration & Bcrypt password hashing |
+| **Analytics** | `GET /api/v1/user/daily-summary` | Redis **READ** (<10ms) | Live daily calories + protein/carbs/fat rings vs target |
+| **Meal Log History**| `GET /api/v1/user/history` | PostgreSQL / Redis | Chronological meal diary log |
+| **Meal Optimization**| `POST /api/v1/meal-plans/generate` | PostgreSQL **READ** | Executes Google OR-Tools LP solver for 4-slot daily plan |
+| **Homely Builder** | `POST /api/v1/homely/calculate` | PostgreSQL **READ** | Household unit to gram conversion (`katori`, `tbsp` → grams) |
 
 ---
 
@@ -598,38 +599,121 @@ flowchart TB
 ## End-to-End Execution Flow Traces
 
 ### Flow 1: Automatic Scale Ingestion
-`ESP32-S3 Scale` $\rightarrow$ HX711 stable at 180g for 500ms $\rightarrow$ OV2640 captures JPEG $\rightarrow$ POST Multipart to Gateway (`:8000`) $\rightarrow$ Gateway routes to MS1 (`:8001`) $\rightarrow$ YOLOv8 detects "apple" at 94% confidence $\rightarrow$ Fetch macros from PostgreSQL $\rightarrow$ INSERT `meal_log` $\rightarrow$ Trigger updates Redis (`user:101:daily_calories = 95`) $\rightarrow$ Flutter App reads Redis (<10ms) $\rightarrow$ UI updates live.
+When weight stabilizes on the physical scale, it posts the telemetry data through the API Gateway, which routes it to MS1. MS1 performs object detection, writes the log to PostgreSQL, triggering an instant update to Redis, which the Flutter app automatically displays in real-time.
 
 ```mermaid
-flowchart TD
-    ESP["1. ESP32-S3 Scale\n(Captures 180g weight + JPEG image)"]
-    GW["2. API Gateway (Port 8000)\n(Validates token & routes request)"]
-    CV["3. Microservice 1: CV & Ingestion (Port 8001)\n(Runs YOLOv8 -> Identifies 'apple' @ 94%)"]
-    PG[("4. PostgreSQL Master DB\n(Stores food database & meal logs)")]
-    RD[("5. Redis Cache (Port 6379)\n(Stores live daily calorie total)")]
-    ANA["6. Microservice 3: Analytics (Port 8002)\n(Reads Redis cache)"]
-    APP["7. Flutter Mobile App\n(Displays updated macro rings)"]
+sequenceDiagram
+    autonumber
+    participant Scale as ESP32 Scale
+    participant GW as API Gateway (Port 8000)
+    participant MS1 as MS1: CV Service (Port 8001)
+    participant DB as PostgreSQL DB
+    participant RD as Redis Cache
+    participant MS3 as MS3: User Service (Port 8002)
+    participant App as Flutter Mobile App
 
-    ESP -->|"HTTP POST Multipart\nweight=180g + image.jpg"| GW
-    GW -->|"Forward request"| CV
-    CV -->|"Query macros for 'apple'"| PG
-    PG -->|"Return 52 kcal/100g"| CV
-    CV -->|"Calculate: 1.8 * 52 = 93.6 kcal\nINSERT INTO meal_logs"| PG
-    PG -->|"Async trigger updates total"| RD
-    APP -->|"GET /v1/user/daily-summary"| GW
-    GW -->|"Forward read request"| ANA
-    ANA -->|"Fast Redis Read (<10ms)"| RD
-    ANA -->|"Return total to app"| APP
+    Scale->>GW: POST /api/v1/ingest/weight-frame<br/>Headers: [Device-Token, User-ID: 101]<br/>Payload: [weight=180g, image=JPEG]
+    Note over GW: Device-Token validated.<br/>Injects X-User-ID: 101
+    GW->>MS1: POST /api/v1/ingest/weight-frame<br/>Headers: [X-User-ID: 101]
+    Note over MS1: Runs YOLOv8 custom model.<br/>Identifies "apple" with 94% confidence.
+    MS1->>DB: Query food library for "apple"
+    DB-->>MS1: Returns 52 kcal per 100g
+    Note over MS1: Calculates: 1.8 * 52 = 93.6 kcal
+    MS1->>DB: INSERT INTO meal_logs (user_id, food_name, weight_g, calories, source)
+    Note over DB: PostgreSQL trigger trg_macro_update fires.<br/>Recalculates daily macro sums.
+    DB->>RD: Update user:101:macros:2026-08-25
+    Note over RD: Macro updates published to channel macro_updates:101
+    
+    rect rgb(230, 245, 230)
+        Note over App, RD: Real-Time UI Sync (Automatic update without manual button press)
+        App->>GW: GET /api/v1/user/daily-summary<br/>Headers: [Authorization: Bearer JWT]
+        Note over GW: Validates JWT.<br/>Injects X-User-ID: 101
+        GW->>MS3: GET /api/v1/user/daily-summary<br/>Headers: [X-User-ID: 101]
+        MS3->>RD: GET user:101:macros:2026-08-25
+        RD-->>MS3: Returns {"calories": 1420, "protein": 85, ...}
+        MS3-->>GW: Return payload
+        GW-->>App: HTTP 200 JSON Response
+        Note over App: Riverpod updates dashboard rings.<br/>App dynamically shows updated progress.
+    end
 ```
 
+---
+
 ### Flow 2: Low-Confidence HitL Retraining & User Adapter Fine-Tuning
-`ESP32-S3 Scale` $\rightarrow$ YOLO detects food at 41% (below 80%) $\rightarrow$ Frame saved to `/dataset/pending/` $\rightarrow$ Flutter app notifies user $\rightarrow$ User inputs "paneer tikka" $\rightarrow$ `hitl_engine.py` generates `.txt` bounding box annotation $\rightarrow$ Move pair to `/dataset/trained/user_101/` $\rightarrow$ `retrain_yolo.py` executes with `freeze=10` (freezing Layers 0-9 backbone, updating ONLY classification head) $\rightarrow$ 3-epoch fine-tuning completes in ~3s on GPU $\rightarrow$ Saves lightweight adapter weights `user_101_head.pt` (~400KB) to `user_adapters` table $\rightarrow$ Next scan with `User-ID: 101` dynamically swaps `user_101_head.pt` and auto-recognizes paneer tikka.
+When a food item is identified with less than 80% confidence, MS1 triggers a pre-HitL multimodal LLM vision lookup to get a candidate, sends a confirmation card to the user, and uses the user's manual correction to retrain a lightweight user-specific head adapter.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant GW as API Gateway (Port 8000)
+    participant MS1 as MS1: CV Service (Port 8001)
+    participant MS2 as MS2: LLM Service (Port 8003)
+    participant DB as PostgreSQL DB
+    participant App as Flutter Mobile App
+
+    GW->>MS1: POST /api/v1/ingest/weight-frame (Low Confidence < 80%)
+    MS1->>MS2: POST /api/v1/llm/vision-infer<br/>Payload: [image=JPEG, weight]
+    MS2-->>MS1: Returns Candidate: "Paneer Tikka"
+    MS1->>App: Sends Low Confidence Confirmation Prompt
+    Note over App: UI prompts: "We think this is Paneer Tikka. Confirm or Edit?"
+    App->>GW: POST /api/v1/hitl/confirm<br/>Headers: [Authorization: Bearer JWT]<br/>Payload: [confirmed_food="Paneer Tikka"]
+    GW->>MS1: POST /api/v1/hitl/confirm
+    Note over MS1: Saves image & generates .txt YOLO label annotation<br/>Writes to /dataset/trained/user_101/
+    MS1->>MS1: Runs retrain_yolo.py (freeze=10)
+    Note over MS1: Backbone frozen. Updates final output head layers only.<br/>Generates user_101_head.pt (~400KB)
+    MS1->>DB: INSERT INTO user_adapters (user_id, weights_path, class_mappings)
+    Note over MS1: Next scale scan dynamically loads user_101_head.pt adapter.
+```
+
+---
 
 ### Flow 3: Autonomous Outlier Alert & Clinical MDT Handoff
-Diabetic user logs 3rd high-GI item in 45 min $\rightarrow$ PostgreSQL trigger pushes event to Redis Stream $\rightarrow$ Tier 2A Guardian Agent detects breach $\rightarrow$ Sends L1 Flutter push alert & inserts L2 `clinical_alerts` record $\rightarrow$ 24h uncorrected $\rightarrow$ Triggers Tier 2B MDT $\rightarrow$ Diagnostic Agent scans 30-day logs $\rightarrow$ Intervention Agent solves OR-Tools LP model $\rightarrow$ Drafting Agent generates clinical report $\rightarrow$ Pushes to Dietitian Portal for approval.
+If a user with special dietary conditions (e.g., a diabetic user) experiences dangerous nutritional deviations, the Guardian Agent intercepts the Redis stream update, generates a database alert, and escalates to the autonomous Clinical Multi-Agent team.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant RD as Redis Cache
+    participant Guardian as Tier 2A Guardian Agent (MS4)
+    participant DB as PostgreSQL DB
+    participant MDT as Tier 2B Clinical MDT (MS4)
+    participant App as Flutter Mobile App
+
+    Note over RD: Scale logs third high-GI meal in a 45-minute window
+    RD->>Guardian: Reads macro updates from channel macro_updates:101
+    Note over Guardian: Evaluates condition threshold matrices.<br/>Identifies L2 critical breach (Diabetic outlier).
+    Guardian->>DB: INSERT INTO clinical_alerts (user_id, severity="critical", message)
+    Guardian->>App: Triggers Firebase L1 Push Alert: "High glycemic load warning"
+    Note over Guardian: 24h passes with no correction from user.
+    Guardian->>MDT: Triggers MDT Diagnostic Handoff
+    MDT->>DB: Query 30-day meal logs & weight trends
+    Note over MDT: Diagnostic Agent compiles deficit vector.<br/>Intervention Agent runs Google OR-Tools LP Solver.<br/>Drafting Agent drafts clinical recommendation report.
+    MDT->>DB: INSERT INTO clinical_reports (user_id, report_data, status="pending_dietitian")
+```
+
+---
 
 ### Flow 4: Meta-Auditor Autonomic Self-Healing
-Scheduled audit cycle runs (every 15 min) $\rightarrow$ Tier 3 Meta-Auditor pulls execution traces from `audit_logs` $\rightarrow$ Calculates $S_{\text{faith}}$ score against ICMR/USDA ground truth $\rightarrow$ Detects LLM hallucination ($S_{\text{faith}} = 0.21$) $\rightarrow$ Automatically patches System Prompt Registry with numerical boundary rules $\rightarrow$ Next LLM lookup executes with updated prompt $\rightarrow$ $S_{\text{faith}}$ improves to 0.94.
+Every 15 minutes, the Meta-Auditor pulls telemetry logs, checks the accuracy of LLM/CV predictions against the ICMR/USDA database, and automatically updates prompt configurations or schedules model retraining to self-heal.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Scheduler as Cron Scheduler
+    participant Auditor as Tier 3 Meta-Auditor (MS4)
+    participant DB as PostgreSQL DB
+    participant MS2 as MS2: LLM Service (Port 8003)
+    participant MS1 as MS1: CV Service (Port 8001)
+
+    Scheduler->>Auditor: Triggers 15-min scheduled audit cycle
+    Auditor->>DB: Query execution traces from audit_logs table
+    Note over Auditor: Computes Faithfulness Score (S_faith).<br/>Detects LLM hallucination: S_faith = 0.21 (< 0.70 threshold)
+    Auditor->>DB: UPDATE system_prompt_registry SET system_prompt = "..."
+    Note over Auditor: Appends numerical database boundary constraints.
+    Note over MS2: Next API lookup reads updated prompt from registry
+    Auditor->>MS2: Verify updated endpoint POST /api/v1/llm/lookup
+    MS2-->>Auditor: Returns validated structured JSON response (S_faith = 0.94)
+```
 
 ---
 

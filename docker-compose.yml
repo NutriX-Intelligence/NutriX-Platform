@@ -55,6 +55,11 @@ services:
       - "8000:8000"
     networks:
       - nutrix-net
+    depends_on:
+      - ms1-cv
+      - ms2-llm
+      - ms3-user
+      - ms4-agents
 
   ms1-cv:
     build:

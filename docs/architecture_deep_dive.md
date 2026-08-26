@@ -103,28 +103,29 @@ Once weight stability is confirmed, the ESP32-S3 captures a JPEG image buffer fr
 - **Request Routing**: Directs heavy vision uploads to MS1 and application/user management endpoints to MS3.
 - **Security Boundary**: Isolates internal Docker microservice ports (8001, 8002, 8003, 8004, 5432, 6379) from direct external network exposure.
 
-### Complete Gateway Route Table
+### Complete Gateway Route Table (Standardized `/api/v1/` Convention)
 
 | Method | Route | Target Service | Purpose |
 |---|---|---|---|
-| `POST` | `/v1/ingest/weight-frame` | MS1: CV & Ingestion | Scale telemetry upload (Vision + Weight) |
-| `POST` | `/api/auth/register`, `/login`, `/google` | MS3: User & Analytics | User authentication & JWT generation |
-| `GET` | `/api/auth/me` | MS3: User & Analytics | Currently authenticated user profile |
-| `GET`, `PUT` | `/api/users/{id}` | MS3: User & Analytics | Profile demographics (age, height, weight, goals) |
-| `POST` | `/api/users/{id}/preferences` | MS3: User & Analytics | Dietary rules (Vegan, Jain, allergies) |
-| `GET` | `/v1/user/daily-summary` | MS3: User & Analytics | Fast Redis read for today's macro progress |
-| `GET` | `/v1/user/history` | MS3: User & Analytics | Timestamped meal log history |
-| `GET` | `/v1/user/targets` | MS3: User & Analytics | Daily BMR/TDEE target breakdown |
-| `POST` | `/api/recipes/recommend` | MS3: User & Analytics | Ingredient-based recipe ranking |
-| `POST` | `/api/recipes/generate-instructions` | MS3: User & Analytics | Step-by-step cooking guidance |
-| `GET` | `/api/barcode/{barcode}` | MS1: CV & Ingestion | Product lookup via cache / OpenFoodFacts |
-| `POST` | `/api/barcode/alternatives` | MS3: User & Analytics | Healthier & cheaper alternative suggestions |
-| `POST` | `/api/classify` | MS3: User & Analytics | Ingredient dietary compliance classification |
-| `POST` | `/api/ocr/upload` | MS1: CV & Ingestion | Nutrition label text extraction |
-| `POST` | `/api/meal-logs` | MS3: User & Analytics | Manual meal entry logging |
-| `POST` | `/api/meal-plans/generate` | MS3: User & Analytics | Google OR-Tools 4-slot meal plan solver |
-| `POST` | `/api/ai/coach` | MS3: User & Analytics | Conversational diet coaching |
-| `POST` | `/v1/llm/lookup` | MS2: LLM Nutrition | Internal service call for unknown foods |
+| `POST` | `/api/v1/ingest/weight-frame` | MS1: CV & Ingestion | Scale telemetry upload (Vision + Weight) |
+| `POST` | `/api/v1/auth/register`, `/login`, `/google` | MS3: User & Analytics | User authentication & JWT generation |
+| `GET` | `/api/v1/auth/me` | MS3: User & Analytics | Currently authenticated user profile |
+| `GET`, `PUT` | `/api/v1/users/{id}` | MS3: User & Analytics | Profile demographics (age, height, weight, goals) |
+| `POST` | `/api/v1/users/{id}/preferences` | MS3: User & Analytics | Dietary rules (Vegan, Jain, allergies) |
+| `GET` | `/api/v1/user/daily-summary` | MS3: User & Analytics | Fast Redis read for today's macro progress |
+| `GET` | `/api/v1/user/history` | MS3: User & Analytics | Timestamped meal log history |
+| `GET` | `/api/v1/user/targets` | MS3: User & Analytics | Daily BMR/TDEE target breakdown |
+| `POST` | `/api/v1/recipes/recommend` | MS3: User & Analytics | Ingredient-based recipe ranking |
+| `POST` | `/api/v1/recipes/generate-instructions` | MS3: User & Analytics | Step-by-step cooking guidance |
+| `GET` | `/api/v1/barcode/{barcode}` | MS1: CV & Ingestion | Product lookup via cache / OpenFoodFacts |
+| `POST` | `/api/v1/barcode/alternatives` | MS3: User & Analytics | Healthier & cheaper alternative suggestions |
+| `POST` | `/api/v1/classify` | MS3: User & Analytics | Ingredient dietary compliance classification |
+| `POST` | `/api/v1/ocr/upload` | MS1: CV & Ingestion | Nutrition label text extraction |
+| `POST` | `/api/v1/meal-logs` | MS3: User & Analytics | Manual meal entry logging |
+| `POST` | `/api/v1/meal-plans/generate` | MS3: User & Analytics | Google OR-Tools 4-slot meal plan solver |
+| `POST` | `/api/v1/ai/coach` | MS3: User & Analytics | Conversational diet coaching |
+| `POST` | `/api/v1/llm/lookup` | MS2: LLM Nutrition | Internal service call for unknown foods |
+| `POST` | `/api/v1/hitl/confirm` | MS1: CV & Ingestion | User confirmation/edit for HitL retraining |
 
 ---
 
@@ -133,7 +134,7 @@ Once weight stability is confirmed, the ESP32-S3 captures a JPEG image buffer fr
 - **Microservice 1: CV & Ingestion Service (Port 8001, GPU)**:
   - Tech: FastAPI + Ultralytics YOLOv8 (`NutriX_yolo_custom.pt`, 123 classes baseline) + OpenCV Barcode.
   - YOLO Adapter Architecture: Shared frozen backbone/neck (Layers 0–9 in VRAM once) + Per-User Head Adapters (`user_{id}_head.pt`, ~400KB) dynamically attached at inference based on `User-ID`.
-  - Pre-HitL LLM Vision Fallback: If YOLO confidence is < 80%, MS1 invokes MS2 (`POST /v1/llm/vision-infer`) to generate a candidate suggestion (*"Paneer Tikka (240 kcal)"*) for 1-tap user confirmation.
+  - Pre-HitL LLM Vision Fallback: If YOLO confidence is < 80%, MS1 invokes MS2 (`POST /api/v1/llm/vision-infer`) to generate a candidate suggestion (*"Paneer Tikka (240 kcal)"*) for 1-tap user confirmation.
   - HitL Engine: Upon user confirmation/edit, saves pair to `/dataset/trained/user_{id}/`, executes `freeze=10` head-only fine-tuning in ~3s via `retrain_yolo.py`, and updates `user_adapters` table.
 
 - **Microservice 2: LLM Nutrition & Vision Service (Port 8003, GPU)**:

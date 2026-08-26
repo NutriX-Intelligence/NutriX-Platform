@@ -136,7 +136,7 @@ flowchart TD
     PGRET["Return Macros\nfrom Local DB"]
     EXTDB["Query OpenFoodFacts\nor USDA FoodData Central"]
     EXTFOUND{"Found in\nExternal DB?"}
-    LLMCALL["POST /v1/llm/lookup\n→ LLM Nutrition Service\nQwen2.5-7B Structured Inference"]
+    LLMCALL["POST /api/v1/llm/lookup\n→ LLM Nutrition Service\nQwen2.5-7B Structured Inference"]
     SAVE["INSERT record → PostgreSQL\nTrigger Redis Sync"]
     LOG["Append Execution Trace\nto Agent Audit Log"]
 
