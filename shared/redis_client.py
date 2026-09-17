@@ -6,6 +6,8 @@ from typing import Optional, Dict, Any
 logger = logging.getLogger("shared.redis")
 
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+if "@redis:" in REDIS_URL or REDIS_URL.startswith("redis://redis:"):
+    REDIS_URL = REDIS_URL.replace("redis://redis:", "redis://localhost:", 1)
 
 _redis_client = None
 _in_memory_cache: Dict[str, Any] = {}

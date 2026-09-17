@@ -13,7 +13,8 @@ class RouteConfig:
 
 ROUTES = [
     RouteConfig(["POST"], r"^/api/v1/ingest/weight-frame$", MS1_CV_URL, 60, "device-token"),
-    RouteConfig(["GET"], r"^/api/v1/barcode/.*$", MS1_CV_URL, 15, "jwt"),
+    RouteConfig(["GET"],  r"^/api/v1/ingest/result/[^/]+$", MS1_CV_URL, 10, "device-token"),
+    RouteConfig(["GET"],  r"^/api/v1/barcode/.*$", MS1_CV_URL, 15, "jwt"),
     RouteConfig(["POST"], r"^/api/v1/ocr/upload$", MS1_CV_URL, 30, "jwt"),
     RouteConfig(["POST"], r"^/api/v1/hitl/confirm$", MS1_CV_URL, 30, "jwt"),
     RouteConfig(["POST"], r"^/api/v1/auth/register$", MS3_USER_URL, 10, "public"),

@@ -66,7 +66,9 @@ class NutriXCVEngine:
         self.confidence_threshold = confidence_threshold
         self.mock_mode = mock_mode
         self._model = None
-        self.pending_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../dataset/pending"))
+        # Resolve project root as the directory 2 levels above ms1_cv/
+        _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
+        self.pending_dir = os.path.join(_project_root, "dataset", "pending")
         os.makedirs(self.pending_dir, exist_ok=True)
 
         # Predefined mock mappings for testing curriculum

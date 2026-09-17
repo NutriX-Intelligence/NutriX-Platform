@@ -3,14 +3,35 @@ import logging
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+try:
+    from dotenv import load_dotenv
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    load_dotenv(BASE_DIR / ".env")
+except ImportError:
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    env_file = BASE_DIR / ".env"
+    if env_file.exists():
+        with open(env_file, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    os.environ.setdefault(k.strip(), v.strip())
 
 logger = logging.getLogger("shared.db")
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "dataset" / "nutrition_master.db"
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://nutrix:changeme@localhost:5432/nutrix_db")
+pg_user = os.environ.get("POSTGRES_USER", "nutrix")
+pg_pass = os.environ.get("POSTGRES_PASSWORD", "nutties")
+pg_db = os.environ.get("POSTGRES_DB", "nutrix_db")
+
+DATABASE_URL = os.environ.get("DATABASE_URL", f"postgresql://{pg_user}:{pg_pass}@localhost:5432/{pg_db}")
+
+# If running on local host outside docker, replace container host 'postgres' with 'localhost'
+if "@postgres:" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("@postgres:", "@localhost:")
 
 # Normalise Heroku-style postgres:// → postgresql://
 if DATABASE_URL.startswith("postgres://"):
