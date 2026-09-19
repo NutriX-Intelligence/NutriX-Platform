@@ -154,6 +154,19 @@ class Food(Base):
 
     # Relationships
     nutrients = relationship("FoodNutrient", back_populates="food", uselist=False, cascade="all, delete-orphan")
+    aliases = relationship("FoodAlias", back_populates="food", cascade="all, delete-orphan")
+
+
+class FoodAlias(Base):
+    __tablename__ = "food_aliases"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    food_id = Column(Integer, ForeignKey("foods.id", ondelete="CASCADE"), nullable=False, index=True)
+    alias_name = Column(String, nullable=False, index=True)
+    language = Column(String, default="en")
+
+    # Relationships
+    food = relationship("Food", back_populates="aliases")
 
 
 class FoodNutrient(Base):
@@ -176,8 +189,6 @@ class FoodNutrient(Base):
 
     # Relationships
     food = relationship("Food", back_populates="nutrients")
-
-
 
 
 class Recipe(Base):

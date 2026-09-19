@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from shared.db import get_db
 from shared.health import check_health
-from shared.models import Food, FoodNutrient, MealLog, User
+from shared.models import Food, FoodNutrient, FoodAlias, MealLog, User
 from ms1_cv.cv_engine import NutriXCVEngine, MealSession
 
 # ── In-memory result store: session_id -> result dict ──────────────────────
@@ -115,63 +115,78 @@ async def ingest_weight_frame(
         food_name = addition["food_name"]
         confidence_val = round(addition["confidence"] * 100, 1)
         bbox = addition.get("bounding_box")  # [xmin, ymin, xmax, ymax] normalized
-        
-        # ── Database Lookup for Calories ────────────────────────────────────
-        clean_name = food_name.replace("_", " ").strip()
-        calories_per_100g = 0.0
-        
-        try:
-            db_food = db.query(Food).filter(
-                (Food.name.ilike(f"%{clean_name}%")) | (Food.name.ilike(f"%{food_name}%"))
-            ).first()
-            if db_food and db_food.nutrients:
-                calories_per_100g = db_food.nutrients.energy_kcal or 0.0
-        except Exception:
-            pass  # Fallback gracefully if table not yet migrated
-            
-        # Standard fallback calorie lookup
-        if calories_per_100g <= 0.0:
-            sample_kcal = {
-                "apple": 52.0, "banana": 89.0, "roti": 264.0, "bread": 265.0,
-                "rice": 130.0, "cucumber": 15.0, "tomato": 18.0, "mango": 60.0,
-                "paneer": 296.0, "paneer tikka": 240.0, "paneer_tikka": 240.0,
-                "lassi": 85.0, "sweet lassi": 89.0, "salted lassi": 45.0,
-                "dosa": 168.0, "idli": 140.0, "samosa": 262.0, "biryani": 160.0,
-                "dal": 116.0, "chole": 164.0, "rajma": 140.0, "poha": 130.0,
-                "upma": 135.0, "vada pav": 289.0, "pav bhaji": 150.0,
-                "orange": 47.0, "egg": 155.0, "chicken": 239.0
-            }
-            calories_per_100g = sample_kcal.get(clean_name.lower(), sample_kcal.get(food_name.lower(), 120.0))
-            
-        total_calories = round((weight / 100.0) * calories_per_100g, 2)
-        
-        payload = {
-            "session_id": session_id,
-            "status": "identified",
-            "food_label": clean_name.title(),
-            "confidence": confidence_val,
-            "weight_g": round(weight, 2),
-            "calories": total_calories,
-            "user_id": x_user_id
-        }
+        status_val = "identified"
     else:
         # Fallback handling
-        fallback_name = (result.get("fallback_class") or "unknown").replace("_", " ").strip()
+        food_name = (result.get("fallback_class") or "unknown").replace("_", " ").strip()
         confidence_val = round((result.get("addition", {}) or {}).get("confidence", 0.0) * 100, 1)
-        fallback_cal_per_100g = 100.0
-        total_calories = round((weight / 100.0) * fallback_cal_per_100g, 2)
         bbox = (result.get("addition", {}) or {}).get("bounding_box")
+        status_val = result.get("status", "unidentified")
         
-        payload = {
-            "session_id": session_id,
-            "status": result.get("status", "unidentified"),
-            "food_label": fallback_name.title(),
-            "confidence": confidence_val,
-            "weight_g": round(weight, 2),
-            "calories": total_calories,
-            "reason": result.get("reason", ""),
-            "user_id": x_user_id
+    # ── Database Lookup for Calories & Macros ───────────────────────────
+    clean_name = food_name.replace("_", " ").strip().lower()
+    calories_per_100g = 0.0
+    protein_per_100g = 3.5
+    carbs_per_100g = 12.0
+    fat_per_100g = 2.5
+    
+    try:
+        # 1. Exact Match canonical (case-insensitive)
+        db_food = db.query(Food).filter(Food.name.ilike(clean_name)).first()
+        
+        # 2. Alias Match
+        if not db_food:
+            alias = db.query(FoodAlias).filter(FoodAlias.alias_name.ilike(clean_name)).first()
+            if alias:
+                db_food = alias.food
+                
+        # 3. Partial Match (restricted to trusted brands)
+        if not db_food:
+            db_food = db.query(Food).filter(
+                Food.name.ilike(f"%{clean_name}%"),
+                Food.brand.in_(["Whole Food", "YOLO Generic"])
+            ).first()
+                
+        if db_food and db_food.nutrients:
+            calories_per_100g = db_food.nutrients.energy_kcal or 0.0
+            protein_per_100g = db_food.nutrients.protein_g or 0.0
+            carbs_per_100g = db_food.nutrients.carb_g or 0.0
+            fat_per_100g = db_food.nutrients.fat_g or 0.0
+    except Exception:
+        pass  # Fallback gracefully if table not yet migrated
+        
+    # Standard fallback calorie lookup if DB failed
+    if calories_per_100g <= 0.0:
+        sample_kcal = {
+            "apple": 52.99, "banana": 89.99, "roti": 264.99, "bread": 265.99,
+            "rice": 130.99, "cucumber": 15.99, "tomato": 18.99, "mango": 60.99,
+            "paneer": 296.99, "paneer tikka": 240.99, "paneer_tikka": 240.99,
+            "lassi": 85.99, "sweet lassi": 89.99, "salted lassi": 45.99,
+            "dosa": 168.99, "idli": 140.99, "samosa": 262.99, "biryani": 160.99,
+            "dal": 116.99, "chole": 164.99, "rajma": 140.99, "poha": 130.99,
+            "upma": 135.99, "vada pav": 289.99, "pav bhaji": 150.99,
+            "orange": 47.99, "egg": 155.99, "chicken": 239.99
         }
+        calories_per_100g = sample_kcal.get(clean_name, 100.0) # default to 100.0 if entirely unknown
+        
+    total_calories = round((weight / 100.0) * calories_per_100g, 2)
+    total_protein = round((weight / 100.0) * protein_per_100g, 2)
+    total_carbs = round((weight / 100.0) * carbs_per_100g, 2)
+    total_fat = round((weight / 100.0) * fat_per_100g, 2)
+    
+    payload = {
+        "session_id": session_id,
+        "status": status_val,
+        "food_label": clean_name.title(),
+        "confidence": confidence_val,
+        "weight_g": round(weight, 2),
+        "calories": total_calories,
+        "protein": total_protein,
+        "carbs": total_carbs,
+        "fat": total_fat,
+        "reason": result.get("reason", ""),
+        "user_id": x_user_id
+    }
 
     # ── Save Meal Entry to PostgreSQL meal_logs Table ─────────────────────────
     try:
@@ -191,9 +206,9 @@ async def ingest_weight_frame(
             meal_type="Scale Capture",
             food_name=payload["food_label"],
             calories=payload["calories"],
-            protein=round((weight / 100.0) * 3.5, 2),
-            carbs=round((weight / 100.0) * 12.0, 2),
-            fat=round((weight / 100.0) * 2.5, 2),
+            protein=payload["protein"],
+            carbs=payload["carbs"],
+            fat=payload["fat"],
             weight_g=payload["weight_g"],
             source="esp32_smart_scale"
         )
