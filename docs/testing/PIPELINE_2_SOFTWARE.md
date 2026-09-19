@@ -130,7 +130,7 @@ If you have a sample JPEG/PNG photo of food and want to test YOLO detection and 
 In WSL2 or Windows:
 ```bash
 # In WSL2:
-PYTHONPATH=. python scripts/dev_capture.py --image dataset/pending/01d69d51-3556-4b21-b3f5-52b2feabaf15_1787998700.jpg --weight 180.0
+PYTHONPATH=. python scripts/dev_capture.py --image inference_outputs/esp32.jpg --weight 180.0
 ```
 
 *Expected Output:*
@@ -156,7 +156,7 @@ PYTHONPATH=. python scripts/dev_capture.py --image dataset/pending/01d69d51-3556
 To run automated inference across an entire folder of test images:
 
 ```bash
-PYTHONPATH=. python scripts/dev_capture.py --images dataset/pending/ --weight 150.0
+PYTHONPATH=. python scripts/dev_capture.py --images inference_outputs/ --weight 150.0
 ```
 This iterates through all images in the folder, sends them to MS1 sequentially, and records each into PostgreSQL and Redis.
 
@@ -186,7 +186,7 @@ If you want to test Pipeline 2 through the Gateway (to test authentication and r
    ```bash
    PYTHONPATH=. python scripts/dev_capture.py --image inference_outputs/esp32.jpg --weight 150 --url http://localhost:8000/api/v1/ingest/weight-frame --token NutriX_ESP32_SECURE_TOKEN
    ```
-2.3. Run `dev_capture.py` pointing to port 8000:
+2. Run `dev_capture.py` pointing to port 8000:
    ```bash
    PYTHONPATH=. python scripts/dev_capture.py --image inference_outputs/banana-trial.jpg --weight 150 --url http://localhost:8000/api/v1/ingest/weight-frame --token NutriX_ESP32_SECURE_TOKEN
    ```

@@ -6,3 +6,4 @@ pydantic>=2.6.1
 numpy>=1.26.4
 roboflow>=1.1.20
 
+python-multipart>=0.0.9
