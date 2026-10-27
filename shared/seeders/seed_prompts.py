@@ -45,6 +45,15 @@ Trigger appropriate Alert levels: L1 (Notification), L2 (Logged), L3 (MDT Clinic
     }
 ]
 
+# MS2 v2 prompts (strict JSON contract). Text comes from the MS2 in-code defaults so the
+# registry seed and the fallback used when the DB is down can never drift apart.
+from ms2_llm.prompts import DEFAULT_PROMPTS, LOOKUP_KEY, VISION_KEY  # noqa: E402
+
+INITIAL_SYSTEM_PROMPTS += [
+    {"prompt_key": key, "prompt_text": DEFAULT_PROMPTS[key], "version": 2}
+    for key in (VISION_KEY, LOOKUP_KEY)
+]
+
 def seed_prompts():
     logger.info("Starting system prompt registry seeding...")
     db = SessionLocal()

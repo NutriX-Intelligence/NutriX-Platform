@@ -1,7 +1,7 @@
 import os
 import uuid
 import time
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional, Set
 from PIL import Image
 import cv2
 import numpy as np
@@ -61,10 +61,22 @@ class MockResults:
         self.names = names
 
 class NutriXCVEngine:
-    def __init__(self, model_path: str = "yolov8n.pt", confidence_threshold: float = 0.8, mock_mode: bool = False):
+    def __init__(
+        self,
+        model_path: str = "yolov8n.pt",
+        confidence_threshold: float = 0.8,
+        mock_mode: bool = False,
+        suppressed_classes: Optional[Set[str]] = None,
+    ):
         self.model_path = model_path
         self.confidence_threshold = confidence_threshold
         self.mock_mode = mock_mode
+        # Classes YOLO is known to over-predict (e.g. lassi/kulfi). A top detection in this
+        # set is treated as unidentified so MS1 falls back to the MS2 vision model.
+        if suppressed_classes is None:
+            raw = os.getenv("YOLO_SUPPRESSED_CLASSES", "lassi,kulfi")
+            suppressed_classes = {c for c in raw.split(",")}
+        self.suppressed_classes = {c.strip().lower() for c in suppressed_classes if c.strip()}
         self._model = None
         # Resolve project root as the directory 2 levels above ms1_cv/
         _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
@@ -179,6 +191,18 @@ class NutriXCVEngine:
             xyxy[2] / w,
             xyxy[3] / h
         ]
+
+        # Suppressed classes are never trusted, and are deliberately NOT passed on as a
+        # fallback hint (it would bias the vision model toward the same mistake).
+        if str(class_name).strip().lower() in self.suppressed_classes:
+            return self._handle_failed_detection(
+                image_path,
+                delta_weight,
+                session,
+                reason=f"Suppressed class: {class_name} at {highest_conf*100:.1f}%",
+                fallback_bbox=normalized_bbox,
+                fallback_conf=highest_conf
+            )
 
         # Check confidence threshold
         if highest_conf >= self.confidence_threshold:

@@ -1,5 +1,5 @@
 # NutriX Pipeline 1: Hardware Testing Runbook
-> **Physical ESP32-S3 Smart Scale $\rightarrow$ Gateway (Port 8000) $\rightarrow$ MS1 Vision (Port 8001) $\rightarrow$ PostgreSQL $\rightarrow$ Redis $\rightarrow$ OLED & Web**
+> **Physical ESP32-S3 Smart Scale $\rightarrow$ Gateway (Port 8000) $\rightarrow$ MS1 Vision (Port 8001) $\rightarrow$ [MS2 Qwen3-VL fallback (Port 8003)] $\rightarrow$ PostgreSQL $\rightarrow$ Redis $\rightarrow$ OLED & Web**
 
 This document is the complete step-by-step developer runbook for testing NutriX with the physical **ESP32-S3 Smart Scale** (HX711 load cell + OV2640 camera + SSD1306 OLED display + push button).
 
@@ -14,6 +14,7 @@ sequenceDiagram
     participant Host as 💻 Windows Host (Wi-Fi LAN IP)
     participant GW as 🔀 API Gateway (:8000) [WSL2]
     participant MS1 as 🎯 MS1: CV & Ingestion (:8001) [WSL2]
+    participant MS2 as 🧠 MS2: Qwen3-VL-2B (:8003) [WSL2]
     participant PG as 🗄️ PostgreSQL (meal_logs)
     participant RD as ⚡ Redis (user:1:macros)
     participant Web as 🌐 Web Browser Viewer
@@ -25,6 +26,11 @@ sequenceDiagram
     Note over GW: Validates Device-Token & routes to MS1
     GW->>MS1: Proxies multipart stream to http://localhost:8001
     MS1->>MS1: Runs YOLOv8 inference & draws green bbox
+    opt YOLO below YOLO_CONF_THRESHOLD (0.5), no detection, or class is lassi/kulfi
+        MS1->>MS2: POST /api/v1/llm/vision-infer [image, weight] (~2.5-4.5 s)
+        MS2-->>MS1: food_name + per-100g macro estimate
+    end
+    MS1->>PG: Look up macros by food name (DB wins; Qwen estimate only on a miss)
     MS1->>PG: INSERT into meal_logs (user_id=1, calories, macros)
     MS1->>RD: Recalculates today's total & SET user:1:macros:YYYY-MM-DD
     MS1-->>GW: Returns JSON payload
@@ -90,6 +96,13 @@ cd /home/harsh/Nutrix
 source .venv/bin/activate
 ```
 
+### Step 3.2b: One-Time Checks (VLM & unit tests)
+```bash
+python -c "import transformers, accelerate, qwen_vl_utils, torch; print('VLM deps OK, CUDA:', torch.cuda.is_available())"
+PYTHONPATH=. python shared/seeders/seed_prompts.py
+PYTHONPATH=. pytest ms2_llm/tests ms1_cv/tests gateway/tests -v
+```
+
 ### Step 3.3: Reset Session Data (Clean State)
 To avoid negative calorie totals and accumulated test data from previous runs:
 ```bash
@@ -101,7 +114,15 @@ This clears today's entries in `meal_logs` for user 1 and sets the Redis key `us
 
 ## 4. Starting the Backend Services
 
-Open two separate WSL2 terminal tabs:
+Open three separate WSL2 terminal tabs. **Start MS2 first**: it needs ~30 s to load the model.
+
+### Tab 0: Start MS2 Vision-Language Service (Port 8003). No `--reload`
+```bash
+cd /home/harsh/Nutrix
+source .venv/bin/activate
+PYTHONPATH=. uvicorn ms2_llm.main:app --host 0.0.0.0 --port 8003
+```
+Ready when `curl -s localhost:8003/health` shows `"vlm": {"status": "ok", ...}`. Never add `--reload` here: each reload re-reads the ~4 GB model from `/mnt/c`. MS2 is only reached by MS1 on the same machine, so it needs **no** portproxy or firewall rule.
 
 ### Tab 1: Start MS1 Vision & Ingestion Service (Port 8001)
 ```bash
@@ -129,6 +150,23 @@ Initializing API Gateway...
 MS1 CV URL: http://localhost:8001
 INFO:     Uvicorn running on http://0.0.0.0:8000
 INFO:     Application startup complete.
+```
+The Gateway startup log lists `MS1/MS2/MS3/MS4` URLs, which should all be `http://localhost:800x`.
+
+### Health check of everything
+```bash
+for p in 8000 8001 8002 8003 8004; do
+  printf "%s  " $p; curl -s -m 5 localhost:$p/health | python -c "import sys,json; d=json.load(sys.stdin); print(d['service'], d['status'])" 2>/dev/null || echo "DOWN"
+done
+```
+Only the Gateway, MS1 and MS2 are needed for this pipeline (MS3/MS4 are health-only stubs).
+
+### Pre-flight request without the hardware
+Confirm the whole chain works through the Gateway before involving the scale:
+```bash
+TOKEN=$(grep '^DEVICE_TOKEN=' .env | cut -d= -f2)
+PYTHONPATH=. python scripts/dev_capture.py --image inference_outputs/latest_raw.jpg --weight 150 \
+  --url http://localhost:8000/api/v1/ingest/weight-frame --token "$TOKEN" --no-browser
 ```
 
 ---
@@ -180,6 +218,19 @@ INFO:     Application startup complete.
      [Database] Logged meal #1: Bell Pepper (38.3 kcal) for user 1
      [Redis] Synced user:1:macros:2026-09-17 -> 38.3 kcal total today
      ```
+   - **MS2 Logs (Tab 0):** Only active on the fallback path (see 6.1).
+
+### 6.1 Testing the VLM Fallback on the Physical Scale
+| Place on the scale | Expect |
+|---|---|
+| A food YOLO knows well (apple, banana, bread) | Fast (~100 ms) response, `identified_by: yolo`, `meal_logs.source = esp32_yolo`. MS2 stays idle |
+| An item YOLO cannot place (unusual dish, poor lighting, empty plate) | Response takes ~3–6 s. OLED shows the **Qwen label**. `identified_by: qwen`, `source = esp32_qwen_vlm` |
+| Lassi or kulfi | Treated as unidentified on purpose (YOLO over-predicts these). Qwen names it instead; `reason` says `Suppressed class: ...` |
+| Any item with MS2 stopped | HTTP 200 but `macro_source: llm-timeout`, 0 kcal. Restart MS2 |
+
+> **Firmware timeout:** the fallback path adds ~3–6 s (worst case ~35 s if MS2 hangs; the gateway cuts off at 60 s). Make sure the ESP32 HTTP client timeout is **at least 15 s** (ideally 40 s); the default of many Arduino HTTP clients is 5 s, which would show a false failure on the OLED while the meal is still logged correctly.
+>
+> The **Conf** value shown for Qwen-identified items is the model's own estimate, not a calibrated probability.
 
 ---
 
@@ -197,7 +248,18 @@ In a WSL2 terminal:
 ```bash
 PYTHONPATH=. python scripts/show_db_logs.py
 ```
-Shows the latest logged meals, weights, and calories from the database.
+Shows the latest logged meals, weights, calories and **Source** (`esp32_yolo` / `esp32_qwen_vlm` / `llm-timeout`) from the database.
+
+For MS2 internals:
+```bash
+# Foods the LLM added to the DB
+docker exec nutrix-postgres psql -U nutrix -d nutrix_db -c \
+  "SELECT f.name, n.energy_kcal, n.protein_g, n.carb_g, n.fat_g FROM foods f JOIN food_nutrients n ON n.food_id=f.id WHERE f.brand='LLM Inferred' ORDER BY f.id DESC LIMIT 10;"
+
+# MS2 audit trail (one row per vision/lookup call)
+docker exec nutrix-postgres psql -U nutrix -d nutrix_db -c \
+  "SELECT id, operation, confidence, latency_ms, flagged, created_at FROM audit_logs WHERE service='ms2' ORDER BY id DESC LIMIT 10;"
+```
 
 ### C. Redis Live Daily Cache Viewer
 In a WSL2 terminal:
@@ -215,7 +277,10 @@ Shows current daily totals (`calories`, `protein_g`, `carbs_g`, `fat_g`, `meals_
 | `ERROR: Could not connect to API Gateway` on ESP32 Serial Monitor | WSL2 IP changed upon PC restart, or portproxy rule is missing. | Re-run Step 2: check WSL2 IP and update `netsh interface portproxy add v4tov4 ... connectaddress=<NEW_WSL_IP>` |
 | ESP32 OLED shows `HTTP 401 / Unauthorized` | Device token mismatch. | Confirm `DEVICE_TOKEN` in ESP32 sketch matches `.env` (`NutriX_ESP32_SECURE_TOKEN`). |
 | Redis calories show negative or huge numbers | Leftover test data with uncalibrated negative load cell weights. | Run `PYTHONPATH=. python scripts/reset_test_session.py` to reset today's stats to 0. |
-| YOLO detects `Unknown` or low confidence | Insufficient lighting or camera angle. | Ensure scale camera has direct line of sight; verify annotated frame at `http://localhost:8001/captures/annotated`. |
+| YOLO detects `Unknown` or low confidence | Insufficient lighting or camera angle. | MS2 (Qwen) now names the item automatically. If it is still wrong, ensure the camera has a direct line of sight; verify the frame at `http://localhost:8001/captures/latest`. |
+| Meal logged with 0 kcal, `macro_source: llm-timeout` | MS2 is down or still loading | `curl localhost:8003/health`; start MS2 (Tab 0) and wait for `vlm.status: ok` |
+| OLED shows a timeout/failure but the meal IS in the database | ESP32 HTTP timeout shorter than the fallback path | Raise the firmware HTTP timeout to ≥ 15 s |
+| CUDA out of memory in MS2/MS1 | Combined VRAM too high on the 6 GB GPU | Close other GPU apps, or set `VLM_KEEP_LOADED=false` in `.env` and restart MS2 |
 | Database connection refused on startup | Docker containers not running. | Run `docker compose up -d postgres redis`. |
 
 ---
@@ -223,7 +288,7 @@ Shows current daily totals (`calories`, `protein_g`, `carbs_g`, `fat_g`, `meals_
 ## 9. Clean Shutdown Sequence
 
 When finished testing:
-1. **Stop microservices:** Press `Ctrl + C` in Terminal 1 (MS1) and Terminal 2 (Gateway).
+1. **Stop microservices:** Press `Ctrl + C` in Tab 0 (MS2, frees ~4 GB VRAM), Tab 1 (MS1) and Tab 2 (Gateway).
 2. **Stop Docker containers:**
    ```bash
    docker compose down

@@ -87,10 +87,27 @@ services:
     restart: always
     env_file:
       - .env
+    environment:
+      # Weights are mounted from the host HF cache, never baked into the image
+      VLM_MODEL_PATH: /models/hf/hub/models--Qwen--Qwen3-VL-2B-Instruct/snapshots/89644892e4d85e24eaac8bacfd4f463576704203
+    volumes:
+      - /mnt/c/Users/HP/.cache/huggingface:/models/hf:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     ports:
       - "8003:8003"
     networks:
       - nutrix-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   ms3-user:
     build:

@@ -1,0 +1,300 @@
+{
+  "timestamp": "2026-10-27 11:18:23",
+  "hardware": {
+    "gpu_name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+    "gpu_total_mb": 6144.0,
+    "ram_total_mb": 7578.2
+  },
+  "resources": {
+    "initial": {
+      "gpu_used_mb": 0.0,
+      "ram_used_mb": 1363.3
+    },
+    "post_yolo": {
+      "gpu_used_mb": 0.0
+    },
+    "post_qwen": {
+      "gpu_used_mb": 4159.0
+    },
+    "peak_vram_allocated_mb": 4203.5
+  },
+  "cold_load": {
+    "yolo_s": 0.11,
+    "qwen_s": 35.68
+  },
+  "image_tests": [
+    {
+      "image": "appleTest.png",
+      "ground_truth": "Apple",
+      "weight_g": 180.0,
+      "yolo": {
+        "prediction": "apple",
+        "confidence": 0.0,
+        "status": "unidentified",
+        "latency_ms": 2693.9
+      },
+      "qwen": {
+        "prediction": "apple",
+        "confidence": 95.0,
+        "flagged": true,
+        "latency_ms": 5281.1,
+        "per_100g": {
+          "calories": 52.0,
+          "protein_g": 0.8,
+          "carbs_g": 24.0,
+          "fat_g": 1.5
+        }
+      },
+      "pipeline_resolution": {
+        "identified_by": "qwen",
+        "final_food": "Apple",
+        "macro_source": "db",
+        "calculated_calories": 93.6,
+        "protein_g": 0.5,
+        "carbs_g": 25.2,
+        "fat_g": 0.4,
+        "e2e_latency_ms": 8001.2
+      },
+      "vram_mb": 4345.0
+    },
+    {
+      "image": "banana-trial.jpg",
+      "ground_truth": "Banana",
+      "weight_g": 120.0,
+      "yolo": {
+        "prediction": "banana",
+        "confidence": 78.3,
+        "status": "identified",
+        "latency_ms": 61.0
+      },
+      "qwen": {
+        "prediction": "banana",
+        "confidence": 95.0,
+        "flagged": true,
+        "latency_ms": 2217.1,
+        "per_100g": {
+          "calories": 85.0,
+          "protein_g": 1.0,
+          "carbs_g": 27.0,
+          "fat_g": 0.5
+        }
+      },
+      "pipeline_resolution": {
+        "identified_by": "yolo",
+        "final_food": "Banana",
+        "macro_source": "db",
+        "calculated_calories": 106.8,
+        "protein_g": 1.3,
+        "carbs_g": 27.4,
+        "fat_g": 0.4,
+        "e2e_latency_ms": 65.8
+      },
+      "vram_mb": 4367.0
+    },
+    {
+      "image": "tomato-trial.jpg",
+      "ground_truth": "Tomato",
+      "weight_g": 95.0,
+      "yolo": {
+        "prediction": "tomato",
+        "confidence": 83.1,
+        "status": "identified",
+        "latency_ms": 60.1
+      },
+      "qwen": {
+        "prediction": "tomato",
+        "confidence": 95.0,
+        "flagged": false,
+        "latency_ms": 2476.1,
+        "per_100g": {
+          "calories": 45.0,
+          "protein_g": 1.2,
+          "carbs_g": 8.5,
+          "fat_g": 0.5
+        }
+      },
+      "pipeline_resolution": {
+        "identified_by": "yolo",
+        "final_food": "Tomato",
+        "macro_source": "db",
+        "calculated_calories": 17.1,
+        "protein_g": 0.9,
+        "carbs_g": 3.7,
+        "fat_g": 0.2,
+        "e2e_latency_ms": 80.2
+      },
+      "vram_mb": 4407.0
+    },
+    {
+      "image": "watermelon-trial.jpg",
+      "ground_truth": "Watermelon",
+      "weight_g": 350.0,
+      "yolo": {
+        "prediction": "greenchutney",
+        "confidence": 0.0,
+        "status": "unidentified",
+        "latency_ms": 79.1
+      },
+      "qwen": {
+        "prediction": "watermelon",
+        "confidence": 97.0,
+        "flagged": true,
+        "latency_ms": 2391.0,
+        "per_100g": {
+          "calories": 34.0,
+          "protein_g": 0.8,
+          "carbs_g": 10.5,
+          "fat_g": 0.5
+        }
+      },
+      "pipeline_resolution": {
+        "identified_by": "qwen",
+        "final_food": "Watermelon",
+        "macro_source": "db",
+        "calculated_calories": 105.0,
+        "protein_g": 2.1,
+        "carbs_g": 26.6,
+        "fat_g": 0.7,
+        "e2e_latency_ms": 2476.0
+      },
+      "vram_mb": 4407.0
+    },
+    {
+      "image": "sweet-potat-test.jpg",
+      "ground_truth": "Sweet Potato",
+      "weight_g": 210.0,
+      "yolo": {
+        "prediction": "None",
+        "confidence": 0.0,
+        "status": "unidentified",
+        "latency_ms": 65.1
+      },
+      "qwen": {
+        "prediction": "sweet potato",
+        "confidence": 97.0,
+        "flagged": true,
+        "latency_ms": 2369.7,
+        "per_100g": {
+          "calories": 320.0,
+          "protein_g": 2.5,
+          "carbs_g": 28.0,
+          "fat_g": 2.0
+        }
+      },
+      "pipeline_resolution": {
+        "identified_by": "qwen",
+        "final_food": "Sweet Potato",
+        "macro_source": "db",
+        "calculated_calories": 180.6,
+        "protein_g": 3.4,
+        "carbs_g": 42.2,
+        "fat_g": 0.2,
+        "e2e_latency_ms": 2437.8
+      },
+      "vram_mb": 4407.0
+    },
+    {
+      "image": "IDLI.jpg",
+      "ground_truth": "Idli",
+      "weight_g": 150.0,
+      "yolo": {
+        "prediction": "idli",
+        "confidence": 52.8,
+        "status": "identified",
+        "latency_ms": 45.4
+      },
+      "qwen": {
+        "prediction": "idli",
+        "confidence": 95.0,
+        "flagged": true,
+        "latency_ms": 2053.8,
+        "per_100g": {
+          "calories": 240.0,
+          "protein_g": 4.0,
+          "carbs_g": 28.0,
+          "fat_g": 2.0
+        }
+      },
+      "pipeline_resolution": {
+        "identified_by": "yolo",
+        "final_food": "Idli",
+        "macro_source": "db",
+        "calculated_calories": 210.0,
+        "protein_g": 6.0,
+        "carbs_g": 45.0,
+        "fat_g": 0.8,
+        "e2e_latency_ms": 49.5
+      },
+      "vram_mb": 4407.0
+    },
+    {
+      "image": "esp32.jpg",
+      "ground_truth": "Carrot/Apple/Tomato (Scale Plate)",
+      "weight_g": 150.0,
+      "yolo": {
+        "prediction": "bell pepper",
+        "confidence": 0.0,
+        "status": "unidentified",
+        "latency_ms": 10.6
+      },
+      "qwen": {
+        "prediction": "bell pepper",
+        "confidence": 95.0,
+        "flagged": false,
+        "latency_ms": 2056.9,
+        "per_100g": {
+          "calories": 35.0,
+          "protein_g": 2.0,
+          "carbs_g": 5.0,
+          "fat_g": 1.0
+        }
+      },
+      "pipeline_resolution": {
+        "identified_by": "qwen",
+        "final_food": "Bell Pepper",
+        "macro_source": "db",
+        "calculated_calories": 30.0,
+        "protein_g": 1.4,
+        "carbs_g": 6.9,
+        "fat_g": 0.3,
+        "e2e_latency_ms": 2070.3
+      },
+      "vram_mb": 4407.0
+    }
+  ],
+  "text_lookups": [
+    {
+      "query": "apple",
+      "source": "db",
+      "macros": {
+        "calories": 52.0,
+        "protein_g": 0.3,
+        "carbs_g": 14.0,
+        "fat_g": 0.2
+      },
+      "latency_ms": 2.8
+    },
+    {
+      "query": "paneer butter masala",
+      "source": "db",
+      "macros": {
+        "calories": 300.0,
+        "protein_g": 12.0,
+        "carbs_g": 15.0,
+        "fat_g": 22.0
+      },
+      "latency_ms": 2.2
+    },
+    {
+      "query": "paneer butter masala",
+      "source": "db",
+      "macros": {
+        "calories": 300.0,
+        "protein_g": 12.0,
+        "carbs_g": 15.0,
+        "fat_g": 22.0
+      },
+      "latency_ms": 1.7
+    }
+  ]
+}

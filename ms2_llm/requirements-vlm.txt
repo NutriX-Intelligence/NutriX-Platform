@@ -1,0 +1,6 @@
+# Heavy GPU dependencies for the Qwen3-VL engine. Kept out of requirements.txt so CI and
+# unit tests (which mock the engine) don't download multi-GB wheels.
+# torch is provided by the CUDA base image in ms2_llm/Dockerfile; in the WSL .venv it is already installed.
+transformers>=4.57
+accelerate>=1.0
+qwen-vl-utils>=0.0.14

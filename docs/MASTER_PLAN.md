@@ -76,17 +76,17 @@
 
 **What is missing:**
 
-- [ ] 3.1 Wrap CV Engine in a FastAPI app (`ms1/main.py`) exposing:
+- [x] 3.1 Wrap CV Engine in a FastAPI app (`ms1/main.py`) exposing:
   - `POST /api/v1/ingest/weight-frame` (receives multipart from gateway)
-  - `POST /api/v1/hitl/confirm` (user confirms/edits unidentified item)
-  - `GET /api/v1/barcode/{barcode}` (barcode lookup handler)
-  - `POST /api/v1/ocr/upload` (OCR image to macros)
+  - `POST /api/v1/hitl/confirm` (user confirms/edits unidentified item) - **PENDING**
+  - `GET /api/v1/barcode/{barcode}` (barcode lookup handler) - **PENDING**
+  - `POST /api/v1/ocr/upload` (OCR image to macros) - **PENDING**
 - [ ] 3.2 Add OpenCV barcode decode path inside `cv_engine.py` (using `pyzbar`)
-- [ ] 3.3 Add PostgreSQL food lookup after identification (check `foods` table before calling MS2)
+- [x] 3.3 Add PostgreSQL food lookup after identification (check `foods` table before calling MS2)
 - [ ] 3.4 Add OpenFoodFacts / USDA API fallback lookup (for barcode misses)
-- [ ] 3.5 Add MS2 LLM nutrition lookup call (`POST http://llm-service:8003/api/v1/llm/lookup`) for unknown foods
-- [ ] 3.6 Add MS2 Pre-HitL Vision call (`POST http://llm-service:8003/api/v1/llm/vision-infer`) when YOLO < 80%
-- [ ] 3.7 Add PostgreSQL `meal_logs` INSERT after food confirmed
+- [x] 3.5 Add MS2 LLM nutrition lookup call (`POST http://llm-service:8003/api/v1/llm/lookup`) for unknown foods
+- [x] 3.6 Add MS2 Vision call (`POST http://llm-service:8003/api/v1/llm/vision-infer`) when YOLO is unidentified / below `YOLO_CONF_THRESHOLD` (done in Phase 4; Qwen's label is logged directly, HitL confirmation deferred)
+- [x] 3.7 Add PostgreSQL `meal_logs` INSERT after food confirmed
 - [ ] 3.8 Modify `retrain_yolo.py` to support `freeze=10` adapter-only retraining with per-user output path
 - [ ] 3.9 Modify `hitl_engine.py` to save adapter weights path to `user_adapters` table after retraining
 - [ ] 3.10 Implement Per-User Head Adapter loading in `cv_engine.py` (load user head from DB/disk, swap on inference)
@@ -97,20 +97,21 @@
 ---
 
 ## Phase 4 — MS2: LLM Nutrition & Vision Service (Port 8003)
-> **Goal:** Local LLM runs nutrition text lookup AND vision inference on unidentified food images.
+> **Goal:** Local VLM runs nutrition text lookup AND vision inference on food images YOLO cannot identify.
+> **Status: Complete** (details and deviations in `docs/tasks/tasks4.md`).
 
-- [ ] 4.1 Choose and pull local model: Qwen2.5-7B-Instruct via Ollama (dev) or vLLM (production)
-- [ ] 4.2 Create FastAPI app (`ms2/main.py`) exposing:
-  - `POST /api/v1/llm/lookup` — text nutrition generation (food name to JSON macros)
-  - `POST /api/v1/llm/vision-infer` — image to food candidate name + macro estimate
-  - `POST /api/v1/llm/generate` — raw prompt to completion (used by MS4 agents)
-- [ ] 4.3 Implement structured prompt template for nutrition lookup (strict JSON output enforcement)
-- [ ] 4.4 Implement multimodal vision prompt for pre-HitL image inference (Qwen2.5-VL or Gemini Vision fallback)
-- [ ] 4.5 Add 10-second timeout handling and `llm-timeout` fallback response
-- [ ] 4.6 Add INSERT to `foods` + `food_nutrients` table for newly inferred foods
-- [ ] 4.7 Add execution trace logging to `audit_logs`
-- [ ] 4.8 Write Dockerfile for MS2 (GPU base: Ollama Docker image or `nvidia/cuda`)
-- [ ] 4.9 Integration test: `POST /api/v1/llm/lookup` returns valid macro JSON; vision call returns a plausible food name
+- [x] 4.1 Local model: **Qwen3-VL-2B-Instruct** via Hugging Face `transformers` (bf16, resident on the GPU). Changed from Qwen2.5-7B/Ollama to fit the 6 GB GPU alongside YOLO
+- [x] 4.2 Create FastAPI app (`ms2_llm/main.py`) exposing:
+  - [x] `POST /api/v1/llm/lookup` — text nutrition generation (food name to JSON macros)
+  - [x] `POST /api/v1/llm/vision-infer` — image to food name + per-100 g macro estimate
+  - [ ] `POST /api/v1/llm/generate` — raw prompt to completion (deferred to Phase 6, used by MS4 agents)
+- [x] 4.3 Structured prompt templates with strict JSON output, parsing and macro sanity checks (`system_prompt_registry` keys `nutrition_lookup_v2`, `vision_infer_v2`)
+- [x] 4.4 Multimodal vision prompt (local Qwen3-VL; no cloud/Gemini fallback)
+- [x] 4.5 Timeout and `llm-timeout` fallback: MS1 → MS2 timeout is 30 s, and MS1 logs a 0 kcal `llm-timeout` meal if MS2 is unreachable
+- [x] 4.6 INSERT into `foods` + `food_nutrients` for newly inferred foods (brand `LLM Inferred`)
+- [x] 4.7 Execution trace logging to `audit_logs`
+- [x] 4.8 Dockerfile for MS2 (CUDA PyTorch base, model mounted as a volume; not yet built/tested)
+- [x] 4.9 Integration tests: 35 unit tests pass; `scripts/test_ms2.py` verified lookup, vision and the full MS1 → MS2 path
 
 ---
 

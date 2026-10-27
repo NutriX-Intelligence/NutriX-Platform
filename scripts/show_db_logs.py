@@ -6,17 +6,17 @@ def main():
     db = SessionLocal()
     try:
         logs = db.query(MealLog).order_by(MealLog.id.desc()).limit(15).all()
-        print("\n" + "="*70)
+        print("\n" + "="*86)
         print("          NUTRIX POSTGRESQL — LATEST SCALE MEAL LOGS")
-        print("="*70)
+        print("="*86)
         if not logs:
             print("No meal logs found yet. Press the ESP32 button to record a meal!")
         else:
-            print(f"{'ID':<5} | {'Food Name':<18} | {'Weight':<10} | {'Calories':<12} | {'Logged Date'}")
-            print("-" * 70)
+            print(f"{'ID':<5} | {'Food Name':<18} | {'Weight':<10} | {'Calories':<12} | {'Source':<14} | {'Logged Date'}")
+            print("-" * 86)
             for m in logs:
-                print(f"#{m.id:<4} | {m.food_name:<18} | {m.weight_g or 0:>6.1f} g  | {m.calories:>6.1f} kcal | {m.log_date}")
-        print("="*70 + "\n")
+                print(f"#{m.id:<4} | {m.food_name:<18} | {m.weight_g or 0:>6.1f} g  | {m.calories:>6.1f} kcal | {(m.source or '-'):<14} | {m.log_date}")
+        print("="*86 + "\n")
     finally:
         db.close()
 

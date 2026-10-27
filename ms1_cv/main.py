@@ -13,7 +13,9 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from shared.db import get_db
 from shared.health import check_health
-from shared.models import Food, FoodNutrient, FoodAlias, MealLog, User
+from shared.models import MealLog, User
+from shared.food_lookup import lookup_food, per_100g, persist_llm_food, normalize_name
+from ms1_cv import llm_client
 from ms1_cv.cv_engine import NutriXCVEngine, MealSession
 
 # ── In-memory result store: session_id -> result dict ──────────────────────
@@ -30,6 +32,10 @@ _MODEL_PATH = "/home/harsh/Nutrix/backend/services/ingestion/best.pt"
 if not os.path.exists(_MODEL_PATH):
     _MODEL_PATH = "yolov8n.pt"   # auto-download fallback
 
+# YOLO confidence needed to trust a detection; below it (or on a suppressed class) the
+# frame goes to MS2's vision model. Tune via YOLO_CONF_THRESHOLD in .env.
+_CONF_THRESHOLD = float(os.getenv("YOLO_CONF_THRESHOLD", "0.5"))
+
 # Shared engine instance (lazy-loaded on first request)
 _engine: Optional[NutriXCVEngine] = None
 
@@ -38,7 +44,7 @@ _engine: Optional[NutriXCVEngine] = None
 async def lifespan(app: FastAPI):
     """Pre-load the YOLO model at startup so first request is fast."""
     global _engine
-    _engine = NutriXCVEngine(model_path=_MODEL_PATH, confidence_threshold=0.5)
+    _engine = NutriXCVEngine(model_path=_MODEL_PATH, confidence_threshold=_CONF_THRESHOLD)
     # Warm up the model
     _ = _engine.model
     yield
@@ -90,8 +96,9 @@ async def ingest_weight_frame(
 
     # Save uploaded image to temp file and latest_raw.jpg
     suffix = os.path.splitext(image.filename or "frame.jpg")[1] or ".jpg"
+    image_bytes = await image.read()
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        shutil.copyfileobj(image.file, tmp)
+        tmp.write(image_bytes)
         tmp_path = tmp.name
 
     shutil.copy(tmp_path, LATEST_RAW_PATH)
@@ -109,74 +116,79 @@ async def ingest_weight_frame(
         except OSError:
             pass
 
-    # Build the response payload
-    if success and result.get("status") == "identified":
+    # ── Resolve the food label (YOLO first, MS2 Qwen3-VL fallback) ───────────
+    identified_by = "yolo"
+    vlm_macros = None       # per-100g macros estimated by Qwen, used only on a DB miss
+    vlm_flagged = False
+    llm_timeout = False
+    yolo_status = result.get("status", "unidentified")
+
+    if success and yolo_status == "identified":
         addition = result["addition"]
         food_name = addition["food_name"]
         confidence_val = round(addition["confidence"] * 100, 1)
         bbox = addition.get("bounding_box")  # [xmin, ymin, xmax, ymax] normalized
         status_val = "identified"
     else:
-        # Fallback handling
-        food_name = (result.get("fallback_class") or "unknown").replace("_", " ").strip()
-        confidence_val = round((result.get("addition", {}) or {}).get("confidence", 0.0) * 100, 1)
+        food_name = "unknown"
+        confidence_val = 0.0
         bbox = (result.get("addition", {}) or {}).get("bounding_box")
-        status_val = result.get("status", "unidentified")
-        
-    # ── Database Lookup for Calories & Macros ───────────────────────────
-    clean_name = food_name.replace("_", " ").strip().lower()
-    calories_per_100g = 0.0
-    protein_per_100g = 3.5
-    carbs_per_100g = 12.0
-    fat_per_100g = 2.5
-    
+        status_val = yolo_status
+        if yolo_status != "ignored":
+            # fallback_class is None for suppressed classes (lassi/kulfi): no biasing hint
+            vlm = await llm_client.vision_infer(image_bytes, weight, result.get("fallback_class"), x_user_id)
+            if vlm is None:
+                llm_timeout = True
+            elif vlm.get("food_name") and vlm["food_name"] != "unknown":
+                food_name = vlm["food_name"]
+                confidence_val = round((vlm.get("confidence") or 0.0) * 100, 1)
+                bbox = None
+                status_val = "identified"
+                identified_by = "qwen"
+                vlm_macros = vlm.get("per_100g")
+                vlm_flagged = bool(vlm.get("flagged"))
+
+    # ── Macro lookup: local DB -> Qwen's estimate -> MS2 text lookup ─────────
+    clean_name = normalize_name(food_name)
+    per100 = None
+    macro_source = "none"
+
     try:
-        # 1. Exact Match canonical (case-insensitive)
-        db_food = db.query(Food).filter(Food.name.ilike(clean_name)).first()
-        
-        # 2. Alias Match
-        if not db_food:
-            alias = db.query(FoodAlias).filter(FoodAlias.alias_name.ilike(clean_name)).first()
-            if alias:
-                db_food = alias.food
-                
-        # 3. Partial Match (restricted to trusted brands)
-        if not db_food:
-            db_food = db.query(Food).filter(
-                Food.name.ilike(f"%{clean_name}%"),
-                Food.brand.in_(["Whole Food", "YOLO Generic"])
-            ).first()
-                
-        if db_food and db_food.nutrients:
-            calories_per_100g = db_food.nutrients.energy_kcal or 0.0
-            protein_per_100g = db_food.nutrients.protein_g or 0.0
-            carbs_per_100g = db_food.nutrients.carb_g or 0.0
-            fat_per_100g = db_food.nutrients.fat_g or 0.0
+        db_food = lookup_food(db, clean_name)
+        per100 = per_100g(db_food) if db_food else None
+        if per100:
+            macro_source = "db"
     except Exception:
-        pass  # Fallback gracefully if table not yet migrated
-        
-    # Standard fallback calorie lookup if DB failed
-    if calories_per_100g <= 0.0:
-        sample_kcal = {
-            "apple": 52.99, "banana": 89.99, "roti": 264.99, "bread": 265.99,
-            "rice": 130.99, "cucumber": 15.99, "tomato": 18.99, "mango": 60.99,
-            "paneer": 296.99, "paneer tikka": 240.99, "paneer_tikka": 240.99,
-            "lassi": 85.99, "sweet lassi": 89.99, "salted lassi": 45.99,
-            "dosa": 168.99, "idli": 140.99, "samosa": 262.99, "biryani": 160.99,
-            "dal": 116.99, "chole": 164.99, "rajma": 140.99, "poha": 130.99,
-            "upma": 135.99, "vada pav": 289.99, "pav bhaji": 150.99,
-            "orange": 47.99, "egg": 155.99, "chicken": 239.99
-        }
-        calories_per_100g = sample_kcal.get(clean_name, 100.0) # default to 100.0 if entirely unknown
-        
-    total_calories = round((weight / 100.0) * calories_per_100g, 2)
-    total_protein = round((weight / 100.0) * protein_per_100g, 2)
-    total_carbs = round((weight / 100.0) * carbs_per_100g, 2)
-    total_fat = round((weight / 100.0) * fat_per_100g, 2)
-    
+        db.rollback()  # table not yet migrated; fall through to the LLM
+
+    if per100 is None and vlm_macros and not vlm_flagged:
+        per100 = vlm_macros
+        macro_source = "qwen3-vl-2b"
+        persist_llm_food(db, clean_name, per100)  # next scan of this food is a plain DB hit
+
+    if per100 is None and clean_name not in ("", "unknown"):
+        lk = await llm_client.lookup(clean_name, x_user_id)
+        if lk and lk.get("per_100g") and not lk.get("flagged"):
+            per100 = lk["per_100g"]
+            macro_source = lk.get("source", "llm")
+        elif lk is None:
+            llm_timeout = True
+
+    if per100 is None:
+        per100 = {"calories": 0.0, "protein_g": 0.0, "carbs_g": 0.0, "fat_g": 0.0}
+        macro_source = "llm-timeout" if llm_timeout else "none"
+
+    total_calories = round((weight / 100.0) * per100["calories"], 2)
+    total_protein = round((weight / 100.0) * per100["protein_g"], 2)
+    total_carbs = round((weight / 100.0) * per100["carbs_g"], 2)
+    total_fat = round((weight / 100.0) * per100["fat_g"], 2)
+
     payload = {
         "session_id": session_id,
         "status": status_val,
+        "identified_by": identified_by if clean_name != "unknown" else "none",
+        "macro_source": macro_source,
+        "yolo_status": yolo_status,
         "food_label": clean_name.title(),
         "confidence": confidence_val,
         "weight_g": round(weight, 2),
@@ -210,7 +222,8 @@ async def ingest_weight_frame(
             carbs=payload["carbs"],
             fat=payload["fat"],
             weight_g=payload["weight_g"],
-            source="esp32_smart_scale"
+            source=("llm-timeout" if macro_source == "llm-timeout"
+                    else "esp32_qwen_vlm" if identified_by == "qwen" else "esp32_yolo")
         )
         db.add(meal_entry)
         db.commit()

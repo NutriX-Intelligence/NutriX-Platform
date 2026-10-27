@@ -95,7 +95,7 @@ def send_frame_to_backend(
     start_time = time.time()
 
     try:
-        response = requests.post(url, headers=headers, files=files, data=data, timeout=30)
+        response = requests.post(url, headers=headers, files=files, data=data, timeout=60)
         elapsed_ms = (time.time() - start_time) * 1000.0
 
         if response.status_code == 200:
@@ -105,6 +105,10 @@ def send_frame_to_backend(
             print("="*65)
             print(f"  • Status          : {result.get('status', 'N/A')}")
             print(f"  • Food Identified : {result.get('food_label', 'N/A')}")
+            print(f"  • Identified By   : {result.get('identified_by', 'N/A')}  (yolo = CV model, qwen = MS2 fallback)")
+            print(f"  • Macro Source    : {result.get('macro_source', 'N/A')}  (db / qwen3-vl-2b / llm-timeout / none)")
+            if result.get('reason'):
+                print(f"  • YOLO Reason     : {result['reason']}")
             print(f"  • Confidence      : {result.get('confidence', 0.0)}%")
             print(f"  • Weight          : {result.get('weight_g', weight_g)} g")
             print(f"  • Calories        : {result.get('calories', 0.0)} kcal")
