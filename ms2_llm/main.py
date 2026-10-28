@@ -11,7 +11,8 @@ from PIL import Image
 from sqlalchemy.orm import Session
 
 from ms2_llm import config, prompts
-from ms2_llm.schemas import LookupRequest, LookupResponse, NutritionPer100g, VisionInferResponse
+from ms2_llm.schemas import (GenerateRequest, GenerateResponse, LookupRequest, LookupResponse, NutritionPer100g,
+                             VisionInferResponse)
 from ms2_llm.validation import UNKNOWN, parse_nutrition
 from ms2_llm.vlm_engine import VLMNotAvailable, engine
 from shared.audit import log_audit_event
@@ -165,4 +166,40 @@ async def llm_lookup(
     if resp.per_100g and not resp.flagged:
         persist_llm_food(db, req.food_name, resp.per_100g.model_dump())
     background.add_task(_audit, "llm_lookup", _user_id(x_user_id), {"food_name": req.food_name}, resp, latency_ms)
+    return resp
+
+
+# ── POST /api/v1/llm/generate ───────────────────────────────────────────────
+DEFAULT_GENERATE_SYSTEM = (
+    "You are NutriX, a helpful, accurate nutrition and cooking assistant. Answer clearly and concisely "
+    "with practical, safe advice. Use short numbered steps or bullets when it helps."
+)
+
+
+@app.post("/api/v1/llm/generate", response_model=GenerateResponse)
+async def llm_generate(
+    req: GenerateRequest,
+    background: BackgroundTasks,
+    x_user_id: Optional[str] = Header(None, alias="x-user-id"),
+):
+    """Text completion on the local model. Internal: MS3 falls back to it when Gemini is unavailable."""
+    start = time.perf_counter()
+    try:
+        text = await run_in_threadpool(
+            engine.infer, req.system or DEFAULT_GENERATE_SYSTEM, req.prompt, None, req.max_new_tokens
+        )
+    except VLMNotAvailable as e:
+        raise HTTPException(status_code=503, detail={"source": "llm-unavailable", "error": str(e)})
+    latency_ms = int((time.perf_counter() - start) * 1000)
+    resp = GenerateResponse(text=text.strip(), source=SOURCE, latency_ms=latency_ms)
+    background.add_task(
+        log_audit_event,
+        service="ms2",
+        operation="llm_generate",
+        user_id=_user_id(x_user_id),
+        input_data={"prompt_sha256": hashlib.sha256(req.prompt.encode("utf-8")).hexdigest(), "chars": len(req.prompt)},
+        output_data={"chars": len(resp.text), "model": SOURCE},
+        latency_ms=latency_ms,
+        flagged=not resp.text,
+    )
     return resp

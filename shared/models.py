@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Date
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
-from datetime import datetime
+from datetime import datetime, date
 from shared.db import Base
 
 class User(Base):
@@ -15,6 +15,7 @@ class User(Base):
     google_id = Column(String, nullable=True, unique=True)
     avatar_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
+    is_onboarded = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
@@ -70,9 +71,18 @@ class User(Base):
     def goal(self, val): self._set_profile_val("goal", val)
 
     @property
-    def diet_type(self): return self._get_profile_val("diet_type")
+    def diet_type(self):
+        val = self._get_profile_val("diet_type")
+        if val:
+            return val
+        for p in (self.preferences or []):
+            if (getattr(p, "preference_type", "") or "").lower().strip() == "diet_type":
+                return p.value
+        return "Non-Vegetarian"
+
     @diet_type.setter
-    def diet_type(self, val): self._set_profile_val("diet_type", val)
+    def diet_type(self, val):
+        self._set_profile_val("diet_type", val)
 
     @property
     def target_calories(self): return self._get_profile_val("target_calories")
@@ -94,6 +104,11 @@ class User(Base):
     @target_fat.setter
     def target_fat(self, val): self._set_profile_val("target_fat", val)
 
+    @property
+    def water_target_ml(self): return self._get_profile_val("water_target_ml")
+    @water_target_ml.setter
+    def water_target_ml(self, val): self._set_profile_val("water_target_ml", val)
+
 
 class Profile(Base):
     __tablename__ = "profiles"
@@ -111,6 +126,7 @@ class Profile(Base):
     target_protein = Column(Float)
     target_carbs = Column(Float)
     target_fat = Column(Float)
+    water_target_ml = Column(Float, nullable=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
@@ -155,6 +171,8 @@ class Food(Base):
     # Relationships
     nutrients = relationship("FoodNutrient", back_populates="food", uselist=False, cascade="all, delete-orphan")
     aliases = relationship("FoodAlias", back_populates="food", cascade="all, delete-orphan")
+    portions = relationship("FoodPortion", back_populates="food", cascade="all, delete-orphan")
+    tags = relationship("FoodTag", back_populates="food", cascade="all, delete-orphan")
 
 
 class FoodAlias(Base):
@@ -191,6 +209,37 @@ class FoodNutrient(Base):
     food = relationship("Food", back_populates="nutrients")
 
 
+class FoodCategory(Base):
+    __tablename__ = "food_categories"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, unique=True, nullable=False)
+
+
+class FoodPortion(Base):
+    __tablename__ = "food_portions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    food_id = Column(Integer, ForeignKey("foods.id", ondelete="CASCADE"), nullable=False)
+    amount = Column(Float)
+    unit = Column(String)
+    gram_weight = Column(Float)
+
+    # Relationships
+    food = relationship("Food", back_populates="portions")
+
+
+class FoodTag(Base):
+    __tablename__ = "food_tags"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    food_id = Column(Integer, ForeignKey("foods.id", ondelete="CASCADE"), nullable=False)
+    tag = Column(String, nullable=False)
+
+    # Relationships
+    food = relationship("Food", back_populates="tags")
+
+
 class Recipe(Base):
     __tablename__ = "recipes"
 
@@ -203,6 +252,8 @@ class Recipe(Base):
     cooking_time_minutes = Column(Integer)
     instructions = Column(Text)
     primarysource = Column(String)
+    brand = Column(String, nullable=True, index=True)          # fast-food chain
+    dietary_tag = Column(String, nullable=True, index=True)    # Vegetarian / Non-Vegetarian / Jain / Vegan
 
     # Relationships
     servings = relationship("Serving", back_populates="recipe", uselist=False, foreign_keys="[Serving.recipe_code]", primaryjoin="Recipe.recipe_code == Serving.recipe_code", cascade="all, delete-orphan")
@@ -299,18 +350,26 @@ class IngredientRule(Base):
     value = Column(Boolean, nullable=False)
 
 
+class Ingredient(Base):
+    __tablename__ = "ingredients"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, unique=True, nullable=False, index=True)
+    food_code = Column(String)
+
+
 class MealLog(Base):
     __tablename__ = "meal_logs"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    log_date = Column(Date, nullable=False)
+    log_date = Column(Date, nullable=False, default=date.today)
     meal_type = Column(String, nullable=False)  # 'Breakfast', 'Lunch', 'Dinner', 'Snack'
     food_name = Column(String, nullable=False)
-    calories = Column(Float, nullable=False)
-    protein = Column(Float, nullable=False)
-    carbs = Column(Float, nullable=False)
-    fat = Column(Float, nullable=False)
+    calories = Column(Float, nullable=False, default=0.0)
+    protein = Column(Float, nullable=False, default=0.0)
+    carbs = Column(Float, nullable=False, default=0.0)
+    fat = Column(Float, nullable=False, default=0.0)
     weight_g = Column(Float, nullable=True)
     source = Column(String, nullable=True)
 
@@ -324,7 +383,7 @@ class WaterLog(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     amount_ml = Column(Float, nullable=False)
-    logged_at = Column(Date, nullable=False)
+    logged_at = Column(Date, nullable=False, default=date.today)
 
     # Relationships
     user = relationship("User", back_populates="water_logs")

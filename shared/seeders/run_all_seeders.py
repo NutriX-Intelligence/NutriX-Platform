@@ -2,6 +2,7 @@ import time
 import logging
 from shared.seeders.seed_foods import seed_foods
 from shared.seeders.seed_recipes import seed_recipes
+from shared.seeders.seed_fast_food import seed_fast_food
 from shared.seeders.seed_aliases import seed_aliases
 from shared.seeders.seed_portions import seed_portions
 from shared.seeders.seed_rules import seed_rules
@@ -17,6 +18,7 @@ def run_all():
     seeders = [
         ("Foods & Nutrients", seed_foods),
         ("Recipes & Ingredients", seed_recipes),
+        ("Fast Food Chains & Dietary Tags", seed_fast_food),
         ("Food Aliases & Synonyms", seed_aliases),
         ("Portions & Unit Conversions", seed_portions),
         ("Dietary Rules & Homely Meals", seed_rules),

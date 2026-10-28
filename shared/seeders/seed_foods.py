@@ -9,10 +9,8 @@ from shared.db import SessionLocal
 logger = logging.getLogger("seeders.foods")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-RAW_DIR = BASE_DIR / "ms3_user" / "NutriX-main" / "NutriX-main" / "Dataset"
-if not RAW_DIR.exists():
-    RAW_DIR = BASE_DIR / "dataset"
+from shared.seeders.common import BASE_DIR, DATA_DIR, require_files
+RAW_DIR = DATA_DIR  # dataset/ms3_datasets (the only supported location)
 
 def clean_nutrient_value(val):
     if pd.isna(val):
@@ -31,6 +29,7 @@ def clean_nutrient_value(val):
         return 0.0
 
 def seed_foods():
+    require_files("Indian_Food_DF.csv", "UK_fct.xlsx", "US_fct.xlsx", "indian_food_nutrition_dataset.csv")
     logger.info(f"Starting food dataset seeding from: {RAW_DIR}")
     db = SessionLocal()
     try:

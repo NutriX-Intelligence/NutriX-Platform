@@ -104,3 +104,32 @@ def test_lookup_flagged_result_is_not_persisted(client, db, monkeypatch):
     assert body["flagged"] is True
     monkeypatch.setattr(ms2.engine, "infer", lambda *a, **k: "no json")
     assert client.post("/api/v1/llm/lookup", json={"food_name": "mystery paste"}).json()["source"] != "db"
+
+
+def test_generate_returns_text_and_passes_system_and_limits(client, monkeypatch):
+    seen = {}
+
+    def fake_infer(system, user, image=None, max_new_tokens=None):
+        seen.update(system=system, user=user, image=image, max_new_tokens=max_new_tokens)
+        return "  1. Eat dal.  "
+
+    monkeypatch.setattr(ms2.engine, "infer", fake_infer)
+    r = client.post("/api/v1/llm/generate", json={"prompt": "Protein snack?", "system": "Be brief", "max_new_tokens": 100})
+    assert r.status_code == 200
+    assert r.json()["text"] == "1. Eat dal." and r.json()["source"] == "qwen3-vl-2b"
+    assert seen == {"system": "Be brief", "user": "Protein snack?", "image": None, "max_new_tokens": 100}
+
+
+def test_generate_uses_a_default_system_prompt_and_validates_input(client, monkeypatch):
+    monkeypatch.setattr(ms2.engine, "infer", lambda system, user, image=None, max_new_tokens=None: system[:20])
+    assert client.post("/api/v1/llm/generate", json={"prompt": "hi"}).json()["text"].startswith("You are NutriX")
+    assert client.post("/api/v1/llm/generate", json={"prompt": ""}).status_code == 422
+    assert client.post("/api/v1/llm/generate", json={"prompt": "x", "max_new_tokens": 99999}).status_code == 422
+
+
+def test_generate_503_when_model_unavailable(client, monkeypatch):
+    def boom(*a, **k):
+        raise VLMNotAvailable("no weights")
+
+    monkeypatch.setattr(ms2.engine, "infer", boom)
+    assert client.post("/api/v1/llm/generate", json={"prompt": "hi"}).status_code == 503

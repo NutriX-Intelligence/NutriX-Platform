@@ -43,10 +43,10 @@ def run_macro_listener():
                     user_id = payload.get("user_id")
                     date_str = payload.get("date")
                     if user_id and date_str:
-                        # 1. Update Redis cache
+                        # Safety net for writers that did not call shared.macro_sync (direct SQL, other
+                        # services, deletes): refresh the cache only. Events are published by
+                        # sync_daily_macros(), so publishing here too would duplicate them.
                         set_daily_macros(user_id, date_str, payload)
-                        # 2. Publish to Redis channel for live UI websocket subscribers
-                        publish_event(f"macro_updates:{user_id}", payload)
                         logger.info(f"Updated live macros for user {user_id} on {date_str}: {payload}")
                 except Exception as e:
                     logger.error(f"Error processing macro_update payload: {e}", exc_info=True)

@@ -31,3 +31,16 @@ class LookupResponse(BaseModel):
     latency_ms: int = 0
     flagged: bool = False
     flag_reason: Optional[str] = None
+
+
+class GenerateRequest(BaseModel):
+    """Plain text completion on the local model (used by MS3 as the fallback when Gemini is unavailable)."""
+    prompt: str = Field(min_length=1, max_length=8000)
+    system: Optional[str] = Field(default=None, max_length=2000)
+    max_new_tokens: int = Field(default=384, ge=16, le=768)
+
+
+class GenerateResponse(BaseModel):
+    text: str
+    source: str = "qwen3-vl-2b"
+    latency_ms: int = 0

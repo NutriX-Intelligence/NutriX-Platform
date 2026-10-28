@@ -114,13 +114,16 @@ Once weight stability is confirmed, the ESP32-S3 captures a JPEG image buffer fr
 | `POST` | `/api/v1/users/{id}/preferences` | MS3: User & Analytics | Dietary rules (Vegan, Jain, allergies) |
 | `GET` | `/api/v1/user/daily-summary` | MS3: User & Analytics | Fast Redis read for today's macro progress |
 | `GET` | `/api/v1/user/history` | MS3: User & Analytics | Timestamped meal log history |
+| `GET` | `/api/v1/user/stream` | MS3: User & Analytics | Live dashboard feed (Server-Sent Events from Redis) |
+
+> Full, current app-facing contract (including legacy aliases): [`docs/API_CONTRACT.md`](API_CONTRACT.md).
 | `GET` | `/api/v1/user/targets` | MS3: User & Analytics | Daily BMR/TDEE target breakdown |
 | `POST` | `/api/v1/recipes/recommend` | MS3: User & Analytics | Ingredient-based recipe ranking |
 | `POST` | `/api/v1/recipes/generate-instructions` | MS3: User & Analytics | Step-by-step cooking guidance |
-| `GET` | `/api/v1/barcode/{barcode}` | MS1: CV & Ingestion | Product lookup via cache / OpenFoodFacts |
+| `GET` | `/api/v1/barcode/{barcode}` | MS3: User & Analytics | Product lookup: curated cache, OpenFoodFacts, search scraper, Gemini (moved from MS1 in Phase 5) |
 | `POST` | `/api/v1/barcode/alternatives` | MS3: User & Analytics | Healthier & cheaper alternative suggestions |
 | `POST` | `/api/v1/classify` | MS3: User & Analytics | Ingredient dietary compliance classification |
-| `POST` | `/api/v1/ocr/upload` | MS1: CV & Ingestion | Nutrition label text extraction |
+| `POST` | `/api/v1/ocr/upload` | MS3: User & Analytics | Nutrition label extraction (Gemini vision / local OCR; moved from MS1 in Phase 5) |
 | `POST` | `/api/v1/meal-logs` | MS3: User & Analytics | Manual meal entry logging |
 | `POST` | `/api/v1/meal-plans/generate` | MS3: User & Analytics | Google OR-Tools 4-slot meal plan solver |
 | `POST` | `/api/v1/ai/coach` | MS3: User & Analytics | Conversational diet coaching |

@@ -17,7 +17,9 @@ async def logging_middleware(request: Request, call_next: Callable[[Request], Aw
     # Extract or generate Request-ID
     request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
     
+    request.state.request_id = request_id  # the proxy forwards this very id downstream
     response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
     
     duration_ms = (time.perf_counter() - start_time) * 1000
     

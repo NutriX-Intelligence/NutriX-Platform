@@ -10,10 +10,8 @@ from shared.db import SessionLocal
 logger = logging.getLogger("seeders.recipes")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-RAW_DIR = BASE_DIR / "ms3_user" / "NutriX-main" / "NutriX-main" / "Dataset"
-if not RAW_DIR.exists():
-    RAW_DIR = BASE_DIR / "dataset"
+from shared.seeders.common import BASE_DIR, DATA_DIR, require_files
+RAW_DIR = DATA_DIR  # dataset/ms3_datasets (the only supported location)
 
 def categorize_recipe(name):
     name_lower = str(name).lower()
@@ -60,7 +58,31 @@ def clean_nutrient_value(val):
     except Exception:
         return 0.0
 
+REGIONAL_FILES = ["bengali_foods.csv", "chinese_foods.csv", "gujarati_kathiyawadi_foods.csv", "italian_foods.csv",
+                  "japanese_foods.csv", "maharashtrian_foods.csv", "mexican_foods.csv", "punjabi_foods.csv",
+                  "rajasthani_foods.csv", "south_indian_foods.csv"]
+
+
+def map_dietary_tag(raw):
+    """Regional CSV "Dietary Tag" -> the values MS3's diet filters expect (Veg/Jain dishes are Jain-safe)."""
+    r = str(raw or "").strip().lower()
+    if not r or r == "nan":
+        return None
+    if "non" in r:
+        return "Non-Vegetarian"
+    if "jain" in r:
+        return "Jain"
+    if "vegan" in r:
+        return "Vegan"
+    if "egg" in r:
+        return "Eggetarian"
+    if "veg" in r:
+        return "Vegetarian"
+    return None
+
+
 def seed_recipes():
+    require_files("recipes_names.xlsx", "recipes_servingsize.xlsx", "INDB.xlsx", "recipes.xlsx", *REGIONAL_FILES)
     logger.info(f"Starting recipe dataset seeding from: {RAW_DIR}")
     db = SessionLocal()
     try:
@@ -241,6 +263,13 @@ def seed_recipes():
                     """),
                     {"code": code, "name": dish_name, "cat": cat, "cuisine": cuisine_name, "inst": instructions, "src": filename}
                 ).fetchone()
+
+                tag = map_dietary_tag(row.get('Dietary Tag'))
+                if tag:
+                    db.execute(
+                        text("UPDATE recipes SET dietary_tag = :tag WHERE recipe_code = :code AND dietary_tag IS NULL"),
+                        {"tag": tag, "code": code}
+                    )
 
                 if res:
                     recipe_id = res[0]

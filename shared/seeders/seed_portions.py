@@ -8,10 +8,8 @@ from shared.db import SessionLocal
 logger = logging.getLogger("seeders.portions")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-RAW_DIR = BASE_DIR / "ms3_user" / "NutriX-main" / "NutriX-main" / "Dataset"
-if not RAW_DIR.exists():
-    RAW_DIR = BASE_DIR / "dataset"
+from shared.seeders.common import BASE_DIR, DATA_DIR, require_files
+RAW_DIR = DATA_DIR  # dataset/ms3_datasets (the only supported location)
 
 def parse_gram_weight(val):
     if pd.isna(val):
@@ -58,6 +56,7 @@ def parse_gram_weight(val):
     return None
 
 def seed_portions():
+    require_files("Units.xlsx")
     logger.info("Starting unit conversions and food portions seeding...")
     db = SessionLocal()
     try:

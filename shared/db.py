@@ -16,7 +16,7 @@ except ImportError:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
                     k, v = line.split("=", 1)
-                    os.environ.setdefault(k.strip(), v.strip())
+                    os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 logger = logging.getLogger("shared.db")
 
@@ -40,7 +40,15 @@ if DATABASE_URL.startswith("postgres://"):
 engine = None
 
 try:
-    if DATABASE_URL.startswith("postgresql://"):
+    if DATABASE_URL.startswith("sqlite"):
+        # Explicit SQLite (used by unit tests): honour it exactly, never fall back to Postgres
+        from sqlalchemy.pool import StaticPool
+        _sqlite_kwargs = {"connect_args": {"check_same_thread": False}}
+        if ":memory:" in DATABASE_URL or "mode=memory" in DATABASE_URL:
+            _sqlite_kwargs["poolclass"] = StaticPool
+        engine = create_engine(DATABASE_URL, **_sqlite_kwargs)
+        logger.info(f"Using explicit SQLite database: {DATABASE_URL}")
+    elif DATABASE_URL.startswith("postgresql://"):
         logger.info(f"Connecting to PostgreSQL database...")
         # Verify the database connection synchronously
         temp_engine = create_engine(DATABASE_URL, pool_pre_ping=True)

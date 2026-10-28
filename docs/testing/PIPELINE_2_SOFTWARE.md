@@ -132,10 +132,19 @@ PYTHONPATH=. uvicorn gateway.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 The Gateway's startup log lists the four downstream URLs. All should be `http://localhost:800x`.
 
-### Terminals 4 & 5: MS3 / MS4 (optional, health only)
+### Terminal 4: MS3 User & Analytics (accounts, dashboard, recipes, fast food, barcode, AI)
 ```bash
-PYTHONPATH=. uvicorn ms3_user.main:app --host 0.0.0.0 --port 8002
-PYTHONPATH=. uvicorn ms4_agents.main:app --host 0.0.0.0 --port 8004
+cd /home/harsh/Nutrix && source .venv/bin/activate
+PYTHONPATH=. uvicorn ms3_user.main:app --host 0.0.0.0 --port 8002 --reload
+```
+With `ENV=dev` in `.env`, the old web dashboard is served at <http://localhost:8002/dev-ui> (a complete test client for MS3). MS4 is still a health-only stub (`PYTHONPATH=. uvicorn ms4_agents.main:app --port 8004`).
+
+### One-time database steps for MS3 (see `docs/tasks/tasks5.md`)
+```bash
+PYTHONPATH=. alembic upgrade head                       # adds the MS3 columns/tables and the canonical macro trigger
+PYTHONPATH=. python shared/seeders/run_all_seeders.py   # needs the datasets in dataset/ms3_datasets/ (it fails loudly if not)
+PYTHONPATH=. python scripts/verify_seed.py              # row counts; fast food must be 3,355 items / 8 chains
+PYTHONPATH=. python scripts/create_dev_user.py          # account #1 (dev@nutrix.dev / nutrix123) = the scale's default User-ID
 ```
 
 ### Health check of everything
@@ -176,6 +185,50 @@ Every `dev_capture.py` result prints **Identified By** (`yolo` / `qwen`) and **M
 | F | **Text lookup, miss then persisted** | `PYTHONPATH=. python scripts/test_ms2.py --lookup "murgh makhani"` twice | 1st: `source: qwen3-vl-2b` (~2 s). 2nd: `source: db` |
 | G | **Direct MS2 vision** | `PYTHONPATH=. python scripts/test_ms2.py --image inference_outputs/latest_raw.jpg --weight 180` | label + per-100 g macros; `flagged: true` + `flag_reason` when calories don't match macros |
 | H | **Full MS1 → MS2 path via script** | `PYTHONPATH=. python scripts/test_ms2.py --image <frame.jpg> --weight 200 --via-ms1` | same JSON as MS1 payload, GPU usage printed before and after |
+
+
+### User journey through the Gateway (MS3 + MS1 + Redis)
+```bash
+GW=http://localhost:8000
+# 1. log in (token's `sub` is the numeric user id)
+TOKEN=$(curl -s -X POST $GW/api/v1/auth/login -H "Content-Type: application/json" \
+  -d '{"email":"dev@nutrix.dev","password":"nutrix123"}' | python -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+# 2. the dashboard before a scan (Redis, falls back to the DB)
+curl -s $GW/api/v1/user/daily-summary -H "Authorization: Bearer $TOKEN" | python -m json.tool
+# 3. a scale scan for the same user (device-token route)
+DEV=$(grep '^DEVICE_TOKEN=' .env | cut -d= -f2)
+PYTHONPATH=. python scripts/dev_capture.py --image inference_outputs/latest_raw.jpg --weight 150 --user-id 1 \
+  --url $GW/api/v1/ingest/weight-frame --token "$DEV" --no-browser
+# 4. the dashboard again: calories went up, `latest_item` is the scanned food
+curl -s $GW/api/v1/user/daily-summary -H "Authorization: Bearer $TOKEN" | python -m json.tool
+# 5. a manual log, then history, then delete it and watch the totals drop
+curl -s -X POST $GW/api/v1/meal-logs -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"user_id":1,"food_name":"Banana","meal_type":"Snack","calories":105,"weight_g":118}'
+curl -s "$GW/api/v1/user/history?page_size=5" -H "Authorization: Bearer $TOKEN" | python -m json.tool
+# 6. ownership: asking for another user's data must be 403, no token must be 401
+curl -s -o /dev/null -w "other user -> %{http_code}\n" $GW/api/v1/water-logs/today/2 -H "Authorization: Bearer $TOKEN"
+curl -s -o /dev/null -w "no token   -> %{http_code}\n" $GW/api/v1/user/daily-summary
+# 7. the old paths the existing app uses still work through the gateway
+curl -s "$GW/api/meal-logs/today/1" -H "Authorization: Bearer $TOKEN" | python -m json.tool
+```
+
+### More MS3 checks (live stream, health, Gemini, cleanup)
+```bash
+# one call for every service
+curl -s $GW/health/all | python -m json.tool
+
+# live dashboard: keep this open in one terminal...
+curl -N -s $GW/api/v1/user/stream -H "Authorization: Bearer $TOKEN"
+# ...and in another, log or delete a meal: a new `event: summary` frame appears; `: ping` every 15 s
+
+# AI features (Gemini). `source` says whether the answer came from Gemini or the offline fallback
+curl -s -X POST $GW/api/v1/ai/coach -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json"   -d '{"message":"How much protein should I eat today?"}' | python -m json.tool
+
+# export the OpenAPI spec for the app team, and tidy junk scale rows (dry-run first)
+PYTHONPATH=. python scripts/export_openapi.py
+PYTHONPATH=. python scripts/cleanup_test_data.py
+PYTHONPATH=. python scripts/cleanup_test_data.py --apply
+```
 
 ### Through the API Gateway
 ```bash

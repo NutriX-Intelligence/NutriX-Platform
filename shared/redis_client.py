@@ -82,3 +82,16 @@ def publish_event(channel: str, message: Dict[str, Any]) -> bool:
             return False
     logger.info(f"[In-Memory Mode] Event published to {channel}: {msg_str}")
     return True
+
+
+def append_macro_stream(user_id: int, payload: Dict[str, Any], maxlen: int = 1000) -> bool:
+    """XADD the payload to `user:{id}:macro_stream` (Tier 2A Guardian reads this stream)."""
+    client = get_redis_client()
+    if not client:
+        return False
+    try:
+        client.xadd(f"user:{user_id}:macro_stream", {"payload": json.dumps(payload)}, maxlen=maxlen, approximate=True)
+        return True
+    except Exception as e:
+        logger.error(f"Error appending to macro stream for user {user_id}: {e}")
+        return False

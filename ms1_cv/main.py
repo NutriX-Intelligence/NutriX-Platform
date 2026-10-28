@@ -15,6 +15,7 @@ from shared.db import get_db
 from shared.health import check_health
 from shared.models import MealLog, User
 from shared.food_lookup import lookup_food, per_100g, persist_llm_food, normalize_name
+from shared.macro_sync import sync_daily_macros
 from ms1_cv import llm_client
 from ms1_cv.cv_engine import NutriXCVEngine, MealSession
 
@@ -79,6 +80,38 @@ def get_latest_annotated_image():
     return FileResponse(LATEST_ANNOTATED_PATH, media_type="image/jpeg")
 
 
+# ── Scale user resolution ───────────────────────────────────────────────────
+# Accounts are created through MS3 (register). For bench testing, AUTO_CREATE_DEV_USER=true lets an
+# unknown User-ID be created on the fly (and keeps the Postgres id sequence ahead of it).
+_AUTO_CREATE_DEV_USER = os.getenv("AUTO_CREATE_DEV_USER", "false").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _resolve_scale_user(db: Session, x_user_id: Optional[str]) -> int:
+    if x_user_id and x_user_id.isdigit():
+        uid = int(x_user_id)
+    elif _AUTO_CREATE_DEV_USER:
+        uid = 1
+    else:
+        raise HTTPException(status_code=400, detail="Missing or invalid User-ID header.")
+
+    if db.query(User).filter(User.id == uid).first():
+        return uid
+    if not _AUTO_CREATE_DEV_USER:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Unknown user {uid}. Register the account first (POST /api/v1/auth/register).",
+        )
+    db.add(User(id=uid, name="Smart Scale User", email=f"user_{uid}@nutrix.local"))
+    db.commit()
+    try:  # an explicit id does not advance the serial sequence: do it, or the next registration collides
+        from sqlalchemy import text
+        db.execute(text("SELECT setval(pg_get_serial_sequence('users', 'id'), (SELECT GREATEST(MAX(id), 1) FROM users))"))
+        db.commit()
+    except Exception:
+        db.rollback()  # not Postgres (SQLite fallback)
+    return uid
+
+
 # ── POST /api/v1/ingest/weight-frame ───────────────────────────────────────
 @app.post("/api/v1/ingest/weight-frame")
 async def ingest_weight_frame(
@@ -92,6 +125,7 @@ async def ingest_weight_frame(
     Runs YOLO inference on the image, fetches calories from DB,
     annotates and saves the image, and returns the result.
     """
+    target_uid = _resolve_scale_user(db, x_user_id)
     session_id = str(uuid.uuid4())
 
     # Save uploaded image to temp file and latest_raw.jpg
@@ -202,16 +236,6 @@ async def ingest_weight_frame(
 
     # ── Save Meal Entry to PostgreSQL meal_logs Table ─────────────────────────
     try:
-        target_uid = 1
-        if x_user_id and x_user_id.isdigit():
-            target_uid = int(x_user_id)
-            
-        usr = db.query(User).filter(User.id == target_uid).first()
-        if not usr:
-            usr = User(id=target_uid, name="Smart Scale User", email=f"user_{target_uid}@nutrix.local")
-            db.add(usr)
-            db.commit()
-            
         meal_entry = MealLog(
             user_id=target_uid,
             log_date=datetime.utcnow().date(),
@@ -228,37 +252,10 @@ async def ingest_weight_frame(
         db.add(meal_entry)
         db.commit()
         print(f"[Database] Logged meal #{meal_entry.id}: {meal_entry.food_name} ({meal_entry.calories} kcal) for user {target_uid}")
-        
-        # ── Synchronize with Redis Cache (<10ms fast read for Flutter App) ───
-        try:
-            from shared.redis_client import set_daily_macros, publish_event
-            today_str = datetime.utcnow().date().isoformat()
-            today_meals = db.query(MealLog).filter(
-                MealLog.user_id == target_uid,
-                MealLog.log_date == datetime.utcnow().date()
-            ).all()
-            
-            tot_cal = sum(m.calories for m in today_meals)
-            tot_prot = sum(m.protein for m in today_meals)
-            tot_carb = sum(m.carbs for m in today_meals)
-            tot_fat = sum(m.fat for m in today_meals)
-            
-            macro_data = {
-                "user_id": target_uid,
-                "date": today_str,
-                "calories": round(tot_cal, 2),
-                "protein_g": round(tot_prot, 2),
-                "carbs_g": round(tot_carb, 2),
-                "fat_g": round(tot_fat, 2),
-                "meals_count": len(today_meals),
-                "latest_item": payload["food_label"]
-            }
-            
-            set_daily_macros(target_uid, today_str, macro_data)
-            publish_event(f"macro_updates:{target_uid}", macro_data)
-            print(f"[Redis] Synced user:{target_uid}:macros:{today_str} -> {tot_cal:.1f} kcal total today")
-        except Exception as re_err:
-            print(f"[Warning] Redis sync skipped: {re_err}")
+
+        # Live dashboard cache (<10 ms reads in MS3): canonical payload shared with MS3 and the DB trigger
+        macros = sync_daily_macros(db, target_uid)
+        print(f"[Redis] Synced user:{target_uid}:macros:{macros['date']} -> {macros['calories']:.1f} kcal total today")
     except Exception as e:
         db.rollback()
         print(f"[Warning] Could not save to meal_logs: {e}")

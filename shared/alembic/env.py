@@ -25,9 +25,16 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Overwrite sqlalchemy.url with dynamic DATABASE_URL
-target_db_url = os.environ.get("DATABASE_URL", DATABASE_URL)
+# Use shared.db's URL: it already maps the Docker hostname (@postgres:) to localhost for host-side runs, which the
+# raw DATABASE_URL from .env does not. ALEMBIC_DATABASE_URL is an explicit override.
+target_db_url = os.environ.get("ALEMBIC_DATABASE_URL", DATABASE_URL)
 if target_db_url.startswith("postgres://"):
     target_db_url = target_db_url.replace("postgres://", "postgresql://", 1)
+if not target_db_url.startswith("postgresql"):
+    raise RuntimeError(
+        f"Alembic needs PostgreSQL but resolved {target_db_url!r} (is `docker compose up -d postgres redis` running?). "
+        "The migrations contain PostgreSQL-only SQL and must not run against the SQLite fallback."
+    )
 
 config.set_main_option("sqlalchemy.url", target_db_url)
 

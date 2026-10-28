@@ -15,8 +15,8 @@ async def proxy_request(request: Request, target_url: str, timeout: int, user_id
     headers.pop("host", None)
     
     headers["X-Forwarded-For"] = request.client.host if request.client else "127.0.0.1"
-    if "x-request-id" not in {k.lower(): v for k, v in headers.items()}:
-        headers["X-Request-ID"] = str(uuid.uuid4())
+    headers.pop("x-request-id", None)
+    headers["X-Request-ID"] = getattr(request.state, "request_id", None) or str(uuid.uuid4())
     if user_id:
         headers["X-User-ID"] = str(user_id)
         

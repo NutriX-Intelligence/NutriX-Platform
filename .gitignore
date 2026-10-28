@@ -45,3 +45,9 @@ dataset/
 docker-compose.override.yml
 .idea/
 .vscode/
+
+# MS3 leftovers
+*:Zone.Identifier
+ms3_user/**/output/
+*.pkl
+docs/api/*.tmp
