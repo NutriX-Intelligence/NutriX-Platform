@@ -301,7 +301,7 @@ def test_optimization_engine_feasibility():
         _recipes = _check.query(_Recipe).count()
     finally:
         _check.close()
-    if _recipes == 0:
+    if _recipes < 50:  # needs the seeded library, not a handful of rows
         pytest.skip("needs the seeded recipe library (integration check); the throw-away test DB has no recipes")
     email = unique_email("optimizer_user")
     reg = client.post("/api/auth/register", json={

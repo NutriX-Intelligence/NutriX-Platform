@@ -214,7 +214,7 @@ def test_diet_plan_and_recipe_generator_sources(monkeypatch):
     plan = client.post("/api/v1/ai/diet-plan", json={"user_id": 7})
     assert plan.status_code == 200 and plan.json() == {"plan": "PLAN TEXT", "source": "gemini"}
     recipe = client.post("/api/v1/ai/recipe-generator", json={"ingredients": "egg, spinach"})
-    assert recipe.json() == {"recipe": "PLAN TEXT", "source": "gemini"}
+    assert recipe.json()["recipe"].strip() == "PLAN TEXT" and recipe.json()["source"] == "gemini"
 
     monkeypatch.setenv("GEMINI_API_KEY", "")
     assert client.post("/api/v1/ai/diet-plan", json={"user_id": 7}).json()["source"] == "offline"

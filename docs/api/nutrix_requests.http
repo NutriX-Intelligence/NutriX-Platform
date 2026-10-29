@@ -150,6 +150,20 @@ Content-Type: application/json
 
 { "message": "Suggest a high-protein vegetarian snack", "history": [] }
 
+### AI diet plan: the goal and diet chosen on the screen override the saved profile. `plan` is a Markdown STRING
+POST {{host}}/api/v1/ai/diet-plan
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "user_id": 1, "goal": "weight loss", "diet_type": "Vegetarian" }
+
+### AI recipe generator: use `name` + `nutrition` from the response to log the meal (never parse `recipe`)
+POST {{host}}/api/v1/ai/recipe-generator
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "ingredients": "paneer, capsicum, tomato", "diet_type": "Vegetarian" }
+
 ### Homely meal calculator
 POST {{host}}/api/v1/homely-meals/calculate
 Authorization: Bearer {{token}}

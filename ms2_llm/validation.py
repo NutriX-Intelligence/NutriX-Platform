@@ -16,6 +16,17 @@ def normalize_label(name: Any) -> str:
     return UNKNOWN if label in _UNKNOWN_NAMES else label
 
 
+def parse_name_only(text: Any) -> str:
+    """Reduce a free-text 'what food is this?' answer to a lowercase label, or UNKNOWN (no answer, a sentence, a refusal)."""
+    first = (str(text or "").strip().splitlines() or [""])[0]
+    label = re.sub(r"[\"'`*.!]", "", first.strip().lower()).strip(" :-")
+    label = re.sub(r"^(a|an|the)\s+", "", re.sub(r"\s+", " ", label))
+    sentence = label.startswith(("i ", "this ", "it ", "there ", "the image", "image "))
+    if not label or sentence or len(label.split()) > 3 or any(w in label for w in ("sorry", "cannot", "can't", "no food", "not sure")):
+        return UNKNOWN
+    return normalize_label(label)
+
+
 def extract_json(text: str) -> Optional[Dict[str, Any]]:
     """Strip markdown fences and parse the first {...} block in the model output."""
     if not text:

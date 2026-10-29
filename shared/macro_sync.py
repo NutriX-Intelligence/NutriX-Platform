@@ -15,6 +15,7 @@ from datetime import date, datetime
 from typing import Any, Dict, Optional
 
 from sqlalchemy.orm import Session
+from shared import clock
 
 from shared.models import MealLog
 from shared.redis_client import append_macro_stream, publish_event, set_daily_macros
@@ -49,7 +50,7 @@ def sync_daily_macros(
     publish: bool = True,
 ) -> Dict[str, Any]:
     """Recompute today's (or `day`'s) totals from the DB and push them to Redis. Never raises."""
-    day = day or datetime.utcnow().date()
+    day = day or clock.today()
     payload = daily_macros_payload(db, user_id, day)
     try:
         set_daily_macros(user_id, payload["date"], payload)

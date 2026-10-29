@@ -1,6 +1,7 @@
 import sys
 import os
 from datetime import datetime, timezone
+from shared import clock
 
 # Ensure project root is in path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -12,7 +13,7 @@ def reset_session(user_id: int = 1, all_dates: bool = False):
     Cleans up meal logs from PostgreSQL and clears the Redis macro cache
     for the specified user to start a clean test session.
     """
-    today_date = datetime.now(timezone.utc).date()
+    today_date = clock.today()
     today_str = today_date.isoformat()
 
     print("\n" + "="*70)

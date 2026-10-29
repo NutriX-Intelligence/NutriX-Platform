@@ -8,6 +8,7 @@ logger = logging.getLogger("ms2_llm.prompts")
 
 VISION_KEY = "vision_infer_v2"
 LOOKUP_KEY = "nutrition_lookup_v2"
+NAME_ONLY_KEY = "vision_name_only_v1"   # in-code only (not in system_prompt_registry): second pass when the full JSON answer is "unknown"
 
 JSON_CONTRACT = (
     "Respond with ONLY a single JSON object and nothing else (no markdown, no explanation) "
@@ -24,6 +25,12 @@ DEFAULT_PROMPTS: Dict[str, str] = {
         "Identify the single main food item on the scale in the image. "
         + JSON_CONTRACT
         + ' If no food is visible, set "food_name" to "unknown", "confidence" to 0 and all numbers to 0.'
+    ),
+    NAME_ONLY_KEY: (
+        "You identify food in photos taken by a kitchen-scale camera. The item may be small, blurry, "
+        "or partly out of frame; fruits, vegetables, Indian dishes and snacks are all common. "
+        "Answer with ONLY the food's common English name in lowercase (one to three words, e.g. \"guava\"), "
+        "no sentence and no punctuation. Answer \"unknown\" only if there is clearly no food in the image."
     ),
     LOOKUP_KEY: (
         "You are the NutriX nutrition database engine. Given a food name, give its typical "

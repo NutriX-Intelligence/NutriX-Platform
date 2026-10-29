@@ -51,6 +51,8 @@ def parse_gram_weight(val):
             return coeff * 0.1
         elif 'no' in unit_word or 'number' in unit_word:
             return coeff * 1.0
+        elif 'cauliflower' in unit_word:  # "1/4 cauliflower" -> 0.25 x 600 g head
+            return coeff * 600.0
         if not unit_word:
             return coeff
     return None
@@ -87,7 +89,10 @@ def seed_portions():
                 db.execute(
                     text("""
                         INSERT INTO unit_conversions (food_item, unit, gram_weight, source)
-                        VALUES (:item, :unit, :gw, :src);
+                        SELECT :item, :unit, :gw, :src
+                        WHERE NOT EXISTS (
+                            SELECT 1 FROM unit_conversions WHERE food_item = :item AND unit = :unit AND gram_weight = :gw
+                        );
                     """),
                     {"item": str(food_item).strip(), "unit": unit_str, "gw": float(gram_weight), "src": source_val}
                 )
@@ -95,8 +100,7 @@ def seed_portions():
             db.commit()
             logger.info(f"Seeded {units_count} unit conversions from Units.xlsx.")
 
-        # Skipping food_portions since it has been removed from database schema
-        pass
+        # food_portions rows come from seed_foods.py (parsed from indian_food_nutrition_dataset.csv serving sizes)
     except Exception as e:
         db.rollback()
         logger.error(f"Error seeding portions: {e}", exc_info=True)

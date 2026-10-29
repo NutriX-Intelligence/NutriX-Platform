@@ -60,6 +60,7 @@ RULES = [
     ("ghee", "exclude_vegan", True),
     ("paneer", "exclude_vegan", True),
     ("honey", "exclude_vegan", True),
+    ("cream", "exclude_vegan", True),
 ]
 
 POPULAR_HOMELY_MEALS = [

@@ -51,13 +51,14 @@ class UserProfileResponse(BaseModel):
 
 class RecommendFoodsRequest(BaseModel):
     user_id: int
-    limit: Optional[int] = Field(60, ge=1, le=2000)
+    limit: Optional[int] = Field(300, ge=1, le=2000)   # page size; see X-Total-Count / X-Has-More in the response
     query: Optional[str] = None
     category: Optional[str] = None
     cuisine: Optional[str] = None
     brand: Optional[str] = None
     diet_filter: Optional[str] = None
     offset: Optional[int] = 0
+    exclude_fast_food: Optional[bool] = False   # for an "All" tab that lists fast food separately
     max_cooking_time: Optional[int] = None
 
 class RankedFoodItem(BaseModel):

@@ -4,6 +4,7 @@ from ortools.linear_solver import pywraplp
 
 from shared.models import Recipe, User, HomelyMeal
 from ms3_user.services.recommendation_engine import RecommendationEngine
+from ms3_user.services.meal_candidates import is_plan_candidate
 
 def categorize_meal(name):
     name_lower = name.lower()
@@ -140,7 +141,7 @@ class OptimizationEngine:
 
         # If not enough cuisine matches or no cuisine requested, fetch general high-quality pool
         if len(matched_recipes) < 30:
-            general_pool = query.limit(350).all()
+            general_pool = query.limit(700).all()
             # Combine avoiding duplicates
             seen_codes = {r.recipe_code for r in matched_recipes}
             for r in general_pool:
@@ -167,7 +168,9 @@ class OptimizationEngine:
             if not r.nutrition:
                 continue
             u_energy = getattr(r.nutrition, "unit_serving_energy_kcal", None) or getattr(r.nutrition, "energy_kcal", 0.0)
-            if not u_energy or u_energy < 15.0:
+            # a real meal for this slot: no spice mixes / condiments / stocks, and a believable per-serving calorie figure
+            user_made = isinstance(r, HomelyMealRecipeWrapper) or hasattr(r, "_homely_meal")
+            if not is_plan_candidate(getattr(r, "recipe_name", None), u_energy, slot_name, user_made=user_made):
                 continue
 
             # Check strict diet compliance

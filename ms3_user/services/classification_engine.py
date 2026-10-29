@@ -33,6 +33,13 @@ class ClassificationEngine:
     
     # Safe compound phrases replaced before token checks
     SAFE_COMPOUNDS = [
+        # Dairy from a cow is dairy, not beef ("Milk, whole, Cow", "cow's milk", "cow ghee"). Only the dairy phrase is
+        # rewritten, so "cow meat" / "beef" are still meat.
+        (r"\bcow(?:'s|s)?\s+(milk|ghee|butter|curd|dahi|yogurt|yoghurt|paneer|cheese|cream|khoya|khoa|dairy)\b", r"\1"),
+        (r"\b((?:milk|ghee|butter|curd|dahi|yogurt|yoghurt|paneer|cheese|cream|khoya|khoa)\b[^;]*?),\s*cow\b", r"\1"),
+        # "Egg, poultry, whole, raw" (food-composition-table naming): an egg is not poultry meat, it is egg
+        (r"\b(eggs?)\s*,\s*poultry\b", r"\1"),
+        (r"\bpoultry\s+(eggs?)\b", r"\1"),
         # Plant Milks (not dairy)
         (r"\b(coconut|almond|soy|soya|oat|cashew|rice|hemp|pea|macadamia|hazelnut|flax|walnut|sunflower|plant|non-dairy|dairy-free)\s+milk\b", r"\1 plantmilk"),
         # Plant Butters (not dairy)

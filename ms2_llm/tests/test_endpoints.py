@@ -58,8 +58,17 @@ def test_vision_infer_retries_once_then_gives_unknown(client, monkeypatch):
     monkeypatch.setattr(ms2.engine, "infer", lambda *a, **k: calls.append(1) or "I see a plate")
     body = _vision(client).json()
 
-    assert len(calls) == 2
+    assert len(calls) == 3   # two JSON attempts, then the name-only second pass (also unusable here)
     assert body["food_name"] == "unknown" and body["flagged"] is True
+
+
+def test_vision_infer_name_only_second_pass_rescues_unknown(client, monkeypatch):
+    answers = iter(['{"food_name": "unknown", "confidence": 0, "calories_per_100g": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0}', "Guava"])
+    monkeypatch.setattr(ms2.engine, "infer", lambda *a, **k: next(answers))
+    body = _vision(client).json()
+
+    assert body["food_name"] == "guava" and body["per_100g"] is None and body["flagged"] is True
+    assert "name-only" in body["flag_reason"]
 
 
 def test_vision_infer_rejects_bad_image(client):

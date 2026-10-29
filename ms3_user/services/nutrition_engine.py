@@ -1,3 +1,18 @@
+def normalize_goal(goal) -> str:
+    """Map any reasonable goal wording to the engine's vocabulary: fat loss / weight gain / muscle gain / maintenance.
+    ('weight loss' used to fall through to maintenance, silently giving loss users maintenance calories.)"""
+    g = " ".join(str(goal or "").replace("_", " ").replace("-", " ").lower().split())
+    if g in ("fat loss", "weight gain", "muscle gain", "maintenance"):
+        return g
+    if any(k in g for k in ("muscle", "bulk", "strength", "build")):
+        return "muscle gain"
+    if any(k in g for k in ("loss", "lose", "cut", "fat", "slim", "reduce", "shred")):
+        return "fat loss"
+    if any(k in g for k in ("gain", "increase", "mass")):
+        return "weight gain"
+    return "maintenance"
+
+
 class NutritionEngine:
     @staticmethod
     def calculate_bmi(weight: float, height: float) -> float:
@@ -44,8 +59,9 @@ class NutritionEngine:
     @classmethod
     def calculate_targets(cls, age: int, gender: str, height: float, weight: float, activity_level: str, goal: str) -> dict:
         """Calculate daily calorie and macronutrient targets.
-        goal: 'fat loss', 'weight gain', 'muscle gain', 'maintenance'
+        goal: 'fat loss', 'weight gain', 'muscle gain', 'maintenance' (other wordings are normalised)
         """
+        goal = normalize_goal(goal)
         bmi = cls.calculate_bmi(weight, height)
         bmr = cls.calculate_bmr(weight, height, age, gender)
         tdee = cls.calculate_tdee(bmr, activity_level)

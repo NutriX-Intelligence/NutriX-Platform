@@ -82,7 +82,8 @@ def map_dietary_tag(raw):
 
 
 def seed_recipes():
-    require_files("recipes_names.xlsx", "recipes_servingsize.xlsx", "INDB.xlsx", "recipes.xlsx", *REGIONAL_FILES)
+    require_files("recipes_names.xlsx", "recipes_servingsize.xlsx", "INDB.xlsx", "recipes.xlsx", *REGIONAL_FILES,
+                  "Indain_Food_Cuisine_Dataset.csv", "Multi_Cuisine_Recipe_Dataset.csv")
     logger.info(f"Starting recipe dataset seeding from: {RAW_DIR}")
     db = SessionLocal()
     try:
@@ -199,12 +200,14 @@ def seed_recipes():
         if recipes_file.exists():
             logger.info("Loading recipes.xlsx for recipe ingredients...")
             recipe_ings_df = pd.read_excel(recipes_file)
+            # re-run safe: recipes that already have ingredients are left alone (this insert has no unique key)
+            already_have_ings = {r[0] for r in db.execute(text("SELECT DISTINCT recipe_id FROM recipe_ingredients"))}
             for idx, row in recipe_ings_df.iterrows():
                 if pd.isna(row.get('recipe_code')):
                     continue
                 code = str(row['recipe_code']).strip()
                 recipe_id = recipe_code_map.get(code)
-                if not recipe_id:
+                if not recipe_id or recipe_id in already_have_ings:
                     continue
                 amt = float(row['amount']) if pd.notna(row.get('amount')) else None
                 db.execute(
@@ -324,6 +327,100 @@ def seed_recipes():
                     reg_total += 1
             db.commit()
         logger.info(f"Seeded {reg_total} recipes from Regional cuisine files.")
+
+        # 3. Large cuisine corpora (ground-truth parity). Macros are flat per-serving estimates, as in the standalone MS3.
+        #    dietary_tag is left NULL here: run scripts/retag_recipes.py afterwards to tag them from their ingredients.
+        def _insert_corpus_recipe(code, name, cuisine, minutes, instructions, src, macros, sodium, calcium, iron, ingredients):
+            energy, prot, carb, fat, fib = macros
+            res = db.execute(
+                text("""
+                    INSERT INTO recipes (recipe_code, recipe_name, category, cuisine, difficulty, cooking_time_minutes, instructions, primarysource)
+                    VALUES (:code, :name, :cat, :cuisine, 'Medium', :mins, :inst, :src)
+                    ON CONFLICT (recipe_code) DO NOTHING
+                    RETURNING id;
+                """),
+                {"code": code, "name": name, "cat": categorize_recipe(name), "cuisine": cuisine,
+                 "mins": minutes, "inst": instructions, "src": src}
+            ).fetchone()
+            if not res:
+                return False
+            rid = res[0]
+            db.execute(
+                text("""
+                    INSERT INTO recipe_nutrition (
+                        recipe_id, recipe_code, energy_kcal, carb_g, protein_g, fat_g, freesugar_g, fibre_g, sodium_mg, calcium_mg, iron_mg, vitc_mg, folate_ug,
+                        unit_serving_energy_kcal, unit_serving_carb_g, unit_serving_protein_g, unit_serving_fat_g, unit_serving_freesugar_g, unit_serving_fibre_g,
+                        unit_serving_sodium_mg, unit_serving_calcium_mg, unit_serving_iron_mg, unit_serving_vitc_mg, unit_serving_folate_ug
+                    ) VALUES (
+                        :rid, :code, :energy, :carb, :prot, :fat, 0.0, :fib, :sod, :calc, :iron, 5.0, 20.0,
+                        :energy, :carb, :prot, :fat, 0.0, :fib, :sod, :calc, :iron, 5.0, 20.0
+                    ) ON CONFLICT (recipe_code) DO NOTHING;
+                """),
+                {"rid": rid, "code": code, "energy": energy, "carb": carb, "prot": prot, "fat": fat, "fib": fib,
+                 "sod": sodium, "calc": calcium, "iron": iron}
+            )
+            for ing in ingredients:
+                db.execute(
+                    text("""
+                        INSERT INTO recipe_ingredients (recipe_id, recipe_code, ingredient_name, food_name, amount, unit)
+                        VALUES (:rid, :code, :ing, :ing, 1.0, 'portion');
+                    """),
+                    {"rid": rid, "code": code, "ing": ing}
+                )
+            db.execute(
+                text("""
+                    INSERT INTO servings (recipe_code, no_of_servings, size_of_servings, servings_unit)
+                    VALUES (:code, 1.0, 1.0, 'serving')
+                    ON CONFLICT (recipe_code) DO NOTHING;
+                """),
+                {"code": code}
+            )
+            return True
+
+        ind_file = RAW_DIR / "Indain_Food_Cuisine_Dataset.csv"  # (sic) the file name is misspelt upstream
+        ind_total = 0
+        if ind_file.exists():
+            logger.info("Loading Indain_Food_Cuisine_Dataset.csv...")
+            df = pd.read_csv(ind_file, encoding="utf-8", on_bad_lines='skip')
+            for idx, row in df.iterrows():
+                dish_name = str(row.get('name_of_Dish', '')).strip()
+                if not dish_name:
+                    continue
+                c_match = re.search(r'Cuisine:\s*([^\\\'"\]]+)', str(row.get('Cuisine_name', '')))
+                cuisine_name = (c_match.group(1).replace("Recipes", "").strip() if c_match else "") or "Indian"
+                ing_raw = str(row.get('Ingredients_of_Dish', ''))
+                try:
+                    ing_list = ast.literal_eval(ing_raw) if ing_raw.startswith('[') else ing_raw.split(',')
+                except Exception:
+                    ing_list = re.findall(r"'([^']+)'", ing_raw)
+                if _insert_corpus_recipe(
+                    f"IND_CUISINE_{idx:05d}", dish_name, cuisine_name, 35,
+                    str(row.get('Recipe_Instructions', 'Follow standard recipe preparation.')).strip(),
+                    "Indain_Food_Cuisine_Dataset.csv", (300.0, 10.0, 40.0, 12.0, 4.0), 350.0, 60.0, 2.5,
+                    [str(i).strip() for i in ing_list if str(i).strip()],
+                ):
+                    ind_total += 1
+            db.commit()
+        logger.info(f"Seeded {ind_total} recipes from Indain_Food_Cuisine_Dataset.csv.")
+
+        multi_file = RAW_DIR / "Multi_Cuisine_Recipe_Dataset.csv"
+        multi_total = 0
+        if multi_file.exists():
+            logger.info("Loading Multi_Cuisine_Recipe_Dataset.csv...")
+            df = pd.read_csv(multi_file, encoding="utf-8", on_bad_lines='skip')
+            for idx, row in df.iterrows():
+                dish_name = str(row.get('name', '')).strip()
+                if not dish_name:
+                    continue
+                if _insert_corpus_recipe(
+                    f"MULTI_CUISINE_{idx:05d}", dish_name, str(row.get('area', 'Multi-Cuisine')).strip() or "Multi-Cuisine", 30,
+                    str(row.get('steps', 'Follow standard preparation steps.')).strip(),
+                    "Multi_Cuisine_Recipe_Dataset.csv", (320.0, 12.0, 42.0, 12.0, 4.0), 320.0, 50.0, 2.0,
+                    [i.strip() for i in str(row.get('ingredients', '')).split(',') if i.strip()],
+                ):
+                    multi_total += 1
+            db.commit()
+        logger.info(f"Seeded {multi_total} recipes from Multi_Cuisine_Recipe_Dataset.csv.")
 
         logger.info("Recipe seeding completed successfully.")
     except Exception as e:

@@ -188,6 +188,14 @@ class BarcodeService:
         }
     }
 
+    _EMPTY_WORDS = {"", "null", "none", "nil", "n/a", "na", "unknown", "undefined", "nan", "-"}
+
+    @classmethod
+    def clean_name(cls, value: Any) -> Optional[str]:
+        """A product name or brand, or None when it is empty or a placeholder word a scraper/LLM returned (e.g. the string "null")."""
+        text = re.sub(r"\s+", " ", str(value or "")).strip()
+        return None if text.lower() in cls._EMPTY_WORDS else text
+
     @classmethod
     def is_valid_nutrients(cls, nutrients: dict) -> bool:
         """Check if a nutrient dictionary contains realistic non-zero macro/caloric values."""
@@ -341,8 +349,8 @@ Return ONLY a valid JSON object matching this exact schema:
                 "sugar_g": float(parsed.get("sugar_g", 0.0)),
                 "saturated_fat_g": float(parsed.get("saturated_fat_g", 0.0)),
                 "estimated_price": float(parsed.get("estimated_price", 35.0)),
-                "product_name": parsed.get("product_name") or product_name,
-                "brand": parsed.get("brand") or "Verified Brand",
+                "product_name": cls.clean_name(parsed.get("product_name")) or product_name,
+                "brand": cls.clean_name(parsed.get("brand")) or "Verified Brand",
                 "ingredients_text": parsed.get("ingredients_text") or "Ingredients analyzed via Gemini AI",
                 "nutrition_grade": str(parsed.get("nutrition_grade", "c")).lower()
             }
@@ -833,7 +841,8 @@ Return ONLY a valid JSON object matching this exact schema:
             cached = db.query(BarcodeCache).filter(BarcodeCache.barcode == barcode).first()
             if cached and cached.nutriments_json:
                 cached_nut = json.loads(cached.nutriments_json)
-                if cls.is_valid_nutrients(cached_nut):
+                # a cached row with no usable name (older "null" results) is dropped and the product is resolved again
+                if cls.is_valid_nutrients(cached_nut) and cls.clean_name(cached.product_name):
                     source_det = getattr(cached, "source_detail", None) or "Local Database Cache (Verified)"
                     ing_names = [cached.product_name] + [s.strip() for s in (cached.ingredients_text or "").split(",") if s.strip()]
                     classification = ClassificationEngine.classify_ingredients(ing_names)
@@ -952,10 +961,12 @@ Return ONLY a valid JSON object matching this exact schema:
             gemini_result = cls.estimate_nutrition_from_gemini(product_name, barcode)
             if gemini_result and cls.is_valid_nutrients(gemini_result):
                 nutrients_100g = gemini_result
-                if gemini_result.get("product_name") and (product_name.startswith("Packaged Food Item #") or len(gemini_result["product_name"]) > len(product_name)):
-                    product_name = gemini_result["product_name"]
-                if gemini_result.get("brand") and (brand == "Unknown Brand" or brand == "Packaged Brand"):
-                    brand = gemini_result["brand"]
+                g_name = cls.clean_name(gemini_result.get("product_name"))
+                g_brand = cls.clean_name(gemini_result.get("brand"))
+                if g_name and (product_name.startswith("Packaged Food Item #") or len(g_name) > len(product_name)):
+                    product_name = g_name
+                if g_brand and (brand == "Unknown Brand" or brand == "Packaged Brand"):
+                    brand = g_brand
                 if gemini_result.get("ingredients_text") and ingredients_text == "No ingredients listed":
                     ingredients_text = gemini_result["ingredients_text"]
                 if gemini_result.get("nutrition_grade") and nutrition_grade == "unknown":
@@ -973,9 +984,14 @@ Return ONLY a valid JSON object matching this exact schema:
             source_name = "web_search"
             source_detail = "DuckDuckGo Scraper + Local Master DB"
 
+        # Never hand the app an empty name: use the brand when that is all we know
+        brand = cls.clean_name(brand) or "Unknown Brand"
+        if not cls.clean_name(product_name) or product_name.startswith("Packaged Food Item #"):
+            product_name = f"{brand} product" if brand not in ("Unknown Brand", "Packaged Brand") else f"Packaged Food Item #{barcode}"
+
         # Calculate Health Score & Nutri-Score
         score, category, explanation = HealthScorer.score_from_nutrition_dict(nutrients_100g)
-        
+
         # Dietary & Allergen Classification via ClassificationEngine
         ing_names = [product_name] + [s.strip() for s in (ingredients_text or "").split(",") if s.strip()]
         classification = ClassificationEngine.classify_ingredients(ing_names)

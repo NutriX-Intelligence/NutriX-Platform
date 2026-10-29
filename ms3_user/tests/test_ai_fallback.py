@@ -132,7 +132,8 @@ def test_all_text_routes_fall_back_to_local_then_to_canned(monkeypatch):
     _gemini_down(monkeypatch)
     _local(monkeypatch, lambda r: httpx.Response(200, json={"text": "LOCAL TEXT"}))
     assert client.post("/api/v1/ai/diet-plan", json={"user_id": 9}).json() == {"plan": "LOCAL TEXT", "source": "local"}
-    assert client.post("/api/v1/ai/recipe-generator", json={"ingredients": "egg"}).json() == {"recipe": "LOCAL TEXT", "source": "local"}
+    recipe = client.post("/api/v1/ai/recipe-generator", json={"ingredients": "egg"}).json()
+    assert (recipe["recipe"].strip(), recipe["source"]) == ("LOCAL TEXT", "local")
     inst = client.post("/api/v1/recipes/generate-instructions", json={"recipe_name": "Poha"})
     assert inst.status_code == 200 and inst.json() == {"instructions": "LOCAL TEXT", "source": "local"}
 

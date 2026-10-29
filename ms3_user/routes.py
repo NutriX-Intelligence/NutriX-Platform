@@ -1,13 +1,14 @@
 # NOTE: converted from the standalone MS3 app/main.py. Handler bodies are unchanged; routes are registered on
 # two DualRouters (public + authenticated) that serve every path both as /api/v1/... and as the legacy path.
 import os
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status, UploadFile, File, Form
 from sqlalchemy import or_, and_, func
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime, date
 from typing import List, Dict, Any, Optional
 
 from shared.db import get_db
+from shared import clock
 from shared.macro_sync import sync_daily_macros
 from shared.redis_client import get_daily_macros
 from ms3_user.services.auth_service import (
@@ -19,7 +20,7 @@ from ms3_user.services.auth_service import (
 )
 from shared import models
 from ms3_user import schemas
-from ms3_user.services.nutrition_engine import NutritionEngine
+from ms3_user.services.nutrition_engine import NutritionEngine, normalize_goal
 from ms3_user.services.recommendation_engine import RecommendationEngine
 from ms3_user.services.optimization_engine import OptimizationEngine
 from ms3_user.services.adaptive_planner import AdaptivePlanner
@@ -40,6 +41,7 @@ from ms3_user import schemas_recipes
 from ms3_user.services import homely_meals_engine
 from ms3_user.services import gemini_client
 from ms3_user.services import ai_text
+from ms3_user.services import recipe_nutrition
 from ms3_user.services import live_stream
 
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -570,7 +572,7 @@ def calculate_profile(profile_in: schemas.UserProfileCreate, db: Session = Depen
     return format_user_profile(user)
 
 @api.post("/recommend-foods", response_model=List[schemas.RankedFoodItem])
-def recommend_foods(req: schemas.RecommendFoodsRequest, db: Session = Depends(get_db)):
+def recommend_foods(req: schemas.RecommendFoodsRequest, response: Response, db: Session = Depends(get_db)):
     """Get ranked recipes customized to user targets, allergies, likes, and dislikes."""
     user = db.query(models.User).filter(models.User.id == req.user_id).first()
     if not user:
@@ -579,19 +581,32 @@ def recommend_foods(req: schemas.RecommendFoodsRequest, db: Session = Depends(ge
             detail=f"User with ID {req.user_id} not found."
         )
     
-    recommendations = RecommendationEngine.get_recommendations(
-        db=db, 
-        user_id=req.user_id, 
-        limit=req.limit or 60,
+    limit = req.limit or 300
+    offset = req.offset or 0
+    page, total = RecommendationEngine.get_recommendations(
+        db=db,
+        user_id=req.user_id,
+        limit=limit,
         query_str=req.query,
         category=req.category,
         cuisine=req.cuisine,
         max_cooking_time=req.max_cooking_time,
         brand=req.brand,
         diet_filter=req.diet_filter,
-        offset=req.offset or 0
+        offset=offset,
+        exclude_fast_food=bool(req.exclude_fast_food),
+        return_total=True,
     )
-    return recommendations
+    # the body stays a plain list (existing clients keep working); paging info travels in headers
+    response.headers["X-Total-Count"] = str(total)
+    response.headers["X-Page-Offset"] = str(offset)
+    response.headers["X-Has-More"] = "true" if offset + len(page) < total else "false"
+    import logging as _logging
+    _logging.getLogger("ms3.foods").info(
+        "foods/recommend user=%s limit=%s offset=%s diet=%s category=%s cuisine=%s brand=%s q=%r exclude_ff=%s -> %d of %d",
+        req.user_id, limit, offset, req.diet_filter, req.category, req.cuisine, req.brand, req.query,
+        bool(req.exclude_fast_food), len(page), total)
+    return page
 
 @api.get("/api/fast-food/chains", response_model=List[schemas.FastFoodChainSummary])
 def get_fast_food_chains(db: Session = Depends(get_db)):
@@ -845,7 +860,7 @@ def generate_meal_plan(req: schemas.GenerateMealPlanRequest, db: Session = Depen
             detail=f"User with ID {req.user_id} not found."
         )
 
-    plan_date = req.plan_date or datetime.utcnow().date()
+    plan_date = req.plan_date or clock.today()
     
     # Run MIP solver to find optimal plan
     plan = OptimizationEngine.generate_daily_plan(
@@ -1406,7 +1421,7 @@ def track_weight(req: schemas.TrackWeightRequest, db: Session = Depends(get_db))
             detail=f"User with ID {req.user_id} not found."
         )
 
-    logged_at = req.logged_at or datetime.utcnow().date()
+    logged_at = req.logged_at or clock.today()
 
     # 1. Log weight
     # Delete existing log for same day if any, to update
@@ -1521,7 +1536,7 @@ def log_water_intake(req: schemas.WaterLogCreate, db: Session = Depends(get_db))
     from datetime import datetime, date, time
     from sqlalchemy import or_, and_, func
 
-    logged_date = req.logged_at or date.today()
+    logged_date = req.logged_at or clock.today()
 
     db_log = models.WaterLog(
         user_id=req.user_id,
@@ -1540,9 +1555,9 @@ def get_today_water_logs(user_id: int, log_date: Optional[str] = None, db: Sessi
     from datetime import datetime, date, time
     from sqlalchemy import or_, and_, func
     try:
-        target_date = date.fromisoformat(log_date) if log_date else date.today()
+        target_date = date.fromisoformat(log_date) if log_date else clock.today()
     except Exception:
-        target_date = date.today()
+        target_date = clock.today()
 
     start_of_day = datetime.combine(target_date, time.min)
     end_of_day = datetime.combine(target_date, time.max)
@@ -1579,7 +1594,7 @@ def get_water_history(user_id: int, days: int = 30, db: Session = Depends(get_db
     """Fetch daily aggregated water intake history for trends."""
     from datetime import date, timedelta
     from sqlalchemy import func
-    cutoff = date.today() - timedelta(days=days)
+    cutoff = clock.today() - timedelta(days=days)
     records = db.query(
         models.WaterLog.logged_at,
         func.sum(models.WaterLog.amount_ml).label("total_ml")
@@ -1958,7 +1973,7 @@ def ocr_image(
         food_label = food_name or file.filename or "Scanned Label"
         db_log = models.MealLog(
             user_id=user_id,
-            log_date=datetime.utcnow().date(),
+            log_date=clock.today(),
             meal_type=meal_type,
             food_name=food_label,
             calories=parsed["energy_kcal"],
@@ -2430,9 +2445,9 @@ def log_meal_directly(req: schemas.MealLogCreate, db: Session = Depends(get_db))
         try:
             target_date = date.fromisoformat(target_date)
         except Exception:
-            target_date = date.today()
+            target_date = clock.today()
     elif not target_date:
-        target_date = date.today()
+        target_date = clock.today()
 
     db_log = models.MealLog(
         user_id=req.user_id,
@@ -2458,9 +2473,9 @@ def get_today_meal_logs(user_id: int, log_date: Optional[str] = None, db: Sessio
     """Fetch all meal logs for the given user for today (or specified date) with macro totals and targets comparison."""
     from datetime import date
     try:
-        target_date = date.fromisoformat(log_date) if log_date else date.today()
+        target_date = date.fromisoformat(log_date) if log_date else clock.today()
     except Exception:
-        target_date = date.today()
+        target_date = clock.today()
 
     logs = db.query(models.MealLog).filter(
         models.MealLog.user_id == user_id,
@@ -2570,7 +2585,7 @@ def generate_recipe_instructions(payload: Dict[str, Any], db: Session = Depends(
 
 
 # --- AI Studio UI Integration Request Models & Endpoints ---
-from pydantic import BaseModel
+from pydantic import AliasChoices, BaseModel, Field
 from typing import List, Optional, Dict
 
 class CoachChatRequest(BaseModel):
@@ -2579,9 +2594,19 @@ class CoachChatRequest(BaseModel):
 
 class DietPlanRequest(BaseModel):
     user_id: int
+    # optional overrides chosen on the generator screen (several spellings accepted); profile values are the default
+    goal: Optional[str] = Field(default=None, validation_alias=AliasChoices("goal", "fitness_goal", "goal_type", "goalType"))
+    diet_type: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("diet_type", "diet", "dietType", "diet_preference", "dietary_preference", "diet_plan"),
+    )
 
 class RecipeGeneratorRequest(BaseModel):
     ingredients: str
+    diet_type: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("diet_type", "diet", "dietType", "diet_preference", "dietary_preference"),
+    )
 
 
 def get_offline_coach_reply(message: str) -> str:
@@ -2655,38 +2680,101 @@ def ai_coach(req: CoachChatRequest):
         return {"reply": get_offline_coach_reply(req.message), "source": "offline"}
 
 
+DIET_RULES = {
+    "jain": "Strictly Jain: no meat, fish or eggs, and no root vegetables (potato, onion, garlic, carrot, beetroot, radish) or mushrooms.",
+    "vegan": "Strictly vegan: no meat, poultry, fish, eggs, dairy or honey.",
+    "eggetarian": "Eggetarian: eggs and dairy are fine, but no meat, poultry or fish.",
+    "pescatarian": "Pescatarian: fish and dairy are fine, but no meat or poultry.",
+    "vegetarian": "Strictly vegetarian: no meat, poultry, fish or eggs (dairy is fine).",
+    "non-vegetarian": "No dietary restrictions.",
+}
+GOAL_LABELS = {
+    "fat loss": "weight loss (fat loss, calorie deficit)",
+    "weight gain": "weight gain (calorie surplus)",
+    "muscle gain": "muscle gain (high protein, small surplus)",
+    "maintenance": "maintenance",
+}
+OFFLINE_MENUS = {
+    "non-vegetarian": ("Oats with almonds and banana (~450 kcal)", "Grilled chicken breast with brown rice and broccoli (~600 kcal)",
+                       "Tofu/Paneer stir-fry with mixed vegetables (~450 kcal)", "Greek yogurt with honey (~200 kcal)"),
+    "vegetarian": ("Moong dal chilla with mint chutney (~350 kcal)", "Dal, 2 rotis, mixed vegetable sabzi and curd (~600 kcal)",
+                   "Paneer bhurji with a roti and salad (~450 kcal)", "Roasted chana and a fruit (~200 kcal)"),
+    "vegan": ("Vegetable poha with peanuts (~350 kcal)", "Rajma with brown rice and salad (~600 kcal)",
+              "Tofu stir-fry with vegetables and a roti (~450 kcal)", "Roasted chickpeas and a fruit (~200 kcal)"),
+    "jain": ("Moong dal chilla without onion or garlic (~350 kcal)", "Dal (no garlic), 2 rotis and lauki sabzi (~600 kcal)",
+             "Paneer and capsicum sabzi with a roti (~450 kcal)", "Fruit with a handful of almonds (~200 kcal)"),
+}
+OFFLINE_MENUS["eggetarian"] = ("Vegetable omelette with a toast (~400 kcal)", *OFFLINE_MENUS["vegetarian"][1:])
+OFFLINE_MENUS["pescatarian"] = OFFLINE_MENUS["vegetarian"][:1] + ("Grilled fish with brown rice and vegetables (~600 kcal)",) + OFFLINE_MENUS["vegetarian"][2:]
+
+
+def _diet_key(value: Optional[str]) -> Optional[str]:
+    """Normalise a diet wording to a DIET_RULES key (None when empty/unknown)."""
+    v = (value or "").strip().lower()
+    if not v or v in ("all", "any", "none"):
+        return None
+    if "jain" in v:
+        return "jain"
+    if "vegan" in v:
+        return "vegan"
+    if "egg" in v:
+        return "eggetarian"
+    if "pesc" in v:
+        return "pescatarian"
+    if "non" in v or "meat" in v:
+        return "non-vegetarian"
+    if "veg" in v:
+        return "vegetarian"
+    return None
+
+
+def _offline_diet_plan(diet: str, goal: str, target_calories: float) -> str:
+    b, l, d, s = OFFLINE_MENUS.get(diet, OFFLINE_MENUS["non-vegetarian"])
+    return (f"AI Diet Plan (offline mode, {diet}, goal: {goal}):\n\nBreakfast: {b}\nLunch: {l}\nDinner: {d}\nSnacks: {s}\n\n"
+            f"Adjust portions to reach about {round(target_calories)} kcal a day.")
+
+
 @api.post("/api/ai/diet-plan")
 def ai_diet_plan(req: DietPlanRequest, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == req.user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    goal = user.goal or "maintenance"
+
+    goal = normalize_goal(req.goal or user.goal)
+    diet = _diet_key(req.diet_type) or _diet_key(user.diet_type) or "non-vegetarian"
     age = user.age or 30
     gender = user.gender or "male"
     height = user.height or 170.0
     weight = user.weight or 70.0
     activity_level = user.activity_level or "sedentary"
-    target_calories = user.target_calories or 2000.0
-    target_protein = user.target_protein or 80.0
+
+    # targets for the goal that was actually requested (the stored ones belong to the profile's own goal)
+    if goal == normalize_goal(user.goal) and user.target_calories and user.target_protein:
+        target_calories, target_protein = float(user.target_calories), float(user.target_protein)
+    else:
+        t = NutritionEngine.calculate_targets(age=age, gender=gender, height=height, weight=weight,
+                                              activity_level=activity_level, goal=goal)
+        target_calories, target_protein = t["target_calories"], t["target_protein_g"]
 
     prompt = f"""
     Generate a 1-day customized nutrition diet meal plan for a person with the following statistics:
-    - Goal: {goal}
+    - Goal: {GOAL_LABELS[goal]}
+    - Diet type: {diet}. {DIET_RULES[diet]}
     - Age: {age} years old
     - Gender: {gender}
     - Height: {height} cm
     - Weight: {weight} kg
     - Activity Level: {activity_level}
-    - Target Calories: {target_calories} kcal
-    - Target Protein: {target_protein} g
-    
+    - Target Calories: {round(target_calories)} kcal
+    - Target Protein: {round(target_protein)} g
+
     Provide recommendations structured in 4 meals:
     1. Breakfast
     2. Lunch
     3. Dinner
     4. Snacks
-    
+
+    Every meal MUST follow the diet type above: do not include any forbidden ingredient. Prefer Indian home-style foods where sensible.
     Explain briefly why this fits their specific goals. Include precise ingredients, serving sizes, and calorie counts for each meal. Make the design of output clean, readable, and energetic.
     """
 
@@ -2694,15 +2782,22 @@ def ai_diet_plan(req: DietPlanRequest, db: Session = Depends(get_db)):
         text, source = ai_text.generate_text(prompt, system="You are an elite sports dietician. Output absolute gold-standard, premium recipe planning recommendations.")
         return {"plan": text, "source": source}
     except ai_text.AIUnavailable:
-        return {"plan": f"AI Onboarding Diet Plan generated locally (Gemini API unavailable):\n\nBreakfast: Oats with almonds and banana (~450 kcal)\nLunch: Grilled chicken breast with brown rice and broccoli (~600 kcal)\nDinner: Tofu/Paneer stir-fry with mixed vegetables (~450 kcal)\nSnacks: Greek yogurt with honey (~200 kcal)\n\nAdjusted calories to meet your target goal of {target_calories} kcal.", "source": "offline"}
+        return {"plan": _offline_diet_plan(diet, goal, target_calories), "source": "offline"}
 
 
 @api.post("/api/ai/recipe-generator")
 def ai_recipe_generator(req: RecipeGeneratorRequest):
+    """
+    Returns {recipe, source, name, servings, nutrition}. `recipe` is a Markdown string for display; `name` and `nutrition`
+    (per serving: calories, protein_g, carbs_g, fat_g) are structured values the app can use to log the meal. They are None when
+    the model gave no usable figures, so the app should leave those fields empty instead of guessing.
+    """
+    diet = _diet_key(req.diet_type)
+    diet_line = f"\n    The recipe MUST follow this diet: {DIET_RULES[diet]}" if diet else ""
     prompt = f"""
     I have the following ingredients:
     {req.ingredients}
-    
+    {diet_line}
     Generate a delicious, healthy, high-nutrient recipe containing these ingredients.
     Output:
     - Recipe Name
@@ -2710,15 +2805,18 @@ def ai_recipe_generator(req: RecipeGeneratorRequest):
     - Total Prep & Cook Time
     - Detailed Ingredients list
     - Step-by-Step Cooking instructions (easy to follow, structured)
-    - Total Calories & Core Macro nutrient Breakdown (Protein, Carbs, Fat)
+    - Calories & Core Macro nutrient Breakdown (Protein, Carbs, Fat) per serving
     - Health score / Benefits for fitness
-    """
+    """ + recipe_nutrition.MACHINE_BLOCK_INSTRUCTION
 
     try:
         text, source = ai_text.generate_text(prompt, system="You are a professional chef and health nutritionist combined. Give clean, highly structured kitchen instructions.")
-        return {"recipe": text, "source": source}
+        parsed = recipe_nutrition.extract(text)
+        return {"recipe": parsed["recipe"], "source": source, "name": parsed["name"],
+                "servings": parsed["servings"], "nutrition": parsed["nutrition"]}
     except ai_text.AIUnavailable:
-        return {"recipe": f"Simulated Recipe based on ingredients (Gemini API offline): {req.ingredients}\n\nRecipe Name: Healthy Homely Stir-fry\nPrep Time: 15 mins\nInstructions:\n1. Chop ingredients.\n2. Heat a non-stick pan.\n3. Toss in ingredients and stir cook for 10 minutes.\nMacros: ~350 kcal | 20g Protein | 30g Carbs | 12g Fats", "source": "offline"}
+        return {"recipe": f"Simulated Recipe based on ingredients (Gemini API offline): {req.ingredients}\n\nRecipe Name: Healthy Homely Stir-fry\nPrep Time: 15 mins\nInstructions:\n1. Chop ingredients.\n2. Heat a non-stick pan.\n3. Toss in ingredients and stir cook for 10 minutes.",
+                "source": "offline", "name": "Healthy Homely Stir-fry", "servings": None, "nutrition": None}
 
 
 # =====================================================================
@@ -2727,7 +2825,7 @@ def ai_recipe_generator(req: RecipeGeneratorRequest):
 def _parse_day(value: Optional[str]) -> date:
     """UTC "today" by default: the same day boundary MS1 and the DB trigger use."""
     if not value:
-        return datetime.utcnow().date()
+        return clock.today()
     try:
         return date.fromisoformat(value)
     except ValueError:
@@ -2774,7 +2872,7 @@ async def stream_daily_summary(request: Request, current_user: models.User = Dep
     user_id, targets = current_user.id, _user_targets(current_user)
 
     def snapshot() -> Dict[str, Any]:
-        today = datetime.utcnow().date()
+        today = clock.today()
         cached = get_daily_macros(user_id, today.isoformat())
         if not cached or "protein_g" not in cached or "meals_count" not in cached:
             session = SessionLocal()

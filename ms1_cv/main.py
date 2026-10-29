@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from datetime import datetime
 from shared.db import get_db
+from shared import clock
 from shared.health import check_health
 from shared.models import MealLog, User
 from shared.food_lookup import lookup_food, per_100g, persist_llm_food, normalize_name
@@ -86,6 +87,13 @@ def get_latest_annotated_image():
 _AUTO_CREATE_DEV_USER = os.getenv("AUTO_CREATE_DEV_USER", "false").strip().lower() in ("1", "true", "yes", "on")
 
 
+_LOG_UNKNOWN_SCANS = os.getenv("LOG_UNKNOWN_SCANS", "false").strip().lower() in ("1", "true", "yes", "on")
+
+
+class _NotLogged(Exception):
+    """Control flow: skip persisting this scan."""
+
+
 def _resolve_scale_user(db: Session, x_user_id: Optional[str]) -> int:
     if x_user_id and x_user_id.isdigit():
         uid = int(x_user_id)
@@ -157,6 +165,20 @@ async def ingest_weight_frame(
     llm_timeout = False
     yolo_status = result.get("status", "unidentified")
 
+    if yolo_status == "ignored":
+        # The scale reported (almost) no weight: there is no food to identify, so neither YOLO nor MS2 runs
+        # and nothing is logged (it used to create an "Unknown, 0 kcal" meal per press).
+        print(f"[Scan] user={target_uid} weight={weight}g -> ignored: {result.get('reason', '')}. "
+              f"YOLO/MS2 not run, nothing logged. Check scale calibration/tare.")
+        payload = {
+            "session_id": session_id, "status": "ignored", "identified_by": "none", "macro_source": "none",
+            "yolo_status": yolo_status, "food_label": "No Weight Detected", "confidence": 0.0,
+            "weight_g": round(weight, 2), "calories": 0.0, "protein": 0.0, "carbs": 0.0, "fat": 0.0,
+            "reason": result.get("reason", ""), "user_id": x_user_id,
+        }
+        _results[session_id] = payload
+        return JSONResponse(content=payload)
+
     if success and yolo_status == "identified":
         addition = result["addition"]
         food_name = addition["food_name"]
@@ -217,6 +239,9 @@ async def ingest_weight_frame(
     total_carbs = round((weight / 100.0) * per100["carbs_g"], 2)
     total_fat = round((weight / 100.0) * per100["fat_g"], 2)
 
+    print(f"[Scan] user={target_uid} weight={weight}g yolo={yolo_status} ({result.get('reason', '')}) "
+          f"-> '{clean_name}' identified_by={identified_by if clean_name != 'unknown' else 'none'} macros={macro_source}")
+
     payload = {
         "session_id": session_id,
         "status": status_val,
@@ -236,9 +261,12 @@ async def ingest_weight_frame(
 
     # ── Save Meal Entry to PostgreSQL meal_logs Table ─────────────────────────
     try:
+        if clean_name == "unknown" and not _LOG_UNKNOWN_SCANS:
+            # nothing was recognised (YOLO and Qwen both gave up, or MS2 was down): a 0 kcal "Unknown" row only clutters the app
+            raise _NotLogged()
         meal_entry = MealLog(
             user_id=target_uid,
-            log_date=datetime.utcnow().date(),
+            log_date=clock.today(),
             meal_type="Scale Capture",
             food_name=payload["food_label"],
             calories=payload["calories"],
@@ -256,6 +284,8 @@ async def ingest_weight_frame(
         # Live dashboard cache (<10 ms reads in MS3): canonical payload shared with MS3 and the DB trigger
         macros = sync_daily_macros(db, target_uid)
         print(f"[Redis] Synced user:{target_uid}:macros:{macros['date']} -> {macros['calories']:.1f} kcal total today")
+    except _NotLogged:
+        print("[Scan] not identified -> nothing logged (set LOG_UNKNOWN_SCANS=true to keep these)")
     except Exception as e:
         db.rollback()
         print(f"[Warning] Could not save to meal_logs: {e}")

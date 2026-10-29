@@ -53,7 +53,7 @@ def test_ocr_label_parser_on_real_packaging():
 def test_jain_compliance_in_meal_optimizer():
     """Ensure that a user with Jain diet type never receives chicken, meat, or non-veg dishes."""
     db = next(get_db())
-    if db.query(Recipe).count() == 0:
+    if db.query(Recipe).count() < 50:  # needs the seeded library, not a handful of rows
         pytest.skip("needs the seeded recipe library (integration check); the throw-away test DB has no recipes")
     
     # Create or fetch test Jain user

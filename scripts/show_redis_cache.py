@@ -1,11 +1,12 @@
 import sys
 import json
 from datetime import datetime
+from shared import clock
 from shared.redis_client import get_redis_client, get_daily_macros
 
 def main():
     client = get_redis_client()
-    today_str = datetime.utcnow().date().isoformat()
+    today_str = clock.today().isoformat()
     user_id = 1
     
     print("\n" + "="*70)

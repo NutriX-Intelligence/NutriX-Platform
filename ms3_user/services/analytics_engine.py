@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
+from shared import clock
 from typing import Dict, Any, List
 from sqlalchemy import func
 from shared.models import MealLog, WaterLog, WeightLog, Analytics, User
@@ -12,7 +13,7 @@ class AnalyticsEngine:
         if not user:
             return {"status": "error", "message": "User not found"}
 
-        now = datetime.utcnow().date()
+        now = clock.today()
         seven_days_ago = now - timedelta(days=7)
         thirty_days_ago = now - timedelta(days=30)
 

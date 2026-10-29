@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from ms2_llm import config, prompts
 from ms2_llm.schemas import (GenerateRequest, GenerateResponse, LookupRequest, LookupResponse, NutritionPer100g,
                              VisionInferResponse)
-from ms2_llm.validation import UNKNOWN, parse_nutrition
+from ms2_llm.validation import UNKNOWN, parse_name_only, parse_nutrition
 from ms2_llm.vlm_engine import VLMNotAvailable, engine
 from shared.audit import log_audit_event
 from shared.db import get_db
@@ -113,6 +113,19 @@ async def vision_infer(
         prompts.vision_user_prompt(weight, yolo_hint),
         pil,
     )
+    if parsed["food_name"] == UNKNOWN:
+        # The one-shot "name + four macros as JSON" answer often collapses to unknown on a small model. Ask only for the name;
+        # MS1 then gets the macros from its DB or from /lookup, so a recognisable fruit is not lost.
+        try:
+            raw = await run_in_threadpool(
+                engine.infer, prompts.DEFAULT_PROMPTS[prompts.NAME_ONLY_KEY], "What food is this?", pil, 16)
+            name = parse_name_only(raw)
+            logger.info("name-only second pass: %r -> %s", raw[:80], name)
+            if name != UNKNOWN:
+                parsed = {"food_name": name, "confidence": None, "per_100g": None, "flagged": True,
+                          "flag_reason": "name-only second pass (macros from lookup)"}
+        except VLMNotAvailable:
+            pass
     latency_ms = int((time.perf_counter() - start) * 1000)
     resp = VisionInferResponse(
         food_name=parsed["food_name"],

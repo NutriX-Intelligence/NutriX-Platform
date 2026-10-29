@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from shared import clock
+from ms3_user.services.nutrition_engine import normalize_goal
 from sqlalchemy.orm import Session
 from shared.models import User, WeightLog, GeneratedMealPlan
 
@@ -15,7 +17,7 @@ class AdaptivePlanner:
             return {"status": "error", "message": "User not found"}
 
         # 1. Check Adherence in the last 7 days
-        seven_days_ago = datetime.utcnow().date() - timedelta(days=7)
+        seven_days_ago = clock.today() - timedelta(days=7)
         plans = db.query(GeneratedMealPlan).filter(
             GeneratedMealPlan.user_id == user_id,
             GeneratedMealPlan.plan_date >= seven_days_ago
@@ -32,7 +34,7 @@ class AdaptivePlanner:
         adherence_rate = (adhered_days / logged_days) if logged_days > 0 else 0.0
 
         # 2. Check Weight logs in the last 14 days to calculate trend
-        fourteen_days_ago = datetime.utcnow().date() - timedelta(days=14)
+        fourteen_days_ago = clock.today() - timedelta(days=14)
         weight_logs = db.query(WeightLog).filter(
             WeightLog.user_id == user_id,
             WeightLog.logged_at >= fourteen_days_ago
@@ -68,7 +70,7 @@ class AdaptivePlanner:
         # If adherence is low, warning the user is better than changing targets.
         adjustment = 0.0
         reason = ""
-        goal_lower = user.goal.lower()
+        goal_lower = normalize_goal(user.goal)
 
         if adherence_rate < 0.70:
             reason = f"Adherence is low ({adherence_rate:.1%}). Try to follow the plan more closely before adjusting targets."

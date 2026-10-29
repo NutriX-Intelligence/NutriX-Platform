@@ -13,6 +13,8 @@ import tempfile
 
 # ── must happen before anything imports shared.db ───────────────────────────
 os.environ["ENV"] = "dev"
+# the ported tests compare against the UTC clock; test_timezone.py exercises other zones explicitly
+os.environ["APP_TIMEZONE"] = "UTC"
 os.environ.setdefault("JWT_SECRET_KEY", "ms3-test-secret")
 os.environ["DATABASE_URL"] = "sqlite:///" + os.path.join(tempfile.gettempdir(), f"nutrix_ms3_tests_{os.getpid()}.db")
 # unreachable on purpose: the Redis helpers then use their in-memory fallback and can never touch the dev cache

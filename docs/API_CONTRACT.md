@@ -11,7 +11,7 @@
 | Base URL | `http://<gateway-host>:8000`, configurable in the app (LAN IP for device testing) |
 | Content type | JSON (`Content-Type: application/json`), except uploads (`multipart/form-data`) and the SSE stream |
 | Auth | `Authorization: Bearer <access_token>` on every call except the four public auth routes |
-| Dates / times | `log_date`, `date`: `YYYY-MM-DD` (**UTC day**); timestamps: ISO-8601 UTC |
+| Dates / times | `log_date`, `date`: `YYYY-MM-DD`. A diary day is the **user's calendar day** in the server's `APP_TIMEZONE` (default `Asia/Kolkata`); timestamps are ISO-8601 UTC. **For "today", omit the date**: when creating a log (`log_date`) and when reading (`/meal-logs/today/{id}`, `daily-summary`) the server then uses its own "today", so creating and reading can never disagree. Send an explicit date only for another day (backdating, calendar, history). Never compute "today" on the device for these calls; if the app needs the server's day, read `date` from `daily-summary` |
 | Units | grams (`*_g`), kilocalories (`calories`, `energy_kcal`), millilitres (`*_ml`), centimetres, kilograms |
 | Request tracing | Every response carries `X-Request-ID`; send your own `X-Request-ID` to correlate logs |
 | CORS | Allowed origins come from `CORS_ORIGINS` (default `*`) |
@@ -78,6 +78,14 @@ Public routes: `POST /api/v1/auth/register | login | google | reset-password` (a
 | POST | `/api/v1/classify` · `/classify/substitutions` | `/api/classify...` |
 | GET/POST | `/api/v1/homely/builder-defaults`, `/homely-meals/calculate`, `/create`, `/user/{id}`, `/search`, `/pending`, `/{id}`, `/{id}/review`, `/review/{id}` | `/api/homely...` |
 
+### Browse Recipes: `POST /api/v1/foods/recommend` (paging)
+Body: `{user_id, limit?, offset?, query?, category?, cuisine?, brand?, diet_filter?, max_cooking_time?, exclude_fast_food?}`. The response body is a plain **list** of recipes, ranked by score. One call returns **one page**:
+- `limit` is the page size (default **300**, max 2000). `offset` is where the page starts.
+- Paging information is in the **response headers**: `X-Total-Count` (all matching recipes), `X-Page-Offset`, `X-Has-More` (`true` / `false`). Load the next page with `offset += limit` while `X-Has-More` is `true`. Do not assume the first page is everything: a Jain user has ~570 matches.
+- `exclude_fast_food: true` leaves branded fast-food items out *before* the page is cut. Use it for an "All" tab that lists fast food under its own chip; otherwise the fast-food items take page slots and are then hidden, leaving a short list.
+- Spice mixes, chutneys, pickles, sauces and stocks are **not listed while browsing**; they appear when the user types a search (`query`).
+- `diet_filter`: `All`, `Vegetarian`, `Vegan`, `Jain`, `Eggetarian`, `Non-Vegetarian`. `All` means "the user's own saved diet".
+
 ### Barcode, OCR (image uploads: JPEG/PNG, `multipart/form-data`, field `file`)
 | Method | Path | Legacy |
 |---|---|---|
@@ -90,9 +98,11 @@ Public routes: `POST /api/v1/auth/register | login | google | reset-password` (a
 | Method | Path | Response |
 |---|---|---|
 | POST | `/api/v1/ai/coach` `{message, history?[{role,message}]}` | `{reply, source}` where `source` is `gemini`, `local` or `offline` |
-| POST | `/api/v1/ai/diet-plan` `{user_id}` | `{plan, source}` |
-| POST | `/api/v1/ai/recipe-generator` `{ingredients}` | `{recipe, source}` |
+| POST | `/api/v1/ai/diet-plan` `{user_id, goal?, diet_type?}` | `{plan, source}`; **`plan` is one Markdown string, not a list**. `goal` (e.g. `weight loss`, `fat loss`, `weight gain`, `muscle gain`, `maintenance`) and `diet_type` (`Vegetarian`, `Vegan`, `Jain`, `Eggetarian`, `Non-Vegetarian`) override the saved profile for this plan; when omitted, the profile values are used |
+| POST | `/api/v1/ai/recipe-generator` `{ingredients, diet_type?}` | `{recipe, source, name, servings, nutrition}`: `recipe` is the Markdown text to display. **To log the meal, use `name` and `nutrition` (`{calories, protein_g, carbs_g, fat_g, per: "serving", basis, consistent}`), do not parse the text.** `nutrition`, `name` and `servings` can be `null`, and individual macros can be `null` when the model gave no figure: leave those input fields empty for the user to fill in rather than showing 0. Log with `POST /meal-logs` using `source: "recipe"` |
 | POST | `/api/v1/recipes/generate-instructions` `{recipe_name, ingredients?, recipe_code?}` | `{instructions, source}`; `503` only when Gemini and the local model are both unavailable |
+
+**Response types:** `reply`, `plan`, `recipe` and `instructions` are all plain strings (Markdown); render them with a Markdown widget, do not cast them to a list. If the app needs a structured, per-meal list, use `POST /api/v1/meal-plans/generate` instead (it returns meals optimised from real recipes).
 
 `source` tells you who answered: `gemini`; `local` (the on-premise Qwen model on MS2, used when Gemini is overloaded, down or not configured: shorter, less polished answers); or `offline` (a canned answer because both failed). The app can show a subtle hint for `local` / `offline`; it is never an error.
 

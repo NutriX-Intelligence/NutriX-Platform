@@ -11,7 +11,7 @@ The backend is **backward compatible**: the old paths still answer, so you can m
 2. **Base URL comes from build config**, never from code: `--dart-define=API_BASE_URL=https://...` (one value per environment/flavor).
 3. **Token on every request** (except register / login / google / reset-password), stored in secure storage.
 4. **`401` = sign out and show login.** `403` = a bug in the app (it sent another user's id).
-5. **Time is UTC days; units are grams/kcal/ml.**
+5. **Let the server decide "today".** For "now" actions leave the date out: no `log_date` when creating a meal/water/weight log, and no `log_date` / `date` parameter when reading today's meals (`/meal-logs/today/{id}`) or `daily-summary`. The server uses one clock (India time) for both, so they can never disagree. Send an explicit `YYYY-MM-DD` only for a different day (calendar, history, backdating), taken from the date the user picked. **Never** build "today" on the device with `DateTime.now()` or `.toUtc()` for these calls: mixing the two is exactly what makes a just-logged meal vanish from the today screen after midnight. Units are grams/kcal/ml.
 6. Use generous timeouts for AI and image calls (60 s).
 
 ## 1. The networking layer (do this first)
@@ -152,7 +152,7 @@ Stream<DailySummary> summaryStream() async* {
 ```
 Wrap it in a Riverpod `StreamProvider` that reconnects with a short back-off when it ends, and cancel it when the dashboard is not visible. If anything about SSE is awkward, polling `daily-summary` every 3 to 5 s is an acceptable fallback.
 
-**Dates:** send `YYYY-MM-DD`; the server's day is UTC. **Never send a user id the user does not own:** use the id from `auth/me` (or omit it where the contract says the server derives it).
+**Dates:** omit the date for today (rule 5); send `YYYY-MM-DD` only for a day the user picked. Never let one screen compute its own "today". **Never send a user id the user does not own:** use the id from `auth/me` (or omit it where the contract says the server derives it).
 
 ## 5. Old path -> new path (find-and-replace list)
 Rule of thumb: `/api/<x>` becomes `/api/v1/<x>`; an unprefixed `/<x>` becomes `/api/v1/<x>`. The exceptions:
@@ -171,6 +171,9 @@ Rule of thumb: `/api/<x>` becomes `/api/v1/<x>`; an unprefixed `/<x>` becomes `/
 
 ## 6. UI details the backend now supports
 - **Meal source icon/label** from `source`: `esp32_yolo` / `esp32_qwen_vlm` (smart scale), `manual`, `fast_food`, `barcode`, `homely`, `recipe`, `ocr_label`. `llm-timeout` with 0 kcal = the scale's AI was down: show it as "could not identify", not "0 kcal food".
+- **Browse Recipes must page.** `POST /foods/recommend` returns one page (default 300). Read `X-Total-Count` / `X-Has-More` from the response headers and load more as the user scrolls (`offset += limit`). For the "All" tab send `exclude_fast_food: true` (fast food has its own chip), otherwise fast-food items fill part of each page and are then hidden by the UI, which is how a Jain user saw only 36 recipes. The reported counts were 60 per page minus the hidden fast-food items.
+- **AI text fields are strings.** `reply` (coach), `plan` (diet plan), `recipe` and `instructions` are Markdown **strings**; casting any of them to `List` throws `type 'String' is not a subtype of type 'List<dynamic>'`. Show them in a Markdown widget (for example `flutter_markdown`). For a structured meal list use `/meal-plans/generate`.
+- **"Log this recipe" (AI recipe generator):** pre-fill the dialog from the response fields `name` and `nutrition.calories / protein_g / carbs_g / fat_g` (per serving). Never regex the Markdown text for numbers. A `null` field means "unknown": show an empty input, not `0`. If `nutrition.consistent == false`, the calories do not match the macros: show a small "check these numbers" hint.
 - **AI badge:** `source: "local"` or `"offline"` on coach / plan / recipe answers: a small "limited mode" hint; never an error dialog.
 - **Diary and rings share one source of truth:** after any create/delete, re-fetch `daily-summary` (or rely on the stream).
 - **Onboarding:** drive it from `is_onboarded`, not from local flags.

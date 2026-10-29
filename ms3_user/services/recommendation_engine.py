@@ -4,6 +4,7 @@ from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session, joinedload
 from shared.models import Recipe, RecipeIngredient, RecipeNutrition, UserPreference, User, HomelyMeal
 from ms3_user.services.classification_engine import ClassificationEngine
+from ms3_user.services.meal_candidates import is_condiment_or_mix
 
 class RecommendationEngine:
     _RECIPE_TAG_CACHE: Dict[str, Dict[str, Any]] = {}
@@ -18,8 +19,13 @@ class RecommendationEngine:
 
         if getattr(recipe, "dietary_tag", None):
             d_tag = recipe.dietary_tag
+            is_vegan = d_tag == "Vegan"
+            if d_tag == "Jain":
+                # "Jain" says nothing about dairy (paneer, ghee and milk are fine for Jains but not vegan). Call a Jain recipe vegan only
+                # when its ingredients prove it; fast-food items have no ingredient list, so they are not offered to vegans.
+                is_vegan = bool(recipe.ingredients) and cls.classify_from_ingredients(recipe)["is_vegan"]
             res = {
-                "is_vegan": d_tag in ("Vegan", "Jain"),
+                "is_vegan": is_vegan,
                 "is_vegetarian": d_tag in ("Vegetarian", "Vegan", "Jain"),
                 "is_jain": d_tag == "Jain",
                 "is_eggetarian": d_tag in ("Eggetarian", "Vegetarian", "Vegan", "Jain"),
@@ -29,6 +35,15 @@ class RecommendationEngine:
                 cls._RECIPE_TAG_CACHE[code] = res
             return res
 
+        res = cls.classify_from_ingredients(recipe)
+        if len(cls._RECIPE_TAG_CACHE) < 50000:
+            cls._RECIPE_TAG_CACHE[code] = res
+        return res
+
+    @classmethod
+    def classify_from_ingredients(cls, recipe: Recipe) -> Dict[str, Any]:
+        """Dietary classification from the name, ingredients and primarysource, ignoring any stored dietary_tag
+        (the fallback above, and what the recipe library is tagged with: see recipe_tagging.py)."""
         ps = (recipe.primarysource or "").strip()
         rname = (recipe.recipe_name or "").lower()
 
@@ -59,8 +74,6 @@ class RecommendationEngine:
             "is_eggetarian": c["is_eggetarian"] or d_tag in ("Eggetarian", "Vegetarian", "Vegan", "Jain"),
             "dietary_tag": d_tag
         }
-        if len(cls._RECIPE_TAG_CACHE) < 50000:
-            cls._RECIPE_TAG_CACHE[code] = res
         return res
 
     @classmethod
@@ -298,7 +311,9 @@ class RecommendationEngine:
         max_cooking_time: Optional[int] = None,
         brand: Optional[str] = None,
         diet_filter: Optional[str] = None,
-        offset: int = 0
+        offset: int = 0,
+        exclude_fast_food: bool = False,
+        return_total: bool = False
     ) -> list:
         # Load user and profile
         user = db.query(User).options(joinedload(User.profile), joinedload(User.preferences)).filter(User.id == user_id).first()
@@ -440,7 +455,7 @@ class RecommendationEngine:
             recipes = filtered_query.limit(fetch_limit).all()
         else:
             # Default browse view: Load a diverse, representative sample including fast food and regional classes
-            ff_recipes = base_query.filter(Recipe.recipe_code.like("FF_%")).limit(400).all()
+            ff_recipes = [] if exclude_fast_food else base_query.filter(Recipe.recipe_code.like("FF_%")).limit(400).all()
             reg_recipes = base_query.filter(Recipe.recipe_code.like("REG_%")).all()
             lunch_recipes = base_query.filter(Recipe.category == "Lunch/Dinner").limit(350).all()
             bf_recipes = base_query.filter(Recipe.category == "Breakfast").limit(200).all()
@@ -479,6 +494,12 @@ class RecommendationEngine:
         # 1. Evaluate recipes
         for recipe in recipes:
             recipe_name_lower = recipe.recipe_name.lower()
+
+            # fast food has its own tab in the app; condiments and spice mixes are only listed when the user searches for them
+            if exclude_fast_food and recipe.brand:
+                continue
+            if not has_search and is_condiment_or_mix(recipe.recipe_name):
+                continue
             
             # Check Diet Type constraint
             if "jain" in diet_lower and not cls.is_jain(recipe):
@@ -607,5 +628,6 @@ class RecommendationEngine:
 
         ranked_recipes.sort(key=lambda x: x["score"], reverse=True)
         start_idx = offset or 0
-        return ranked_recipes[start_idx:start_idx + limit]
+        page = ranked_recipes[start_idx:start_idx + limit]
+        return (page, len(ranked_recipes)) if return_total else page
 

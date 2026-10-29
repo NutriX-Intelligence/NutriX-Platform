@@ -54,3 +54,15 @@ def test_confidence_clamped_and_label_normalised():
     assert r["food_name"] == "sweet lassi"
     assert r["confidence"] == 1.0
     assert normalize_label("None") == "unknown"
+
+
+from ms2_llm.validation import parse_name_only
+
+
+def test_parse_name_only():
+    assert parse_name_only('Guava') == 'guava'
+    assert parse_name_only('"a green apple."') == 'green apple'
+    assert parse_name_only('unknown') == 'unknown'
+    assert parse_name_only('') == 'unknown'
+    assert parse_name_only('Sorry, I cannot tell what this is') == 'unknown'
+    assert parse_name_only('This looks like a fresh round green fruit on a plate') == 'unknown'

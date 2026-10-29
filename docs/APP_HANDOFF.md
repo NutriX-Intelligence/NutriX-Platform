@@ -66,7 +66,7 @@ The smart scale logs meals on its own, so the dashboard should update without a 
 
 - **`source` on meals:** `esp32_yolo` / `esp32_qwen_vlm` (scale), `manual`, `fast_food`, `barcode`, `homely`, `recipe`, `ocr_label`. `llm-timeout` with 0 kcal means the scale's AI service was down at that moment.
 - **AI answers carry `source`:** `gemini`, `local` (an on-premise model, shorter answers) or `offline` (canned text). Worth a subtle hint in the UI; never an error.
-- **Days are UTC.** A meal logged shortly after midnight India time still counts toward the previous UTC day. Known limitation, a per-user timezone is planned.
+- **A day is the user's calendar day** (server `APP_TIMEZONE`, default Asia/Kolkata). **For "today", do not send a date at all**: omit `log_date` when logging and omit `?log_date=` / `?date=` when reading today's meals or summary. The server then decides today for both, so they always agree. Send an explicit date only for other days. A known bug to avoid: using one clock (local) to create a meal and another (UTC, or a screen opened before midnight) to read "today" makes new meals vanish from the today screen.
 - **Not built yet:** confirming/correcting the scale's guesses (HitL), push notifications, the agent chat, password-reset e-mail, token refresh.
 - AI and image calls can take a few seconds (up to about 40 s in the worst case when two fallbacks are tried): use generous timeouts (60 s) and a spinner for `ai/*`, `ocr/upload`, `barcode/scan-image`.
 

@@ -28,6 +28,29 @@ def clean_nutrient_value(val):
     except Exception:
         return 0.0
 
+def clean_energy_kcal(val):
+    """Energy cell -> kcal. Packaged-food cells look like '1,994 kj\\n(238 kcal)': stripping non-digits would glue the two
+    numbers together (1994238), so take the kcal figure, else convert kJ, else treat it as a plain number."""
+    if pd.isna(val):
+        return 0.0
+    s = str(val).lower().replace(",", "")
+    m = re.search(r'(\d+(?:\.\d+)?)\s*kcal', s)
+    if m:
+        return float(m.group(1))
+    m = re.search(r'(\d+(?:\.\d+)?)\s*kj', s)
+    if m:
+        return round(float(m.group(1)) / 4.184, 1)
+    return clean_nutrient_value(val)
+
+
+def parse_serving_size(serving_str):
+    """'1 plate (150g)' -> (1.0, 'plate', 150.0); None when the text does not follow that shape."""
+    m = re.match(r'^(\d+(?:\.\d+)?)\s+([a-zA-Z\s]+)\s*\((\d+(?:\.\d+)?)(?:g|ml)\)$', str(serving_str).strip())
+    if m:
+        return float(m.group(1)), m.group(2).strip(), float(m.group(3))
+    return None
+
+
 def seed_foods():
     require_files("Indian_Food_DF.csv", "UK_fct.xlsx", "US_fct.xlsx", "indian_food_nutrition_dataset.csv")
     logger.info(f"Starting food dataset seeding from: {RAW_DIR}")
@@ -47,12 +70,12 @@ def seed_foods():
                 brand_val = str(brand).strip() if pd.notna(brand) else None
                 fcode = f"PACKAGED_{idx:04d}"
 
-                # Insert food
+                # Insert food (a re-run also corrects the nutrients of rows seeded by an older parser)
                 res = db.execute(
                     text("""
                         INSERT INTO foods (food_code, name, brand)
                         VALUES (:code, :name, :brand)
-                        ON CONFLICT (food_code) DO NOTHING
+                        ON CONFLICT (food_code) DO UPDATE SET name = EXCLUDED.name
                         RETURNING id;
                     """),
                     {"code": fcode, "name": str(name).strip(), "brand": brand_val}
@@ -62,7 +85,7 @@ def seed_foods():
                     food_id = res[0]
                     salt = clean_nutrient_value(row.get('nutri_salt'))
                     sodium = salt * 400.0
-                    energy_kcal = clean_nutrient_value(row.get('nutri_energy'))
+                    energy_kcal = clean_energy_kcal(row.get('nutri_energy'))
                     protein_g = clean_nutrient_value(row.get('nutri_protein'))
                     carb_g = clean_nutrient_value(row.get('nutri_carbohydrate'))
                     fat_g = clean_nutrient_value(row.get('nutri_fat'))
@@ -76,7 +99,10 @@ def seed_foods():
                                 food_id, energy_kcal, protein_g, carb_g, fat_g, fibre_g, sodium_mg, sugar_g, saturated_fat_g
                             ) VALUES (
                                 :food_id, :energy, :prot, :carb, :fat, :fib, :sod, :sug, :sat_fat
-                            ) ON CONFLICT (food_id) DO NOTHING;
+                            ) ON CONFLICT (food_id) DO UPDATE SET
+                                energy_kcal = EXCLUDED.energy_kcal, protein_g = EXCLUDED.protein_g, carb_g = EXCLUDED.carb_g,
+                                fat_g = EXCLUDED.fat_g, fibre_g = EXCLUDED.fibre_g, sodium_mg = EXCLUDED.sodium_mg,
+                                sugar_g = EXCLUDED.sugar_g, saturated_fat_g = EXCLUDED.saturated_fat_g;
                         """),
                         {
                             "food_id": food_id,
@@ -213,6 +239,7 @@ def seed_foods():
                         continue
                     name = ",".join(parts[:-7]).strip()
                     category = parts[-7].strip()
+                    serving_size = parts[-6].strip()
                     calories = clean_nutrient_value(parts[-5])
                     protein = clean_nutrient_value(parts[-4])
                     carbs = clean_nutrient_value(parts[-3])
@@ -224,7 +251,7 @@ def seed_foods():
                         text("""
                             INSERT INTO foods (food_code, name)
                             VALUES (:code, :name)
-                            ON CONFLICT (food_code) DO NOTHING
+                            ON CONFLICT (food_code) DO UPDATE SET name = foods.name
                             RETURNING id;
                         """),
                         {"code": code_val, "name": name}
@@ -232,6 +259,7 @@ def seed_foods():
 
                     if res:
                         food_id = res[0]
+                        # nutrients stay DO NOTHING: the YOLO seeder overwrites some of these rows on purpose (wholeFoods.xlsx)
                         db.execute(
                             text("""
                                 INSERT INTO food_nutrients (
@@ -242,6 +270,27 @@ def seed_foods():
                             """),
                             {"food_id": food_id, "energy": calories, "prot": protein, "carb": carbs, "fat": fats}
                         )
+                        # ground-truth parity: the serving size ("1 plate (150g)") and the diet/"Indian" tags
+                        portion = parse_serving_size(serving_size)
+                        if portion:
+                            db.execute(
+                                text("""
+                                    INSERT INTO food_portions (food_id, amount, unit, gram_weight)
+                                    SELECT :fid, :amt, :unit, :gw
+                                    WHERE NOT EXISTS (SELECT 1 FROM food_portions WHERE food_id = :fid AND unit = :unit);
+                                """),
+                                {"fid": food_id, "amt": portion[0], "unit": portion[1], "gw": portion[2]}
+                            )
+                        for tag in (dietary_pref, "Indian"):
+                            if tag:
+                                db.execute(
+                                    text("""
+                                        INSERT INTO food_tags (food_id, tag)
+                                        SELECT :fid, :tag
+                                        WHERE NOT EXISTS (SELECT 1 FROM food_tags WHERE food_id = :fid AND tag = :tag);
+                                    """),
+                                    {"fid": food_id, "tag": tag}
+                                )
                         ind_count += 1
             db.commit()
             logger.info(f"Seeded {ind_count} foods from indian_food_nutrition_dataset.csv.")

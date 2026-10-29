@@ -40,7 +40,7 @@ app.add_middleware(
     allow_credentials=_cors_origins != ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["X-Request-ID"],
+    expose_headers=["X-Request-ID", "X-Total-Count", "X-Page-Offset", "X-Has-More"],
 )
 
 @app.get("/health")

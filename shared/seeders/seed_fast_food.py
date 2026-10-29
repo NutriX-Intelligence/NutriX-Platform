@@ -566,27 +566,12 @@ def seed_fast_food():
 
 
 def backfill_dietary_tags(db):
-    """MS3 filters Vegetarian / Vegan / Jain users with `recipes.dietary_tag` in SQL, so no recipe may be NULL."""
-    logger.info("Backfilling dietary_tag for recipes that have none...")
-    db.execute(text("""
-        UPDATE recipes SET dietary_tag = 'Vegetarian'
-        WHERE dietary_tag IS NULL AND (
-            primarysource = 'Vegetarian'
-            OR cuisine IN ('Gujarati', 'Gujarati / Kathiyawadi', 'Rajasthani', 'South Indian')
-            OR recipe_name ILIKE '%paneer%' OR recipe_name ILIKE '%dal%' OR recipe_name ILIKE '%khichdi%'
-            OR recipe_name ILIKE '%sabzi%' OR recipe_name ILIKE '%roti%' OR recipe_name ILIKE '%dosa%'
-            OR recipe_name ILIKE '%idli%')
-    """))
-    db.execute(text("""
-        UPDATE recipes SET dietary_tag = 'Non-Vegetarian'
-        WHERE dietary_tag IS NULL AND (
-            primarysource = 'Non-Vegetarian'
-            OR recipe_name ILIKE '%chicken%' OR recipe_name ILIKE '%mutton%' OR recipe_name ILIKE '%fish%'
-            OR recipe_name ILIKE '%egg%' OR recipe_name ILIKE '%prawn%' OR recipe_name ILIKE '%pork%'
-            OR recipe_name ILIKE '%beef%' OR recipe_name ILIKE '%keema%')
-    """))
-    db.execute(text("UPDATE recipes SET dietary_tag = 'Vegetarian' WHERE dietary_tag IS NULL"))
-    db.commit()
+    """MS3 pre-filters Vegetarian / Vegan / Jain users with `recipes.dietary_tag` in SQL and then trusts it, so every home-style
+    recipe needs a CORRECT tag. Untagged ones are classified from their ingredients (curated regional tags are kept)."""
+    from ms3_user.services.recipe_tagging import retag_recipes
+    logger.info("Tagging recipes that have no dietary_tag from their ingredients...")
+    result = retag_recipes(db, apply=True, only_untagged=True)
+    logger.info(f"Tagged {len(result['changes'])} recipe(s): " + ", ".join(f"{t} {n}" for t, n in sorted(result["after"].items())))
 
 
 if __name__ == "__main__":

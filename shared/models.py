@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime, date
 from shared.db import Base
+from shared import clock
 
 class User(Base):
     __tablename__ = "users"
@@ -363,7 +364,7 @@ class MealLog(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    log_date = Column(Date, nullable=False, default=date.today)
+    log_date = Column(Date, nullable=False, default=clock.today)
     meal_type = Column(String, nullable=False)  # 'Breakfast', 'Lunch', 'Dinner', 'Snack'
     food_name = Column(String, nullable=False)
     calories = Column(Float, nullable=False, default=0.0)
@@ -383,7 +384,7 @@ class WaterLog(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     amount_ml = Column(Float, nullable=False)
-    logged_at = Column(Date, nullable=False, default=date.today)
+    logged_at = Column(Date, nullable=False, default=clock.today)
 
     # Relationships
     user = relationship("User", back_populates="water_logs")
