@@ -1,0 +1,27 @@
+{
+  "hash": "imagehash.phash 64-bit",
+  "threshold_hamming_le": 6,
+  "n_images": {
+    "train": 51535,
+    "valid": 2484,
+    "test": 2128
+  },
+  "test_vs_train": {
+    "n_with_near_dup": 834,
+    "n": 2128,
+    "pct": 39.19,
+    "exact_hash_match_d0": 773
+  },
+  "valid_vs_train": {
+    "n_with_near_dup": 815,
+    "n": 2484,
+    "pct": 32.81,
+    "exact_hash_match_d0": 737
+  },
+  "test_vs_valid": {
+    "n_with_near_dup": 27,
+    "n": 2128,
+    "pct": 1.27,
+    "exact_hash_match_d0": 17
+  }
+}

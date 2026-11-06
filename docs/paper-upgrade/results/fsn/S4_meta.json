@@ -1,0 +1,20 @@
+{
+  "n_foods_scored": 15,
+  "n_foods_total": 77,
+  "n_unscored": 62,
+  "wrong_definition": "kcal APE > 20.0% vs INDB",
+  "guardrail_confusion_on_atwater_kcal": {
+    "wrong_flagged": 0,
+    "wrong_not_flagged": 13,
+    "correct_flagged": 0,
+    "correct_not_flagged": 2
+  },
+  "guardrail_confusion_on_raw_kcal": {
+    "wrong_flagged": 0,
+    "wrong_not_flagged": 12,
+    "correct_flagged": 0,
+    "correct_not_flagged": 3
+  },
+  "n_flagged": 0,
+  "db_missing_for_scored_foods": []
+}

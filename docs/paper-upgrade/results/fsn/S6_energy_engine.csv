@@ -1,0 +1,51 @@
+profile,age,sex,height_cm,weight_kg,activity,goal,quantity,hand_computed,engine,abs_diff,pass_,note
+P1,25,male,175,70,sedentary,maintenance,bmr,1673.75,1673.75,0.0,True,baseline male
+P1,25,male,175,70,sedentary,maintenance,tdee,2008.5,2008.5,0.0,True,baseline male
+P1,25,male,175,70,sedentary,maintenance,target_calories,2008.5,2008.5,0.0,True,baseline male
+P1,25,male,175,70,sedentary,maintenance,target_protein_g,125.53,125.53,0.0,True,baseline male
+P1,25,male,175,70,sedentary,maintenance,target_carbs_g,225.96,225.96,0.0,True,baseline male
+P1,25,male,175,70,sedentary,maintenance,target_fat_g,66.95,66.95,0.0,True,baseline male
+P1,25,male,175,70,sedentary,maintenance,bmi,22.86,22.86,0.0,True,baseline male
+P2,30,female,165,60,lightly_active,fat loss,bmr,1320.25,1320.25,0.0,True,"deficit, floor not hit"
+P2,30,female,165,60,lightly_active,fat loss,tdee,1815.34,1815.34,0.0,True,"deficit, floor not hit"
+P2,30,female,165,60,lightly_active,fat loss,target_calories,1315.34,1315.34,0.0,True,"deficit, floor not hit"
+P2,30,female,165,60,lightly_active,fat loss,target_protein_g,98.65,98.65,0.0,True,"deficit, floor not hit"
+P2,30,female,165,60,lightly_active,fat loss,target_carbs_g,131.53,131.53,0.0,True,"deficit, floor not hit"
+P2,30,female,165,60,lightly_active,fat loss,target_fat_g,43.84,43.84,0.0,True,"deficit, floor not hit"
+P2,30,female,165,60,lightly_active,fat loss,bmi,22.04,22.04,0.0,True,"deficit, floor not hit"
+P3,40,male,180,90,moderately_active,muscle gain,bmr,1830.0,1830.0,0.0,True,surplus +300
+P3,40,male,180,90,moderately_active,muscle gain,tdee,2836.5,2836.5,0.0,True,surplus +300
+P3,40,male,180,90,moderately_active,muscle gain,target_calories,3136.5,3136.5,0.0,True,surplus +300
+P3,40,male,180,90,moderately_active,muscle gain,target_protein_g,235.24,235.24,0.0,True,surplus +300
+P3,40,male,180,90,moderately_active,muscle gain,target_carbs_g,352.86,352.86,0.0,True,surplus +300
+P3,40,male,180,90,moderately_active,muscle gain,target_fat_g,87.12,87.12,0.0,True,surplus +300
+P3,40,male,180,90,moderately_active,muscle gain,bmi,27.78,27.78,0.0,True,surplus +300
+P4,22,female,155,50,sedentary,fat loss,bmr,1197.75,1197.75,0.0,True,female floor 1200 applied
+P4,22,female,155,50,sedentary,fat loss,tdee,1437.3,1437.3,0.0,True,female floor 1200 applied
+P4,22,female,155,50,sedentary,fat loss,target_calories,1200.0,1200.0,0.0,True,female floor 1200 applied
+P4,22,female,155,50,sedentary,fat loss,target_protein_g,90.0,90.0,0.0,True,female floor 1200 applied
+P4,22,female,155,50,sedentary,fat loss,target_carbs_g,120.0,120.0,0.0,True,female floor 1200 applied
+P4,22,female,155,50,sedentary,fat loss,target_fat_g,40.0,40.0,0.0,True,female floor 1200 applied
+P4,22,female,155,50,sedentary,fat loss,bmi,20.81,20.81,0.0,True,female floor 1200 applied
+P5,55,male,170,65,sedentary,fat loss,bmr,1442.5,1442.5,0.0,True,male floor 1500 applied
+P5,55,male,170,65,sedentary,fat loss,tdee,1731.0,1731.0,0.0,True,male floor 1500 applied
+P5,55,male,170,65,sedentary,fat loss,target_calories,1500.0,1500.0,0.0,True,male floor 1500 applied
+P5,55,male,170,65,sedentary,fat loss,target_protein_g,112.5,112.5,0.0,True,male floor 1500 applied
+P5,55,male,170,65,sedentary,fat loss,target_carbs_g,150.0,150.0,0.0,True,male floor 1500 applied
+P5,55,male,170,65,sedentary,fat loss,target_fat_g,50.0,50.0,0.0,True,male floor 1500 applied
+P5,55,male,170,65,sedentary,fat loss,bmi,22.49,22.49,0.0,True,male floor 1500 applied
+P6,35,female,168,72,very_active,weight gain,bmr,1434.0,1434.0,0.0,True,surplus +500
+P6,35,female,168,72,very_active,weight gain,tdee,2724.6,2724.6,0.0,True,surplus +500
+P6,35,female,168,72,very_active,weight gain,target_calories,3224.6,3224.6,0.0,True,surplus +500
+P6,35,female,168,72,very_active,weight gain,target_protein_g,201.54,201.54,0.0,True,surplus +500
+P6,35,female,168,72,very_active,weight gain,target_carbs_g,403.07,403.07,0.0,True,surplus +500
+P6,35,female,168,72,very_active,weight gain,target_fat_g,89.57,89.57,0.0,True,surplus +500
+P6,35,female,168,72,very_active,weight gain,bmi,25.51,25.51,0.0,True,surplus +500
+unit,,,,,,,tdee_unknown_activity_uses_1.2,1200.0,1200.0,,True,unit check
+unit,,,,,,,tdee_active_1.725,1725.0,1725.0,,True,unit check
+unit,,,,,,,goal 'weight loss' -> fat loss,fat loss,fat loss,,True,unit check
+unit,,,,,,,goal 'lose_weight' -> fat loss,fat loss,fat loss,,True,unit check
+unit,,,,,,,goal 'bulk' -> muscle gain,muscle gain,muscle gain,,True,unit check
+unit,,,,,,,goal 'gain weight' -> weight gain,weight gain,weight gain,,True,unit check
+unit,,,,,,,goal 'xyz' -> maintenance,maintenance,maintenance,,True,unit check
+unit,,,,,,,bmi height 0 -> 0.0,0.0,0.0,,True,unit check

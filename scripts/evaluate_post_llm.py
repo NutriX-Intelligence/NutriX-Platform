@@ -13,7 +13,21 @@ from shared.food_lookup import lookup_food, per_100g, persist_llm_food, normaliz
 from ms1_cv.cv_engine import NutriXCVEngine, MealSession
 from ms2_llm.vlm_engine import engine as vlm_engine
 from ms2_llm import prompts
-from ms2_llm.validation import parse_nutrition
+from ms2_llm.validation import parse_nutrition, extract_json
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from eval_fallback_ablation import is_match  # same matcher as the labelled ablation
+
+
+def _raw_qwen_macros(raw_text):
+    """Qwen's macros exactly as emitted (before the Atwater recompute in parse_nutrition) plus the Atwater kcal."""
+    data = extract_json(raw_text or "") or {}
+    try:
+        kcal, p, c, f = (float(data[k]) for k in ("calories_per_100g", "protein_g", "carbs_g", "fat_g"))
+    except (KeyError, TypeError, ValueError):
+        return None
+    return {"raw_kcal": kcal, "protein_g": p, "carbs_g": c, "fat_g": f,
+            "atwater_kcal": round(4 * p + 4 * c + 9 * f, 1)}
 
 def get_gpu_vram():
     try:
@@ -81,7 +95,7 @@ def run_evaluation():
         {"path": "inference_outputs/watermelon-trial.jpg", "ground_truth": "Watermelon", "weight": 350.0},
         {"path": "inference_outputs/sweet-potat-test.jpg", "ground_truth": "Sweet Potato", "weight": 210.0},
         {"path": "inference_outputs/IDLI.jpg", "ground_truth": "Idli", "weight": 150.0},
-        {"path": "inference_outputs/esp32.jpg", "ground_truth": "Carrot/Apple/Tomato (Scale Plate)", "weight": 150.0},
+        {"path": "inference_outputs/esp32.jpg", "ground_truth": "Mixed plate (carrot, apple, tomato)", "weight": 150.0, "excluded": True},
     ]
 
     db_gen = get_db()
@@ -91,7 +105,7 @@ def run_evaluation():
     print("RUNNING IMAGE EVALUATION MATRIX")
     print("="*80)
 
-    for item in test_files:
+    for idx, item in enumerate(test_files):
         fpath = item["path"]
         if not os.path.exists(fpath):
             print(f"[-] Warning: {fpath} not found, skipping.")
@@ -116,6 +130,8 @@ def run_evaluation():
         else:
             yolo_pred = yolo_res.get("fallback_class") or "None"
             yolo_conf = (yolo_res.get("fallback_conf") or 0.0) * 100
+        # top-1 confidence is kept even when the frame is rejected (the result dict only carries it for fallbacks)
+        yolo_raw_conf = yolo_conf
 
         # Step B: Qwen3-VL-2B Test
         pil_img = Image.open(fpath).convert("RGB")
@@ -131,6 +147,8 @@ def run_evaluation():
         vlm_conf = (parsed_vlm.get("confidence") or 0.0) * 100 if parsed_vlm else 0.0
         vlm_flagged = parsed_vlm.get("flagged", False) if parsed_vlm else True
         vlm_macros = parsed_vlm.get("per_100g") if parsed_vlm else None
+        vlm_flag_reason = parsed_vlm.get("flag_reason") if parsed_vlm else "unparseable output"
+        vlm_raw_macros = _raw_qwen_macros(raw_vlm)
 
         # Step C: Fallback & Macro Lookup Logic (Post-LLM Pipeline)
         t_pipe_start = time.perf_counter()
@@ -150,7 +168,7 @@ def run_evaluation():
         macro_src = "db" if per100 else "none"
 
         if per100 is None and vlm_macros and not vlm_flagged:
-            per100 = vlm_macros
+            per100 = vlm_macros.model_dump()  # persist_llm_food/per100["..."] expect a plain dict, as in ms1/ms2
             macro_src = "qwen3-vl-2b"
             persist_llm_food(db, clean_name, per100)
 
@@ -168,13 +186,22 @@ def run_evaluation():
 
         curr_gpu, _ = get_gpu_vram()
 
+        excluded = bool(item.get("excluded"))
         test_record = {
             "image": os.path.basename(fpath),
             "ground_truth": gt,
             "weight_g": w,
+            "excluded_multi_item": excluded,
+            "warmup_call": idx == 0,
+            "score": {
+                "yolo": "excluded" if excluded else ("correct" if yolo_status == "identified" and is_match(yolo_pred, gt) else "wrong"),
+                "qwen": "excluded" if excluded else ("correct" if is_match(vlm_pred, gt) else "wrong"),
+                "pipeline": "excluded" if excluded else ("correct" if is_match(final_food, gt) else "wrong"),
+            },
             "yolo": {
                 "prediction": yolo_pred,
                 "confidence": round(yolo_conf, 1),
+                "raw_conf": round(yolo_raw_conf, 1),
                 "status": yolo_status,
                 "latency_ms": round(t_yolo_ms, 1)
             },
@@ -182,6 +209,8 @@ def run_evaluation():
                 "prediction": vlm_pred,
                 "confidence": round(vlm_conf, 1),
                 "flagged": vlm_flagged,
+                "flag_reason": vlm_flag_reason,
+                "raw_macros": vlm_raw_macros,
                 "latency_ms": round(t_vlm_ms, 1),
                 "per_100g": vlm_macros.model_dump() if hasattr(vlm_macros, "model_dump") else (dict(vlm_macros) if vlm_macros else None)
             },
@@ -206,21 +235,26 @@ def run_evaluation():
     print("\n" + "="*80)
     print("RUNNING TEXT LOOKUP & PERSISTENCE BENCHMARK")
     print("="*80)
-    lookup_samples = ["apple", "paneer butter masala", "paneer butter masala"]
+    # 'paneer butter masala' is a curated DB row (IND_FOOD_0018, brand NULL), so it is always a DB hit. The miss path is
+    # exercised with names verified absent from foods/food_aliases: each is a miss -> Qwen -> persist, then a DB hit.
+    lookup_samples = ["apple", "paneer butter masala", "kadhai paneer", "kadhai paneer", "shahi tukda", "shahi tukda"]
     for item_name in lookup_samples:
         t0 = time.perf_counter()
         clean = normalize_name(item_name)
         db_f = lookup_food(db, clean)
         m = per_100g(db_f) if db_f else None
         src = "db"
+        flag_reason, raw_macros = None, None
         if not m:
             # Query Qwen text lookup
             sys_p = prompts.get_system_prompt(prompts.LOOKUP_KEY)
             usr_p = prompts.lookup_user_prompt(item_name)
             raw = vlm_engine.infer(sys_p, usr_p, None)
             parsed = parse_nutrition(raw)
+            raw_macros = _raw_qwen_macros(raw)
+            flag_reason = parsed.get("flag_reason") if parsed else "unparseable output"
             if parsed and parsed.get("per_100g") and not parsed.get("flagged"):
-                m = parsed["per_100g"]
+                m = parsed["per_100g"].model_dump()
                 src = "qwen3-vl-2b"
                 persist_llm_food(db, clean, m)
             else:
@@ -229,17 +263,34 @@ def run_evaluation():
         rec = {
             "query": item_name,
             "source": src,
+            "flag_reason": flag_reason,
+            "qwen_raw_macros": raw_macros,
             "macros": m.model_dump() if hasattr(m, "model_dump") else (dict(m) if m else None),
             "latency_ms": round(lat, 1)
         }
         results["text_lookups"].append(rec)
         print(f"  • Lookup '{item_name}': Source: {src} | {lat:.1f}ms | Macros: {m}")
 
+    # Scoring + latency summaries (first image is the warm-up call and is excluded from latency statistics)
+    scored = [r for r in results["image_tests"] if not r["excluded_multi_item"]]
+    results["scoring"] = {
+        "n_total": len(results["image_tests"]), "n_scored": len(scored),
+        "n_excluded": len(results["image_tests"]) - len(scored),
+        **{k: sum(r["score"][k] == "correct" for r in scored) for k in ("yolo", "qwen", "pipeline")},
+    }
+    steady = [r for r in results["image_tests"] if not r["warmup_call"]]
+    qwen_steady = [r["qwen"]["latency_ms"] for r in steady]
+    yolo_steady = [r["yolo"]["latency_ms"] for r in steady]
+    e2e_steady = [r["pipeline_resolution"]["e2e_latency_ms"] for r in steady]
+    stat = lambda xs: ({"n": len(xs), "mean": round(sum(xs) / len(xs), 1), "median": round(sorted(xs)[len(xs) // 2], 1),
+                        "min": min(xs), "max": max(xs)} if xs else None)
+    results["latency_summary_excl_warmup"] = {"yolo_ms": stat(yolo_steady), "qwen_ms": stat(qwen_steady), "e2e_ms": stat(e2e_steady)}
+
     # Peak VRAM
     peak_vram = torch.cuda.max_memory_allocated() / (1024 * 1024) if torch.cuda.is_available() else 0.0
     results["resources"]["peak_vram_allocated_mb"] = round(peak_vram, 1)
 
-    out_json = "inference_outputs/post_llm_benchmark_results.json"
+    out_json = f"inference_outputs/post_llm_benchmark_results_{time.strftime('%Y%m%d_%H%M%S')}.json"  # never overwrite earlier runs
     with open(out_json, "w") as f:
         json.dump(results, f, indent=2)
     print(f"\n[+] Benchmark completed. Raw results saved to {out_json}")

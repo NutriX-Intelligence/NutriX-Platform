@@ -1,0 +1,78 @@
+food,indian_class,ref_source,ref_code,ref_name,rule,status
+aloogobi,True,INDB,ASC171,Potato cauliflower (Aloo gobhi),transliteration,scored
+aloomasala,True,none,,,,no INDB row found (Indian class)
+apple,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+artichoke,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+avocado,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+banana,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+beans,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+beet,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+bell pepper,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+bhatura,True,INDB,ASC143,Bhatura,exact,scored
+bhindimasala,True,none,,,,no INDB row found (Indian class)
+biryani,True,none,,,,ambiguous_multiple_variants: INDB has mutton and vegetable biryani
+bitter gourd,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+blueberry,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+bottle gourd,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+broccoli,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+brussels sprouts,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+cabbage,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+capsicum,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+carrot,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+cauliflower,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+celery,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+chai,True,INDB,ASC001,Hot tea (Garam Chai),synonym (parenthetical 'Garam Chai'),scored
+chicken,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+chickpeas,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+chole,True,INDB,ASC162,Chickpeas curry (Safed channa curry),synonym (chickpea curry) - judgement,scored
+coconutchutney,True,none,,,,no INDB row found (Indian class)
+corn,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+cucumber,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+dal,True,none,,,,no INDB row found (Indian class)
+dosa,True,INDB,BFP148,Plain dosa,generic->variant (plain dosa) - judgement,scored
+dumaloo,True,none,,,,no INDB row found (Indian class)
+egg,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+eggplant,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+fishcurry,True,none,,,,no INDB row found (Indian class)
+garlic,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+ghevar,True,none,,,,no INDB row found (Indian class)
+grape,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+green brinjal,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+greenchutney,True,none,,,,no INDB row found (Indian class)
+gulabjamun,True,none,,,,ambiguous_multiple_variants: INDB has khoya and milk-powder variants
+hot pepper,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+idli,True,INDB,ASC144,Idli,exact,scored
+jalebi,True,none,,,,no INDB row found (Indian class)
+kebab,True,none,,,,ambiguous_multiple_variants: INDB has >=6 kebab variants
+kheer,True,INDB,ASC282,Rice kheer (Chawal ki kheer),generic->variant (rice kheer) - judgement,scored
+kulfi,True,INDB,ASC321,Kulfi,exact,scored
+lassi,True,none,,,,ambiguous_multiple_variants: INDB has sweet and salted lassi
+lettuce,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+minced meat,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+muttoncurry,True,none,,,,no INDB row found (Indian class)
+onion,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+onionpakoda,True,INDB,ASC352,Onion pakora/pakoda (Pyaaz ke pakode),transliteration,scored
+orange,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+palakpaneer,True,INDB,ASC215,Spinach paneer (Palak paneer),exact (parenthetical),scored
+papaya,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+pattypan squash,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+pea,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+peach,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+pear,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+pineapple,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+poha,True,INDB,BFP044,Poha,exact,scored
+potato,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+pumpkin,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+radish,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+rahar ko daal,True,none,,,,no INDB row found (Indian class)
+rajmacurry,True,INDB,ASC165,Kidney bean curry (Rajmah curry),exact (parenthetical),scored
+rasmalai,True,INDB,BFP393,Rasmalai,exact,scored
+raspberry,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+samosa,True,INDB,ASC361,Potato samosa (Aloo ka samosa),generic->variant (potato samosa) - judgement,scored
+shahipaneer,True,INDB,ASC221,Shahi paneer,exact,scored
+strawberry,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+sweet potato,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+tomato,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+vegetable marrow,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+watermelon,False,none,,,,"raw/non-Indian food: not in INDB, no USDA reference file available locally"
+whiterice,True,none,,,,no INDB row found (Indian class)

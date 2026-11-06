@@ -273,5 +273,6 @@ class NutriXCVEngine:
             "pending_image_path": dest_path,
             "addition_index": len(session.history) - 1,
             "fallback_class": fallback_class,
+            "fallback_conf": fallback_conf,
             "session": session.to_dict()
         }
