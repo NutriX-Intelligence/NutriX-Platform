@@ -15,7 +15,7 @@ from shared.db import get_db
 from shared import clock
 from shared.health import check_health
 from shared.models import MealLog, User
-from shared.food_lookup import lookup_food, per_100g, persist_llm_food, normalize_name
+from shared.food_lookup import is_zero_energy_food, lookup_food, per_100g, persist_llm_food, normalize_name
 from shared.macro_sync import sync_daily_macros
 from ms1_cv import llm_client
 from ms1_cv.cv_engine import NutriXCVEngine, MealSession
@@ -94,6 +94,44 @@ class _NotLogged(Exception):
     """Control flow: skip persisting this scan."""
 
 
+# meal_logs.source for a capture whose food was named but no trustworthy macros were found: its 0 kcal is
+# missing data, not a measurement (FSN A2; existing free-text column, no migration).
+NO_NUTRITION_SOURCE = "no_nutrition_data"
+
+
+def _has_energy(per100: Optional[dict], food_name: str) -> bool:
+    """MS2 macros are usable only with an energy value (0 kcal is accepted only for ~0 kcal foods such as water)."""
+    return bool(per100) and ((per100.get("calories") or 0.0) > 0 or is_zero_energy_food(food_name))
+
+
+# One JSON + image per logged capture, keyed by meal_logs.id: what YOLO and the VLM said, which meal_logs does not
+# store. Read by scripts/fsn_capture_logger.py during the physical tests. Plain files, no DB/API change.
+CAPTURE_LOG_DIR = os.path.join(CAPTURES_DIR, "log")
+
+
+def _write_capture_record(meal_log_id: int, record: dict) -> None:
+    try:
+        import json
+        os.makedirs(CAPTURE_LOG_DIR, exist_ok=True)
+        img = os.path.join(CAPTURE_LOG_DIR, f"{meal_log_id}.jpg")
+        if os.path.exists(LATEST_RAW_PATH):
+            shutil.copy(LATEST_RAW_PATH, img)
+        record = {"meal_log_id": meal_log_id, "logged_at_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+                  "image_path": img if os.path.exists(img) else None, **record}
+        with open(os.path.join(CAPTURE_LOG_DIR, f"{meal_log_id}.json"), "w") as f:
+            json.dump(record, f, indent=1, default=str)
+    except Exception as e:      # never lose the meal because the side record failed
+        print(f"[Warning] Could not write capture record for meal #{meal_log_id}: {e}")
+
+
+def meal_log_source(macro_source: str, identified_by: str) -> str:
+    if macro_source == "llm-timeout":
+        return "llm-timeout"
+    if macro_source == NO_NUTRITION_SOURCE:
+        return NO_NUTRITION_SOURCE
+    return "esp32_qwen_vlm" if identified_by == "qwen" else "esp32_yolo"
+
+
 def _resolve_scale_user(db: Session, x_user_id: Optional[str]) -> int:
     if x_user_id and x_user_id.isdigit():
         uid = int(x_user_id)
@@ -160,6 +198,7 @@ async def ingest_weight_frame(
 
     # ── Resolve the food label (YOLO first, MS2 Qwen3-VL fallback) ───────────
     identified_by = "yolo"
+    vlm = None
     vlm_macros = None       # per-100g macros estimated by Qwen, used only on a DB miss
     vlm_flagged = False
     llm_timeout = False
@@ -217,22 +256,24 @@ async def ingest_weight_frame(
     except Exception:
         db.rollback()  # table not yet migrated; fall through to the LLM
 
-    if per100 is None and vlm_macros and not vlm_flagged:
+    if per100 is None and vlm_macros and not vlm_flagged and _has_energy(vlm_macros, clean_name):
         per100 = vlm_macros
         macro_source = "qwen3-vl-2b"
         persist_llm_food(db, clean_name, per100)  # next scan of this food is a plain DB hit
 
     if per100 is None and clean_name not in ("", "unknown"):
         lk = await llm_client.lookup(clean_name, x_user_id)
-        if lk and lk.get("per_100g") and not lk.get("flagged"):
+        if lk and lk.get("per_100g") and not lk.get("flagged") and _has_energy(lk["per_100g"], clean_name):
             per100 = lk["per_100g"]
             macro_source = lk.get("source", "llm")
         elif lk is None:
             llm_timeout = True
 
     if per100 is None:
+        # No trustworthy macros (DB miss/empty row and MS2 flagged, empty or down). The row is still logged so the
+        # capture is not lost, but its source says the zeros are missing data, not a measured 0 kcal.
         per100 = {"calories": 0.0, "protein_g": 0.0, "carbs_g": 0.0, "fat_g": 0.0}
-        macro_source = "llm-timeout" if llm_timeout else "none"
+        macro_source = "llm-timeout" if llm_timeout else NO_NUTRITION_SOURCE
 
     total_calories = round((weight / 100.0) * per100["calories"], 2)
     total_protein = round((weight / 100.0) * per100["protein_g"], 2)
@@ -274,12 +315,21 @@ async def ingest_weight_frame(
             carbs=payload["carbs"],
             fat=payload["fat"],
             weight_g=payload["weight_g"],
-            source=("llm-timeout" if macro_source == "llm-timeout"
-                    else "esp32_qwen_vlm" if identified_by == "qwen" else "esp32_yolo")
+            source=meal_log_source(macro_source, identified_by)
         )
         db.add(meal_entry)
         db.commit()
         print(f"[Database] Logged meal #{meal_entry.id}: {meal_entry.food_name} ({meal_entry.calories} kcal) for user {target_uid}")
+        _write_capture_record(meal_entry.id, {
+            "session_id": session_id, "user_id": target_uid, "weight_g": payload["weight_g"],
+            "yolo_status": yolo_status, "yolo_reason": result.get("reason", ""),
+            "yolo_top1": result["addition"]["food_name"] if yolo_status == "identified" else result.get("yolo_top1"),
+            "yolo_conf": result["addition"]["confidence"] if yolo_status == "identified" else result.get("fallback_conf", 0.0),
+            "conf_threshold": _CONF_THRESHOLD, "identified_by": payload["identified_by"],
+            "vlm": vlm, "llm_timeout": llm_timeout, "macro_source": macro_source, "per_100g": per100,
+            "food_label": payload["food_label"], "calories": payload["calories"], "protein": payload["protein"],
+            "carbs": payload["carbs"], "fat": payload["fat"], "meal_log_source": meal_entry.source,
+        })
 
         # Live dashboard cache (<10 ms reads in MS3): canonical payload shared with MS3 and the DB trigger
         macros = sync_daily_macros(db, target_uid)

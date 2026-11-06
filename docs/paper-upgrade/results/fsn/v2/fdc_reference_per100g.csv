@@ -1,0 +1,47 @@
+food,ref_source,ref_code,ref_name,ref_kcal,ref_protein,ref_carbs,ref_fat
+apple,USDA FDC SR Legacy,FDC_171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",52.0,0.26,13.81,0.17
+artichoke,USDA FDC SR Legacy,FDC_169205,"Artichokes, (globe or french), raw",47.0,3.27,10.51,0.15
+avocado,USDA FDC SR Legacy,FDC_171705,"Avocados, raw, all commercial varieties",160.0,2.0,8.53,14.66
+banana,USDA FDC SR Legacy,FDC_173944,"Bananas, raw",89.0,1.09,22.84,0.33
+beans,USDA FDC SR Legacy,FDC_169961,"Beans, snap, green, raw",31.0,1.83,6.97,0.22
+beet,USDA FDC SR Legacy,FDC_169145,"Beets, raw",43.0,1.61,9.56,0.17
+bell pepper,USDA FDC SR Legacy,FDC_170108,"Peppers, sweet, red, raw",26.0,0.99,6.03,0.3
+bitter gourd,USDA FDC SR Legacy,FDC_168393,"Balsam-pear (bitter gourd), pods, raw",17.0,1.0,3.7,0.17
+blueberry,USDA FDC SR Legacy,FDC_171711,"Blueberries, raw",57.0,0.74,14.49,0.33
+bottle gourd,USDA FDC SR Legacy,FDC_169232,"Gourd, white-flowered (calabash), raw",14.0,0.62,3.39,0.02
+broccoli,USDA FDC SR Legacy,FDC_170379,"Broccoli, raw",34.0,2.82,6.64,0.37
+brussels sprouts,USDA FDC SR Legacy,FDC_170383,"Brussels sprouts, raw",43.0,3.38,8.95,0.3
+cabbage,USDA FDC SR Legacy,FDC_169975,"Cabbage, raw",25.0,1.28,5.8,0.1
+capsicum,USDA FDC SR Legacy,FDC_170427,"Peppers, sweet, green, raw",20.0,0.86,4.64,0.17
+carrot,USDA FDC SR Legacy,FDC_170393,"Carrots, raw",41.0,0.93,9.58,0.24
+cauliflower,USDA FDC SR Legacy,FDC_169986,"Cauliflower, raw",25.0,1.92,4.97,0.28
+celery,USDA FDC SR Legacy,FDC_169988,"Celery, raw",14.0,0.69,2.97,0.17
+chicken,USDA FDC SR Legacy,FDC_171052,"Chicken, broilers or fryers, meat only, raw",119.0,21.39,0.0,3.08
+chickpeas,USDA FDC SR Legacy,FDC_173757,"Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt",164.0,8.86,27.42,2.59
+corn,USDA FDC SR Legacy,FDC_169998,"Corn, sweet, yellow, raw",86.0,3.27,18.7,1.35
+cucumber,USDA FDC SR Legacy,FDC_168409,"Cucumber, with peel, raw",15.0,0.65,3.63,0.11
+egg,USDA FDC SR Legacy,FDC_171287,"Egg, whole, raw, fresh",143.0,12.56,0.72,9.51
+eggplant,USDA FDC SR Legacy,FDC_169228,"Eggplant, raw",25.0,0.98,5.88,0.18
+garlic,USDA FDC SR Legacy,FDC_169230,"Garlic, raw",149.0,6.36,33.06,0.5
+grape,USDA FDC SR Legacy,FDC_174683,"Grapes, red or green (European type, such as Thompson seedless), raw",69.0,0.72,18.1,0.16
+green brinjal,USDA FDC SR Legacy,FDC_169228,"Eggplant, raw",25.0,0.98,5.88,0.18
+hot pepper,USDA FDC SR Legacy,FDC_170497,"Peppers, hot chili, green, raw",40.0,2.0,9.46,0.2
+lettuce,USDA FDC SR Legacy,FDC_169249,"Lettuce, green leaf, raw",15.0,1.36,2.87,0.15
+minced meat,USDA FDC SR Legacy,FDC_174036,"Beef, ground, 80% lean meat / 20% fat, raw",254.0,17.17,0.0,20.0
+onion,USDA FDC SR Legacy,FDC_170000,"Onions, raw",40.0,1.1,9.34,0.1
+orange,USDA FDC SR Legacy,FDC_169097,"Oranges, raw, all commercial varieties",47.0,0.94,11.75,0.12
+papaya,USDA FDC SR Legacy,FDC_169926,"Papayas, raw",43.0,0.47,10.82,0.26
+pattypan squash,USDA FDC SR Legacy,FDC_169289,"Squash, summer, scallop, raw",18.0,1.2,3.84,0.2
+pea,USDA FDC SR Legacy,FDC_170419,"Peas, green, raw",81.0,5.42,14.45,0.4
+peach,USDA FDC SR Legacy,FDC_169928,"Peaches, yellow, raw",39.0,0.91,9.54,0.25
+pear,USDA FDC SR Legacy,FDC_169118,"Pears, raw",57.0,0.36,15.23,0.14
+pineapple,USDA FDC SR Legacy,FDC_169124,"Pineapple, raw, all varieties",50.0,0.54,13.12,0.12
+potato,USDA FDC SR Legacy,FDC_170026,"Potatoes, flesh and skin, raw",77.0,2.05,17.49,0.09
+pumpkin,USDA FDC SR Legacy,FDC_168448,"Pumpkin, raw",26.0,1.0,6.5,0.1
+radish,USDA FDC SR Legacy,FDC_169276,"Radishes, raw",16.0,0.68,3.4,0.1
+raspberry,USDA FDC SR Legacy,FDC_167755,"Raspberries, raw",52.0,1.2,11.94,0.65
+strawberry,USDA FDC SR Legacy,FDC_167762,"Strawberries, raw",32.0,0.67,7.68,0.3
+sweet potato,USDA FDC SR Legacy,FDC_168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",86.0,1.57,20.12,0.05
+tomato,USDA FDC SR Legacy,FDC_170457,"Tomatoes, red, ripe, raw, year round average",18.0,0.88,3.89,0.2
+vegetable marrow,USDA FDC SR Legacy,FDC_169291,"Squash, summer, zucchini, includes skin, raw",17.0,1.21,3.11,0.32
+watermelon,USDA FDC SR Legacy,FDC_167765,"Watermelon, raw",30.0,0.61,7.55,0.15

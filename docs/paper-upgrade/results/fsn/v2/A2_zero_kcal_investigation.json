@@ -1,0 +1,470 @@
+{
+  "meal_logs": [
+    {
+      "id": 150,
+      "log_date": "2026-10-24",
+      "food_name": "Unknown",
+      "meal_type": "Scale Capture",
+      "weight_g": 150.0,
+      "calories": 0.0,
+      "protein": 0.0,
+      "carbs": 0.0,
+      "fat": 0.0,
+      "source": "llm-timeout"
+    },
+    {
+      "id": 216,
+      "log_date": "2026-10-30",
+      "food_name": "Mixed Nuts",
+      "meal_type": "Scale Capture",
+      "weight_g": 122.4,
+      "calories": 306.0,
+      "protein": 14.7,
+      "carbs": 12.2,
+      "fat": 0.0,
+      "source": "esp32_qwen_vlm"
+    },
+    {
+      "id": 217,
+      "log_date": "2026-10-30",
+      "food_name": "null (Oreo) - 15g",
+      "meal_type": "Breakfast",
+      "weight_g": 15.0,
+      "calories": 72.5,
+      "protein": 0.8,
+      "carbs": 10.8,
+      "fat": 2.9,
+      "source": "barcode"
+    },
+    {
+      "id": 219,
+      "log_date": "2026-10-30",
+      "food_name": "Oreo",
+      "meal_type": "Scale Capture",
+      "weight_g": 3.3,
+      "calories": 15.94,
+      "protein": 0.17,
+      "carbs": 2.37,
+      "fat": 0.65,
+      "source": "esp32_qwen_vlm"
+    },
+    {
+      "id": 220,
+      "log_date": "2026-10-30",
+      "food_name": "Oreo",
+      "meal_type": "Scale Capture",
+      "weight_g": 10.5,
+      "calories": 50.71,
+      "protein": 0.55,
+      "carbs": 7.55,
+      "fat": 2.06,
+      "source": "esp32_qwen_vlm"
+    },
+    {
+      "id": 221,
+      "log_date": "2026-10-30",
+      "food_name": "Oreo",
+      "meal_type": "Scale Capture",
+      "weight_g": 8.9,
+      "calories": 42.99,
+      "protein": 0.46,
+      "carbs": 6.4,
+      "fat": 1.74,
+      "source": "esp32_qwen_vlm"
+    },
+    {
+      "id": 228,
+      "log_date": "2026-10-30",
+      "food_name": "null (Oreo) - 100g",
+      "meal_type": "Breakfast",
+      "weight_g": 100.0,
+      "calories": 483.0,
+      "protein": 5.2,
+      "carbs": 71.9,
+      "fat": 19.6,
+      "source": "barcode"
+    },
+    {
+      "id": 229,
+      "log_date": "2026-10-30",
+      "food_name": "null (Nutella, Ferrero) - 100g",
+      "meal_type": "Breakfast",
+      "weight_g": 100.0,
+      "calories": 539.0,
+      "protein": 6.3,
+      "carbs": 57.5,
+      "fat": 30.9,
+      "source": "barcode"
+    },
+    {
+      "id": 231,
+      "log_date": "2026-10-30",
+      "food_name": "null (Nutella, Ferrero) - 100g",
+      "meal_type": "Breakfast",
+      "weight_g": 100.0,
+      "calories": 539.0,
+      "protein": 6.3,
+      "carbs": 57.5,
+      "fat": 30.9,
+      "source": "barcode"
+    },
+    {
+      "id": 235,
+      "log_date": "2026-10-30",
+      "food_name": "null (Nutella, Ferrero) - 100g",
+      "meal_type": "Breakfast",
+      "weight_g": 100.0,
+      "calories": 539.0,
+      "protein": 6.3,
+      "carbs": 57.5,
+      "fat": 30.9,
+      "source": "barcode"
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": 45,
+      "created_at": "2026-10-30 10:20:32.092986+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": true,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 12.0,
+          "carbs_g": 24.0,
+          "calories": 350.0,
+          "protein_g": 3.5
+        },
+        "food_name": "oreo",
+        "flag_reason": "kcal 350 inconsistent with macros (Atwater estimate 218)"
+      }
+    },
+    {
+      "id": 46,
+      "created_at": "2026-10-30 10:21:25.239760+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": true,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 15.0,
+          "carbs_g": 28.0,
+          "calories": 350.0,
+          "protein_g": 1.5
+        },
+        "food_name": "chocolate bar",
+        "flag_reason": "kcal 350 inconsistent with macros (Atwater estimate 253)"
+      }
+    },
+    {
+      "id": 47,
+      "created_at": "2026-10-30 10:21:27.518672+00:00",
+      "service": "ms2",
+      "operation": "llm_lookup",
+      "flagged": true,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 15.0,
+          "carbs_g": 25.0,
+          "calories": 450.0,
+          "protein_g": 1.0
+        },
+        "food_name": "chocolate bar",
+        "flag_reason": "kcal 450 inconsistent with macros (Atwater estimate 239)"
+      }
+    },
+    {
+      "id": 48,
+      "created_at": "2026-10-30 10:22:30.489575+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": true,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 22.0,
+          "carbs_g": 18.0,
+          "calories": 450.0,
+          "protein_g": 12.0
+        },
+        "food_name": "mixed nuts",
+        "flag_reason": "kcal 450 inconsistent with macros (Atwater estimate 318)"
+      }
+    },
+    {
+      "id": 49,
+      "created_at": "2026-10-30 10:22:32.910185+00:00",
+      "service": "ms2",
+      "operation": "llm_lookup",
+      "flagged": false,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 18.0,
+          "carbs_g": 10.0,
+          "calories": 250.0,
+          "protein_g": 12.0
+        },
+        "food_name": "mixed nuts",
+        "flag_reason": null
+      }
+    },
+    {
+      "id": 51,
+      "created_at": "2026-10-30 11:57:55.960520+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": true,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 10.0,
+          "carbs_g": 20.0,
+          "calories": 300.0,
+          "protein_g": 3.5
+        },
+        "food_name": "oreo",
+        "flag_reason": "kcal 300 inconsistent with macros (Atwater estimate 184)"
+      }
+    },
+    {
+      "id": 52,
+      "created_at": "2026-10-30 11:59:07.691463+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": true,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 12.0,
+          "carbs_g": 20.0,
+          "calories": 450.0,
+          "protein_g": 1.5
+        },
+        "food_name": "oreo",
+        "flag_reason": "kcal 450 inconsistent with macros (Atwater estimate 194)"
+      }
+    },
+    {
+      "id": 53,
+      "created_at": "2026-10-30 11:59:12.979157+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": true,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 10.0,
+          "carbs_g": 20.0,
+          "calories": 350.0,
+          "protein_g": 1.5
+        },
+        "food_name": "oreo",
+        "flag_reason": "kcal 350 inconsistent with macros (Atwater estimate 176)"
+      }
+    },
+    {
+      "id": 305,
+      "created_at": "2026-11-06 07:51:43.280488+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": false,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 22.0,
+          "carbs_g": 12.0,
+          "calories": 318.0,
+          "protein_g": 18.0
+        },
+        "food_name": "cashew nuts",
+        "flag_reason": "kcal recomputed from macros (model said 520)"
+      }
+    },
+    {
+      "id": 306,
+      "created_at": "2026-11-06 07:51:45.672628+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": false,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 22.0,
+          "carbs_g": 12.0,
+          "calories": 318.0,
+          "protein_g": 18.0
+        },
+        "food_name": "cashew nuts",
+        "flag_reason": "kcal recomputed from macros (model said 520)"
+      }
+    },
+    {
+      "id": 363,
+      "created_at": "2026-11-06 07:54:04.615185+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": false,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 12.0,
+          "carbs_g": 35.0,
+          "calories": 250.0,
+          "protein_g": 2.5
+        },
+        "food_name": "chocolate ice cream",
+        "flag_reason": null
+      }
+    },
+    {
+      "id": 364,
+      "created_at": "2026-11-06 07:54:07.066827+00:00",
+      "service": "ms2",
+      "operation": "llm_vision",
+      "flagged": false,
+      "output": {
+        "model": "qwen3-vl-2b",
+        "source": "qwen3-vl-2b",
+        "per_100g": {
+          "fat_g": 12.0,
+          "carbs_g": 35.0,
+          "calories": 250.0,
+          "protein_g": 2.5
+        },
+        "food_name": "chocolate ice cream",
+        "flag_reason": null
+      }
+    }
+  ],
+  "foods_with_exact_name": {
+    "oreo": [
+      {
+        "id": 1066,
+        "food_code": "PACKAGED_1065",
+        "name": "OREO",
+        "brand": null,
+        "created_at": "2026-08-22 18:00:18.524263",
+        "kcal": 0.0,
+        "protein": 0.0,
+        "carbs": 0.0,
+        "fat": 0.0
+      },
+      {
+        "id": 1209,
+        "food_code": "PACKAGED_1208",
+        "name": "Oreo",
+        "brand": null,
+        "created_at": "2026-08-22 18:00:18.524263",
+        "kcal": 483.0,
+        "protein": 5.2,
+        "carbs": 71.9,
+        "fat": 19.6
+      }
+    ],
+    "chocolate bar": [],
+    "mixed nuts": [
+      {
+        "id": 7059,
+        "food_code": "LLM_mixed_nuts",
+        "name": "Mixed Nuts",
+        "brand": "LLM Inferred",
+        "created_at": "2026-10-30 10:22:32.896611",
+        "kcal": 250.0,
+        "protein": 12.0,
+        "carbs": 10.0,
+        "fat": 18.0
+      }
+    ]
+  },
+  "resolution": {
+    "oreo": {
+      "v1_rule": {
+        "tier": "exact",
+        "food": {
+          "id": 1209,
+          "food_code": "PACKAGED_1208",
+          "name": "Oreo",
+          "brand": null,
+          "created_at": "2026-08-22 18:00:18.524263",
+          "kcal": 483.0,
+          "protein": 5.2,
+          "carbs": 71.9,
+          "fat": 19.6
+        }
+      },
+      "current": {
+        "tier": "exact",
+        "food": {
+          "id": 1209,
+          "food_code": "PACKAGED_1208",
+          "name": "Oreo",
+          "brand": null,
+          "created_at": "2026-08-22 18:00:18.524263",
+          "kcal": 483.0,
+          "protein": 5.2,
+          "carbs": 71.9,
+          "fat": 19.6
+        }
+      }
+    },
+    "chocolate bar": {
+      "v1_rule": {
+        "tier": "miss",
+        "food": null
+      },
+      "current": {
+        "tier": "miss",
+        "food": null
+      }
+    },
+    "mixed nuts": {
+      "v1_rule": {
+        "tier": "exact",
+        "food": {
+          "id": 7059,
+          "food_code": "LLM_mixed_nuts",
+          "name": "Mixed Nuts",
+          "brand": "LLM Inferred",
+          "created_at": "2026-10-30 10:22:32.896611",
+          "kcal": 250.0,
+          "protein": 12.0,
+          "carbs": 10.0,
+          "fat": 18.0
+        }
+      },
+      "current": {
+        "tier": "exact",
+        "food": {
+          "id": 7059,
+          "food_code": "LLM_mixed_nuts",
+          "name": "Mixed Nuts",
+          "brand": "LLM Inferred",
+          "created_at": "2026-10-30 10:22:32.896611",
+          "kcal": 250.0,
+          "protein": 12.0,
+          "carbs": 10.0,
+          "fat": 18.0
+        }
+      }
+    }
+  },
+  "foods_total": 1890,
+  "foods_with_null_or_zero_energy": 276,
+  "foods_with_null_or_zero_energy_but_macros": 27,
+  "note": "the v1 rule here is the lookup as of commit b247304 (empty rows lose only to complete rows); at the demo (commit a076b2e, 2026-10-29) the exact tier used .first() with no ordering, so the all-zero 'OREO' row could win outright."
+}

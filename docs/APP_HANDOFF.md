@@ -64,7 +64,7 @@ The smart scale logs meals on its own, so the dashboard should update without a 
 
 ## 7. Behaviours worth knowing
 
-- **`source` on meals:** `esp32_yolo` / `esp32_qwen_vlm` (scale), `manual`, `fast_food`, `barcode`, `homely`, `recipe`, `ocr_label`. `llm-timeout` with 0 kcal means the scale's AI service was down at that moment.
+- **`source` on meals:** `esp32_yolo` / `esp32_qwen_vlm` (scale), `manual`, `fast_food`, `barcode`, `homely`, `recipe`, `ocr_label`. `llm-timeout` with 0 kcal means the scale's AI service was down at that moment. `no_nutrition_data` with 0 kcal means the food was named but no trustworthy nutrition values were found (empty DB row and the AI estimate was rejected): show it as "nutrition unavailable", not as 0 kcal, and let the user edit or delete it.
 - **AI answers carry `source`:** `gemini`, `local` (an on-premise model, shorter answers) or `offline` (canned text). Worth a subtle hint in the UI; never an error.
 - **A day is the user's calendar day** (server `APP_TIMEZONE`, default Asia/Kolkata). **For "today", do not send a date at all**: omit `log_date` when logging and omit `?log_date=` / `?date=` when reading today's meals or summary. The server then decides today for both, so they always agree. Send an explicit date only for other days. A known bug to avoid: using one clock (local) to create a meal and another (UTC, or a screen opened before midnight) to read "today" makes new meals vanish from the today screen.
 - **Not built yet:** confirming/correcting the scale's guesses (HitL), push notifications, the agent chat, password-reset e-mail, token refresh.

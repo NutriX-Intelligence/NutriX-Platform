@@ -201,7 +201,8 @@ class NutriXCVEngine:
                 session,
                 reason=f"Suppressed class: {class_name} at {highest_conf*100:.1f}%",
                 fallback_bbox=normalized_bbox,
-                fallback_conf=highest_conf
+                fallback_conf=highest_conf,
+                top1_class=class_name
             )
 
         # Check confidence threshold
@@ -229,18 +230,20 @@ class NutriXCVEngine:
                 reason=reason,
                 fallback_class=class_name,
                 fallback_bbox=normalized_bbox,
-                fallback_conf=highest_conf
+                fallback_conf=highest_conf,
+                top1_class=class_name
             )
 
     def _handle_failed_detection(
-        self, 
-        image_path: str, 
-        delta_weight: float, 
-        session: MealSession, 
+        self,
+        image_path: str,
+        delta_weight: float,
+        session: MealSession,
         reason: str,
         fallback_class: Optional[str] = None,
         fallback_bbox: Optional[List[float]] = None,
-        fallback_conf: float = 0.0
+        fallback_conf: float = 0.0,
+        top1_class: Optional[str] = None
     ) -> Tuple[bool, Dict[str, Any]]:
         """Saves image to pending dataset and flags for HitL review."""
         print(f"[CV Engine] Detection Failed: {reason}")
@@ -274,5 +277,6 @@ class NutriXCVEngine:
             "addition_index": len(session.history) - 1,
             "fallback_class": fallback_class,
             "fallback_conf": fallback_conf,
+            "yolo_top1": top1_class,   # raw top-1 for audit/evaluation; unlike fallback_class it is kept for suppressed classes
             "session": session.to_dict()
         }

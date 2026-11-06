@@ -1,0 +1,19 @@
+{
+  "n_db_rows_compared_with_indb": 55,
+  "n_suspect_vs_indb": 36,
+  "n_zero_energy_among_compared": 0,
+  "by_rule": {
+    "S4 crosswalk": 11,
+    "exact normalised name": 44
+  },
+  "mixed_nuts": {
+    "db_kcal": 250.0,
+    "db_protein": 12.0,
+    "db_carbs": 10.0,
+    "db_fat": 18.0,
+    "ref_code": "FDC_170585",
+    "ref_name": "Nuts, mixed nuts, dry roasted, with peanuts, without salt added",
+    "ref_kcal": 607.0,
+    "kcal_rel_diff": -0.588
+  }
+}

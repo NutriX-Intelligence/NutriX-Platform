@@ -1,0 +1,26 @@
+{
+  "n_distinct_name_gt_pairs": 188,
+  "n_distinct_names": 156,
+  "old_tier_counts": {
+    "exact": 86,
+    "miss": 89,
+    "partial": 13
+  },
+  "new_default_tier_counts": {
+    "exact": 86,
+    "miss": 102
+  },
+  "new_partial_on_tier_counts": {
+    "exact": 86,
+    "miss": 102
+  },
+  "pairs_changed_default": 13,
+  "names_changed_default": 7,
+  "pairs_changed_partial_on": 13,
+  "changed_by_old_tier": {
+    "partial": 13
+  },
+  "old_partial_pairs_correct": 6,
+  "old_partial_pairs": 13,
+  "v1_vs_old_rule_tier_disagreements": 0
+}

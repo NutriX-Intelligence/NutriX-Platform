@@ -24,6 +24,7 @@ def test_suppressed_class_is_unidentified_with_no_hint(tmp_path, frame):
     assert ok is False
     assert result["status"] == "unidentified"
     assert result["fallback_class"] is None
+    assert result["yolo_top1"] == "apple"          # kept for the audit record even though no hint is passed on
     assert "Suppressed class" in result["reason"]
 
 

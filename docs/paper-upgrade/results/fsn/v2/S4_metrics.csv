@@ -1,0 +1,97 @@
+subset,source,nutrient,n,MAE,MAPE,median_APE,n_APE,BA_bias,LoA_lo,LoA_hi
+All scored foods,i DB,kcal,61,41.5,19.8,0.0,61,-14.9,-236.4,206.6
+All scored foods,i DB,protein,61,0.8,32.6,2.0,40,0.4,-3.4,4.2
+All scored foods,i DB,carbs,61,3.0,28.7,0.5,58,1.3,-14.3,17.0
+All scored foods,i DB,fat,61,4.2,72.1,30.7,19,-2.5,-29.4,24.5
+All scored foods,ii Qwen raw,kcal,61,63.2,65.5,29.4,61,-3.2,-255.6,249.2
+All scored foods,ii Qwen raw,protein,61,2.2,91.4,57.0,40,0.9,-7.2,9.0
+All scored foods,ii Qwen raw,carbs,61,6.0,61.4,40.1,58,-1.2,-21.2,18.8
+All scored foods,ii Qwen raw,fat,61,4.7,94.9,76.3,19,-2.7,-30.7,25.4
+All scored foods,iii Qwen Atwater,kcal,61,63.1,63.5,29.4,61,-11.1,-267.5,245.4
+All scored foods,iii Qwen Atwater,protein,61,2.2,91.4,57.0,40,0.9,-7.2,9.0
+All scored foods,iii Qwen Atwater,carbs,61,6.0,61.4,40.1,58,-1.2,-21.2,18.8
+All scored foods,iii Qwen Atwater,fat,61,4.7,94.9,76.3,19,-2.7,-30.7,25.4
+All scored foods,iv Qwen after guardrail,kcal,54,56.9,47.3,27.3,54,-19.6,-270.3,231.1
+All scored foods,iv Qwen after guardrail,protein,54,2.2,96.8,55.1,34,1.2,-7.2,9.5
+All scored foods,iv Qwen after guardrail,carbs,54,5.7,61.0,38.1,52,-0.7,-19.8,18.4
+All scored foods,iv Qwen after guardrail,fat,54,5.1,97.1,76.3,17,-3.2,-32.8,26.4
+"All scored foods, excluding suspect INDB rows",i DB,kcal,58,22.0,17.7,0.0,58,6.0,-119.5,131.4
+"All scored foods, excluding suspect INDB rows",i DB,protein,58,0.7,19.9,1.6,37,0.2,-3.4,3.9
+"All scored foods, excluding suspect INDB rows",i DB,carbs,58,2.0,14.6,0.4,55,0.2,-12.1,12.5
+"All scored foods, excluding suspect INDB rows",i DB,fat,58,1.4,70.4,28.3,16,0.4,-8.3,9.2
+"All scored foods, excluding suspect INDB rows",ii Qwen raw,kcal,58,44.5,65.7,28.4,58,18.6,-143.4,180.7
+"All scored foods, excluding suspect INDB rows",ii Qwen raw,protein,58,2.1,79.0,54.5,37,0.7,-7.4,8.8
+"All scored foods, excluding suspect INDB rows",ii Qwen raw,carbs,58,5.6,55.0,39.1,55,-2.0,-21.2,17.2
+"All scored foods, excluding suspect INDB rows",ii Qwen raw,fat,58,1.7,96.7,69.2,16,0.4,-7.2,8.0
+"All scored foods, excluding suspect INDB rows",iii Qwen Atwater,kcal,58,43.3,63.5,28.4,58,11.4,-145.9,168.8
+"All scored foods, excluding suspect INDB rows",iii Qwen Atwater,protein,58,2.1,79.0,54.5,37,0.7,-7.4,8.8
+"All scored foods, excluding suspect INDB rows",iii Qwen Atwater,carbs,58,5.6,55.0,39.1,55,-2.0,-21.2,17.2
+"All scored foods, excluding suspect INDB rows",iii Qwen Atwater,fat,58,1.7,96.7,69.2,16,0.4,-7.2,8.0
+"All scored foods, excluding suspect INDB rows",iv Qwen after guardrail,kcal,51,34.0,46.3,26.1,51,5.5,-126.7,137.6
+"All scored foods, excluding suspect INDB rows",iv Qwen after guardrail,protein,51,2.1,82.5,53.9,31,1.0,-7.4,9.3
+"All scored foods, excluding suspect INDB rows",iv Qwen after guardrail,carbs,51,5.3,53.8,34.9,49,-1.5,-19.8,16.7
+"All scored foods, excluding suspect INDB rows",iv Qwen after guardrail,fat,51,1.7,99.6,64.0,14,0.3,-7.5,8.0
+Indian dishes (INDB),i DB,kcal,15,141.8,59.9,55.9,15,-86.1,-473.0,300.9
+Indian dishes (INDB),i DB,protein,15,2.4,86.6,58.5,14,0.8,-4.9,6.6
+Indian dishes (INDB),i DB,carbs,15,10.4,102.8,56.3,15,3.9,-25.2,32.9
+Indian dishes (INDB),i DB,fat,15,15.2,102.3,76.3,13,-11.7,-61.2,37.9
+Indian dishes (INDB),ii Qwen raw,kcal,15,173.9,95.6,60.0,15,-44.7,-512.6,423.2
+Indian dishes (INDB),ii Qwen raw,protein,15,5.1,150.5,99.2,14,3.3,-10.2,16.8
+Indian dishes (INDB),ii Qwen raw,carbs,15,13.1,119.5,90.0,15,1.3,-33.0,35.5
+Indian dishes (INDB),ii Qwen raw,fat,15,16.6,93.5,79.7,13,-12.2,-65.1,40.7
+Indian dishes (INDB),iii Qwen Atwater,kcal,15,167.0,82.0,60.0,15,-80.3,-535.1,374.6
+Indian dishes (INDB),iii Qwen Atwater,protein,15,5.1,150.5,99.2,14,3.3,-10.2,16.8
+Indian dishes (INDB),iii Qwen Atwater,carbs,15,13.1,119.5,90.0,15,1.3,-33.0,35.5
+Indian dishes (INDB),iii Qwen Atwater,fat,15,16.6,93.5,79.7,13,-12.2,-65.1,40.7
+Indian dishes (INDB),iv Qwen after guardrail,kcal,15,167.0,82.0,60.0,15,-80.3,-535.1,374.6
+Indian dishes (INDB),iv Qwen after guardrail,protein,15,5.1,150.5,99.2,14,3.3,-10.2,16.8
+Indian dishes (INDB),iv Qwen after guardrail,carbs,15,13.1,119.5,90.0,15,1.3,-33.0,35.5
+Indian dishes (INDB),iv Qwen after guardrail,fat,15,16.6,93.5,79.7,13,-12.2,-65.1,40.7
+"Indian dishes (INDB), excluding suspect rows",i DB,kcal,12,72.7,59.6,51.2,12,-3.0,-200.9,195.0
+"Indian dishes (INDB), excluding suspect rows",i DB,protein,12,2.1,58.9,55.8,11,0.2,-5.6,6.0
+"Indian dishes (INDB), excluding suspect rows",i DB,carbs,12,7.2,56.8,50.4,12,-1.0,-24.7,22.7
+"Indian dishes (INDB), excluding suspect rows",i DB,fat,12,4.4,108.7,57.6,10,-0.0,-12.6,12.5
+"Indian dishes (INDB), excluding suspect rows",ii Qwen raw,kcal,12,111.1,104.2,59.6,12,50.4,-221.5,322.3
+"Indian dishes (INDB), excluding suspect rows",ii Qwen raw,protein,12,5.3,124.8,66.1,11,3.0,-12.0,18.0
+"Indian dishes (INDB), excluding suspect rows",ii Qwen raw,carbs,12,12.8,104.6,65.4,12,-2.0,-37.6,33.7
+"Indian dishes (INDB), excluding suspect rows",ii Qwen raw,fat,12,5.3,95.9,75.8,10,0.1,-14.5,14.8
+"Indian dishes (INDB), excluding suspect rows",iii Qwen Atwater,kcal,12,97.4,86.6,59.6,12,11.0,-246.4,268.4
+"Indian dishes (INDB), excluding suspect rows",iii Qwen Atwater,protein,12,5.3,124.8,66.1,11,3.0,-12.0,18.0
+"Indian dishes (INDB), excluding suspect rows",iii Qwen Atwater,carbs,12,12.8,104.6,65.4,12,-2.0,-37.6,33.7
+"Indian dishes (INDB), excluding suspect rows",iii Qwen Atwater,fat,12,5.3,95.9,75.8,10,0.1,-14.5,14.8
+"Indian dishes (INDB), excluding suspect rows",iv Qwen after guardrail,kcal,12,97.4,86.6,59.6,12,11.0,-246.4,268.4
+"Indian dishes (INDB), excluding suspect rows",iv Qwen after guardrail,protein,12,5.3,124.8,66.1,11,3.0,-12.0,18.0
+"Indian dishes (INDB), excluding suspect rows",iv Qwen after guardrail,carbs,12,12.8,104.6,65.4,12,-2.0,-37.6,33.7
+"Indian dishes (INDB), excluding suspect rows",iv Qwen after guardrail,fat,12,5.3,95.9,75.8,10,0.1,-14.5,14.8
+Raw / other foods (USDA FDC SR Legacy),i DB,kcal,46,8.8,6.7,0.0,46,8.3,-93.0,109.6
+Raw / other foods (USDA FDC SR Legacy),i DB,protein,46,0.3,3.5,0.9,26,0.3,-2.6,3.1
+Raw / other foods (USDA FDC SR Legacy),i DB,carbs,46,0.6,2.9,0.3,43,0.5,-6.8,7.8
+Raw / other foods (USDA FDC SR Legacy),i DB,fat,46,0.7,6.5,5.2,6,0.5,-7.1,8.2
+Raw / other foods (USDA FDC SR Legacy),ii Qwen raw,kcal,46,27.1,55.7,25.0,46,10.4,-107.5,128.2
+Raw / other foods (USDA FDC SR Legacy),ii Qwen raw,protein,46,1.2,59.6,52.1,26,0.1,-4.5,4.8
+Raw / other foods (USDA FDC SR Legacy),ii Qwen raw,carbs,46,3.7,41.2,34.9,43,-2.0,-14.5,10.5
+Raw / other foods (USDA FDC SR Legacy),ii Qwen raw,fat,46,0.8,98.0,44.0,6,0.5,-4.1,5.0
+Raw / other foods (USDA FDC SR Legacy),iii Qwen Atwater,kcal,46,29.2,57.5,25.0,46,11.5,-111.7,134.7
+Raw / other foods (USDA FDC SR Legacy),iii Qwen Atwater,protein,46,1.2,59.6,52.1,26,0.1,-4.5,4.8
+Raw / other foods (USDA FDC SR Legacy),iii Qwen Atwater,carbs,46,3.7,41.2,34.9,43,-2.0,-14.5,10.5
+Raw / other foods (USDA FDC SR Legacy),iii Qwen Atwater,fat,46,0.8,98.0,44.0,6,0.5,-4.1,5.0
+Raw / other foods (USDA FDC SR Legacy),iv Qwen after guardrail,kcal,39,14.5,33.9,18.6,39,3.7,-57.4,64.9
+Raw / other foods (USDA FDC SR Legacy),iv Qwen after guardrail,protein,39,1.1,59.2,50.2,20,0.3,-4.2,4.9
+Raw / other foods (USDA FDC SR Legacy),iv Qwen after guardrail,carbs,39,2.9,37.3,31.1,37,-1.4,-9.7,6.8
+Raw / other foods (USDA FDC SR Legacy),iv Qwen after guardrail,fat,39,0.6,108.9,20.4,4,0.3,-3.8,4.4
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",i DB,kcal,6,67.7,51.4,17.4,6,63.7,-212.1,339.4
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",i DB,protein,6,2.1,14.3,5.0,5,2.0,-5.7,9.7
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",i DB,carbs,6,4.5,26.7,15.3,4,3.8,-16.6,24.3
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",i DB,fat,6,4.9,13.4,13.4,2,4.1,-17.2,25.4
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",ii Qwen raw,kcal,6,52.7,135.3,38.1,6,0.0,-157.7,157.7
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",ii Qwen raw,protein,6,4.3,72.9,75.0,5,1.7,-9.4,12.8
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",ii Qwen raw,carbs,6,7.3,63.4,73.2,4,-7.2,-32.8,18.5
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",ii Qwen raw,fat,6,3.0,206.0,206.0,2,1.2,-9.9,12.2
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",iii Qwen Atwater,kcal,6,67.7,147.9,65.4,6,15.0,-175.8,205.8
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",iii Qwen Atwater,protein,6,4.3,72.9,75.0,5,1.7,-9.4,12.8
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",iii Qwen Atwater,carbs,6,7.3,63.4,73.2,4,-7.2,-32.8,18.5
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",iii Qwen Atwater,fat,6,3.0,206.0,206.0,2,1.2,-9.9,12.2
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",iv Qwen after guardrail,kcal,3,49.7,50.2,34.6,3,47.0,-104.6,198.6
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",iv Qwen after guardrail,protein,3,5.5,42.9,42.9,2,5.5,-3.5,14.6
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",iv Qwen after guardrail,carbs,3,0.2,7.8,7.8,1,0.2,-0.4,0.7
+"Raw / other foods (USDA), excluding DB rows equal to the USDA value",iv Qwen after guardrail,fat,3,5.7,206.0,206.0,2,2.4,-14.6,19.4

@@ -13,10 +13,12 @@ def test_complete_row_wins_over_zero_row():
     assert _first_with_macros([zero, full]).food_code == 'FULL'
 
 
-def test_macros_only_row_counts_as_complete():
-    assert _first_with_macros([_row('ZERO', 0.0), _row('MACROS', 0.0, 3.0)]).food_code == 'MACROS'
+def test_row_without_energy_is_not_usable_even_with_macro_grams():
+    # changed (FSN A2): energy_kcal null/0 means missing data -> miss -> MS2 text lookup
+    assert _first_with_macros([_row('ZERO', 0.0), _row('MACROS', 0.0, 3.0)]) is None
+    assert _first_with_macros([_row('NULL', None, 3.0), _row('FULL', 52.0)]).food_code == 'FULL'
 
 
-def test_falls_back_to_first_row_when_all_are_empty_and_none_when_no_rows():
-    assert _first_with_macros([_row('A', 0.0), _row('B', 0.0)]).food_code == 'A'
+def test_all_empty_rows_and_no_rows_are_a_miss():
+    assert _first_with_macros([_row('A', 0.0), _row('B', 0.0)]) is None
     assert _first_with_macros([]) is None

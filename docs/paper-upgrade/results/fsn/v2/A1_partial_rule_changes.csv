@@ -1,0 +1,189 @@
+vlm_name,gt,v1_tier,v1_food,old_tier,old_food,new_default_tier,new_default_food,new_partial_tier,new_partial_food,changed_default,changed_partial_on,old_matches_gt,new_default_matches_gt
+apple,apple,exact,Apple,exact,Apple,exact,Apple,exact,Apple,False,False,True,True
+apple slices,vegetable marrow,miss,,miss,,miss,,miss,,False,False,False,False
+artichoke,artichoke,exact,Artichoke,exact,Artichoke,exact,Artichoke,exact,Artichoke,False,False,True,True
+avocado,avocado,exact,Avocado,exact,Avocado,exact,Avocado,exact,Avocado,False,False,True,True
+banana,banana,exact,Banana,exact,Banana,exact,Banana,exact,Banana,False,False,True,True
+banana,lettuce,exact,Banana,exact,Banana,exact,Banana,exact,Banana,False,False,False,False
+beef chunks,buff meat,miss,,miss,,miss,,miss,,False,False,False,False
+beet,beet,exact,Beet,exact,Beet,exact,Beet,exact,Beet,False,False,True,True
+beetroot,beet,miss,,miss,,miss,,miss,,False,False,False,False
+bell pepper,bell pepper,exact,Bell Pepper,exact,Bell Pepper,exact,Bell Pepper,exact,Bell Pepper,False,False,True,True
+bhaji,onionpakoda,miss,,miss,,miss,,miss,,False,False,False,False
+bhatura,bhatura,exact,Bhatura,exact,Bhatura,exact,Bhatura,exact,Bhatura,False,False,True,True
+biriyani,biryani,miss,,miss,,miss,,miss,,False,False,False,False
+bitter gourd,bitter gourd,exact,Bitter Gourd,exact,Bitter Gourd,exact,Bitter Gourd,exact,Bitter Gourd,False,False,True,True
+black mushrooms,beet,miss,,miss,,miss,,miss,,False,False,False,False
+black radish,radish,miss,,miss,,miss,,miss,,False,False,False,False
+blueberries,blueberry,exact,Blueberries,exact,Blueberries,exact,Blueberries,exact,Blueberries,False,False,False,False
+blueberry,blueberry,exact,Blueberry,exact,Blueberry,exact,Blueberry,exact,Blueberry,False,False,True,True
+bottle gourd,ash gourd -kubhindo-,exact,Bottle Gourd,exact,Bottle Gourd,exact,Bottle Gourd,exact,Bottle Gourd,False,False,False,False
+bottle gourd,bottle gourd -lauka-,exact,Bottle Gourd,exact,Bottle Gourd,exact,Bottle Gourd,exact,Bottle Gourd,False,False,True,True
+bottle gourd,sponge gourd -ghiraula-,exact,Bottle Gourd,exact,Bottle Gourd,exact,Bottle Gourd,exact,Bottle Gourd,False,False,False,False
+broccoli,broccoli,exact,Broccoli,exact,Broccoli,exact,Broccoli,exact,Broccoli,False,False,True,True
+brussels sprouts,brussels sprouts,exact,Brussels Sprouts,exact,Brussels Sprouts,exact,Brussels Sprouts,exact,Brussels Sprouts,False,False,True,True
+cabbage,cabbage,exact,Cabbage,exact,Cabbage,exact,Cabbage,exact,Cabbage,False,False,True,True
+cabbage,vegetable marrow,exact,Cabbage,exact,Cabbage,exact,Cabbage,exact,Cabbage,False,False,False,False
+canned kidney beans,beans,miss,,miss,,miss,,miss,,False,False,False,False
+carrot,carrot,exact,Carrot,exact,Carrot,exact,Carrot,exact,Carrot,False,False,True,True
+cashew nuts,grape,miss,,miss,,miss,,miss,,False,False,False,False
+cauliflower,aloogobi,exact,Cauliflower,exact,Cauliflower,exact,Cauliflower,exact,Cauliflower,False,False,False,False
+cauliflower,cauliflower,exact,Cauliflower,exact,Cauliflower,exact,Cauliflower,exact,Cauliflower,False,False,True,True
+cauliflower masala,aloogobi,miss,,miss,,miss,,miss,,False,False,False,False
+celery,celery,exact,Celery,exact,Celery,exact,Celery,exact,Celery,False,False,True,True
+chai,chai,exact,Chai,exact,Chai,exact,Chai,exact,Chai,False,False,True,True
+chicken,bell pepper,exact,Chicken,exact,Chicken,exact,Chicken,exact,Chicken,False,False,False,False
+chicken,chicken,exact,Chicken,exact,Chicken,exact,Chicken,exact,Chicken,False,False,True,True
+chicken,mutton,exact,Chicken,exact,Chicken,exact,Chicken,exact,Chicken,False,False,False,False
+chicken biryani,biryani,exact,Chicken Biryani,exact,Chicken Biryani,exact,Chicken Biryani,exact,Chicken Biryani,False,False,False,False
+chicken curry,fishcurry,exact,Chicken Curry,exact,Chicken Curry,exact,Chicken Curry,exact,Chicken Curry,False,False,False,False
+chicken curry,muttoncurry,exact,Chicken Curry,exact,Chicken Curry,exact,Chicken Curry,exact,Chicken Curry,False,False,False,False
+chicken fritters,onionpakoda,miss,,miss,,miss,,miss,,False,False,False,False
+chicken gizzards,chicken,exact,Chicken Gizzards,exact,Chicken Gizzards,exact,Chicken Gizzards,exact,Chicken Gizzards,False,False,False,False
+chicken kofta,kebab,miss,,miss,,miss,,miss,,False,False,False,False
+chicken skewers,kebab,miss,,miss,,miss,,miss,,False,False,False,False
+chicken tikka,bell pepper,exact,Chicken Tikka,exact,Chicken Tikka,exact,Chicken Tikka,exact,Chicken Tikka,False,False,False,False
+chicken tikka,dumaloo,exact,Chicken Tikka,exact,Chicken Tikka,exact,Chicken Tikka,exact,Chicken Tikka,False,False,False,False
+chicken tikka,shahipaneer,exact,Chicken Tikka,exact,Chicken Tikka,exact,Chicken Tikka,exact,Chicken Tikka,False,False,False,False
+chickpea crisp,ghevar,miss,,miss,,miss,,miss,,False,False,False,False
+chickpea curry,chole,miss,,miss,,miss,,miss,,False,False,False,False
+chickpea curry,rajmacurry,miss,,miss,,miss,,miss,,False,False,False,False
+chickpea stew,rajmacurry,miss,,miss,,miss,,miss,,False,False,False,False
+chickpeas,chickpeas,exact,Chickpeas,exact,Chickpeas,exact,Chickpeas,exact,Chickpeas,False,False,True,True
+chili,hot pepper,partial,Chili Pepper -Khursani-,partial,Chili Pepper -Khursani-,miss,,miss,,True,True,True,False
+chili,rajmacurry,partial,Chili Pepper -Khursani-,partial,Chili Pepper -Khursani-,miss,,miss,,True,True,False,False
+chocolate ice cream,kulfi,miss,,miss,,miss,,miss,,False,False,False,False
+chutney,coconutchutney,partial,Coconutchutney,partial,Coconutchutney,miss,,miss,,True,True,True,False
+chutney,greenchutney,partial,Coconutchutney,partial,Coconutchutney,miss,,miss,,True,True,False,False
+corn,corn,exact,Corn,exact,Corn,exact,Corn,exact,Corn,False,False,True,True
+cubed pumpkin,pumpkin,miss,,miss,,miss,,miss,,False,False,False,False
+cucumber,cucumber,exact,Cucumber,exact,Cucumber,exact,Cucumber,exact,Cucumber,False,False,True,True
+cucumber,vegetable marrow,exact,Cucumber,exact,Cucumber,exact,Cucumber,exact,Cucumber,False,False,False,False
+dal,dal,exact,Dal,exact,Dal,exact,Dal,exact,Dal,False,False,True,True
+dal,palakpaneer,exact,Dal,exact,Dal,exact,Dal,exact,Dal,False,False,False,False
+dal,rajmacurry,exact,Dal,exact,Dal,exact,Dal,exact,Dal,False,False,False,False
+dal makhni,dal,miss,,miss,,miss,,miss,,False,False,False,False
+dal makhni,poha,miss,,miss,,miss,,miss,,False,False,False,False
+dal makhni,rajmacurry,miss,,miss,,miss,,miss,,False,False,False,False
+dal makhni,shahipaneer,miss,,miss,,miss,,miss,,False,False,False,False
+dosa,dosa,exact,Dosa,exact,Dosa,exact,Dosa,exact,Dosa,False,False,True,True
+dosai,dosa,miss,,miss,,miss,,miss,,False,False,False,False
+dried fish,gundruk,miss,,miss,,miss,,miss,,False,False,False,False
+dried seaweed,gundruk,miss,,miss,,miss,,miss,,False,False,False,False
+edamame,beans,miss,,miss,,miss,,miss,,False,False,False,False
+egg,egg,exact,Egg,exact,Egg,exact,Egg,exact,Egg,False,False,True,True
+eggplant,eggplant,exact,Eggplant,exact,Eggplant,exact,Eggplant,exact,Eggplant,False,False,True,True
+eggs,egg,miss,,miss,,miss,,miss,,False,False,False,False
+fava bean,broad beans -bakullo-,miss,,miss,,miss,,miss,,False,False,False,False
+fish,asparagus,exact,Fish,exact,Fish,exact,Fish,exact,Fish,False,False,False,False
+fish curry,fishcurry,miss,,miss,,miss,,miss,,False,False,False,False
+garlic,garlic,exact,garlic,exact,garlic,exact,garlic,exact,garlic,False,False,True,True
+ghevar,ghevar,exact,Ghevar,exact,Ghevar,exact,Ghevar,exact,Ghevar,False,False,True,True
+gizzard,chicken,partial,Chicken Gizzards,partial,Chicken Gizzards,miss,,miss,,True,True,False,False
+grape,grape,exact,Grape,exact,Grape,exact,Grape,exact,Grape,False,False,True,True
+grapes,grape,miss,,miss,,miss,,miss,,False,False,False,False
+green chutney,greenchutney,miss,,miss,,miss,,miss,,False,False,False,False
+green eggplant,green brinjal,miss,,miss,,miss,,miss,,False,False,False,False
+green mango,papaya,miss,,miss,,miss,,miss,,False,False,False,False
+green peas,beans,exact,Green Peas,exact,Green Peas,exact,Green Peas,exact,Green Peas,False,False,False,False
+green peas,pea,exact,Green Peas,exact,Green Peas,exact,Green Peas,exact,Green Peas,False,False,True,True
+grilled lamb kebab,kebab,miss,,miss,,miss,,miss,,False,False,False,False
+grilled meat,kebab,miss,,miss,,miss,,miss,,False,False,False,False
+grilled tomato,tomato,miss,,miss,,miss,,miss,,False,False,False,False
+ground chicken,minced meat,miss,,miss,,miss,,miss,,False,False,False,False
+ground meat,minced meat,miss,,miss,,miss,,miss,,False,False,False,False
+guava,papaya,exact,Guava,exact,Guava,exact,Guava,exact,Guava,False,False,False,False
+gulab jamun,gulabjamun,exact,Gulab Jamun,exact,Gulab Jamun,exact,Gulab Jamun,exact,Gulab Jamun,False,False,True,True
+gulabjamun,gulabjamun,exact,Gulabjamun,exact,Gulabjamun,exact,Gulabjamun,exact,Gulabjamun,False,False,True,True
+ice cream,kulfi,miss,,miss,,miss,,miss,,False,False,False,False
+idli,idli,exact,Idli,exact,Idli,exact,Idli,exact,Idli,False,False,True,True
+jalebi,gulabjamun,exact,Jalebi,exact,Jalebi,exact,Jalebi,exact,Jalebi,False,False,False,False
+jalebi,jalebi,exact,Jalebi,exact,Jalebi,exact,Jalebi,exact,Jalebi,False,False,True,True
+kale,bhindimasala,miss,,miss,,miss,,miss,,False,False,False,False
+kale,brussels sprouts,miss,,miss,,miss,,miss,,False,False,False,False
+kava cherry in sauce,beans,miss,,miss,,miss,,miss,,False,False,False,False
+kebab,kebab,exact,Kebab,exact,Kebab,exact,Kebab,exact,Kebab,False,False,True,True
+kheer,ghevar,exact,Kheer,exact,Kheer,exact,Kheer,exact,Kheer,False,False,False,False
+kheer,kheer,exact,Kheer,exact,Kheer,exact,Kheer,exact,Kheer,False,False,True,True
+kheer ice cream,kulfi,miss,,miss,,miss,,miss,,False,False,False,False
+kidney beans,red beans,miss,,miss,,miss,,miss,,False,False,False,False
+korma,dumaloo,miss,,miss,,miss,,miss,,False,False,False,False
+kumkum,brussels sprouts,miss,,miss,,miss,,miss,,False,False,False,False
+kumquat,orange,miss,,miss,,miss,,miss,,False,False,False,False
+laddu,kheer,miss,,miss,,miss,,miss,,False,False,False,False
+ladyfinger,chai,miss,,miss,,miss,,miss,,False,False,False,False
+ladyfinger milkshake,lassi,miss,,miss,,miss,,miss,,False,False,False,False
+lentil curry,chole,miss,,miss,,miss,,miss,,False,False,False,False
+lentils,red lentils,partial,Green Lentils,partial,Green Lentils,miss,,miss,,True,True,False,False
+lettuce,lettuce,exact,Lettuce,exact,Lettuce,exact,Lettuce,exact,Lettuce,False,False,True,True
+lime,papaya,exact,Lime,exact,Lime,exact,Lime,exact,Lime,False,False,False,False
+lukewarm milk,lassi,miss,,miss,,miss,,miss,,False,False,False,False
+mashed yam,garlic,miss,,miss,,miss,,miss,,False,False,False,False
+meatballs,dumaloo,miss,,miss,,miss,,miss,,False,False,False,False
+minced meat,minced meat,exact,Minced Meat,exact,Minced Meat,exact,Minced Meat,exact,Minced Meat,False,False,True,True
+mung beans,green lentils,miss,,miss,,miss,,miss,,False,False,False,False
+mushroom,garlic,exact,Mushroom,exact,Mushroom,exact,Mushroom,exact,Mushroom,False,False,False,False
+mutton curry,muttoncurry,exact,Mutton Curry,exact,Mutton Curry,exact,Mutton Curry,exact,Mutton Curry,False,False,True,True
+oatmeal,almond,miss,,miss,,miss,,miss,,False,False,False,False
+okra,bhindimasala,miss,,miss,,miss,,miss,,False,False,False,False
+okra masala,bhindimasala,miss,,miss,,miss,,miss,,False,False,False,False
+onion,onion,exact,Onion,exact,Onion,exact,Onion,exact,Onion,False,False,True,True
+onion pakoda,onionpakoda,miss,,miss,,miss,,miss,,False,False,False,False
+orange,mandarin,exact,Orange,exact,Orange,exact,Orange,exact,Orange,False,False,False,False
+orange,orange,exact,Orange,exact,Orange,exact,Orange,exact,Orange,False,False,True,True
+oyster mushroom,mushroom,miss,,miss,,miss,,miss,,False,False,False,False
+palak paneer,palakpaneer,exact,Palak Paneer,exact,Palak Paneer,exact,Palak Paneer,exact,Palak Paneer,False,False,True,True
+paneer,palakpaneer,partial,Palakpaneer,partial,Palakpaneer,miss,,miss,,True,True,True,False
+paneer,shahipaneer,partial,Palakpaneer,partial,Palakpaneer,miss,,miss,,True,True,False,False
+pattypan squash,pattypan squash,exact,Pattypan Squash,exact,Pattypan Squash,exact,Pattypan Squash,exact,Pattypan Squash,False,False,True,True
+pea,pea,exact,Pea,exact,Pea,exact,Pea,exact,Pea,False,False,True,True
+peach,peach,exact,Peach,exact,Peach,exact,Peach,exact,Peach,False,False,True,True
+pear,pear,exact,Pear,exact,Pear,exact,Pear,exact,Pear,False,False,True,True
+pepper,bell pepper,partial,Bell Pepper,partial,Bell Pepper,miss,,miss,,True,True,True,False
+pepper,hot pepper,partial,Bell Pepper,partial,Bell Pepper,miss,,miss,,True,True,False,False
+pickled radish,radish,miss,,miss,,miss,,miss,,False,False,False,False
+pineapple,pineapple,exact,Pineapple,exact,Pineapple,exact,Pineapple,exact,Pineapple,False,False,True,True
+plum,apple,miss,,miss,,miss,,miss,,False,False,False,False
+poha,biryani,exact,Poha,exact,Poha,exact,Poha,exact,Poha,False,False,False,False
+poha,poha,exact,Poha,exact,Poha,exact,Poha,exact,Poha,False,False,True,True
+potato,aloomasala,exact,Potato,exact,Potato,exact,Potato,exact,Potato,False,False,False,False
+potato,potato,exact,Potato,exact,Potato,exact,Potato,exact,Potato,False,False,True,True
+potato curry,dumaloo,miss,,miss,,miss,,miss,,False,False,False,False
+potato fritters,onionpakoda,miss,,miss,,miss,,miss,,False,False,False,False
+potato wedges,potato,miss,,miss,,miss,,miss,,False,False,False,False
+pumpkin,pumpkin,exact,Pumpkin,exact,Pumpkin,exact,Pumpkin,exact,Pumpkin,False,False,True,True
+puri,bhatura,exact,Puri,exact,Puri,exact,Puri,exact,Puri,False,False,False,False
+purple turnip,turnip,miss,,miss,,miss,,miss,,False,False,False,False
+radish,radish,exact,Radish,exact,Radish,exact,Radish,exact,Radish,False,False,True,True
+rasmalai,rasmalai,exact,Rasmalai,exact,Rasmalai,exact,Rasmalai,exact,Rasmalai,False,False,True,True
+raspberry,raspberry,exact,Raspberry,exact,Raspberry,exact,Raspberry,exact,Raspberry,False,False,True,True
+rava chutney,coconutchutney,miss,,miss,,miss,,miss,,False,False,False,False
+red bell pepper,bell pepper,miss,,miss,,miss,,miss,,False,False,False,False
+rice,grape,partial,Rice -Chamal-,partial,Rice -Chamal-,miss,,miss,,True,True,False,False
+rice,rice -chamal-,partial,Rice -Chamal-,partial,Rice -Chamal-,miss,,miss,,True,True,True,False
+rice,whiterice,partial,Rice -Chamal-,partial,Rice -Chamal-,miss,,miss,,True,True,True,False
+saffron halwa,rasmalai,miss,,miss,,miss,,miss,,False,False,False,False
+saffron kheer,rasmalai,miss,,miss,,miss,,miss,,False,False,False,False
+saffron milk pudding,rasmalai,miss,,miss,,miss,,miss,,False,False,False,False
+saffron rice pudding,rasmalai,miss,,miss,,miss,,miss,,False,False,False,False
+sambhar,poha,miss,,miss,,miss,,miss,,False,False,False,False
+samosa,samosa,exact,Samosa,exact,Samosa,exact,Samosa,exact,Samosa,False,False,True,True
+scone,pattypan squash,miss,,miss,,miss,,miss,,False,False,False,False
+smoked salmon sandwich,lemon,miss,,miss,,miss,,miss,,False,False,False,False
+smoothie,lassi,miss,,miss,,miss,,miss,,False,False,False,False
+soup,green onion,miss,,miss,,miss,,miss,,False,False,False,False
+spicy fried potatoes,aloomasala,miss,,miss,,miss,,miss,,False,False,False,False
+strawberry,strawberry,exact,Strawberry,exact,Strawberry,exact,Strawberry,exact,Strawberry,False,False,True,True
+sweet potato,pumpkin,exact,Sweet Potato,exact,Sweet Potato,exact,Sweet Potato,exact,Sweet Potato,False,False,False,False
+tea,chai,miss,,miss,,miss,,miss,,False,False,False,False
+tomato,tomato,exact,Tomato,exact,Tomato,exact,Tomato,exact,Tomato,False,False,True,True
+tomato curry,fishcurry,miss,,miss,,miss,,miss,,False,False,False,False
+turnip,turnip,exact,Turnip,exact,Turnip,exact,Turnip,exact,Turnip,False,False,True,True
+white rice,whiterice,miss,,miss,,miss,,miss,,False,False,False,False
+white squash,pattypan squash,miss,,miss,,miss,,miss,,False,False,False,False
+yellow bell pepper,capsicum,miss,,miss,,miss,,miss,,False,False,False,False
+yellow rice,biryani,miss,,miss,,miss,,miss,,False,False,False,False
+yellow rice,poha,miss,,miss,,miss,,miss,,False,False,False,False
+yogurt,blackberry,miss,,miss,,miss,,miss,,False,False,False,False
+zucchini,pattypan squash,miss,,miss,,miss,,miss,,False,False,False,False
+zucchini,vegetable marrow,miss,,miss,,miss,,miss,,False,False,False,False

@@ -1,0 +1,230 @@
+image,gt,indian,yolo,yolo_conf,suppressed,vlm,vlm_tier,vlm_canon,hybrid_vlm,hybrid_vlm_tier,hybrid_vlm_canon,leak_free,yolo_raw_t0.5,yolo_abstain_t0.5,vlm_only_t0.5,vlm_only_resolved_t0.5,hybrid_t0.5,hybrid_resolved_t0.5,fallback_t0.5
+20240328_cf3f38d0-7783-4ced-9409-1619c54978f2_5_png.rf.b11d988b0d54c28852a162e8491ff894.jpg,almond,False,none,0.0,False,oatmeal,miss,,oatmeal,miss,,True,0,0,0,0,0,0,True
+OIP-2-_jpg.rf.1a526af8b2b899dae57ebae269682bf3.jpg,aloogobi,True,aloogobi,0.562,False,cauliflower masala,miss,,cauliflower,exact,Cauliflower,True,1,1,0,0,1,1,False
+maxresdefault-1-_jpg.rf.4df8ae5392be00d1dd4c75f3f64ea2a7.jpg,aloogobi,True,aloogobi,0.7498,False,cauliflower,exact,Cauliflower,cauliflower,exact,Cauliflower,True,1,1,0,0,1,1,False
+e4aa4af0756881b7099748941dd06a9c_jpg.rf.e666d05f5e335ac93e508740cc3b51a8.jpg,aloogobi,True,whiterice,0.6894,False,cauliflower,exact,Cauliflower,cauliflower,exact,Cauliflower,True,0,0,0,0,0,0,False
+R-8-1_jpg.rf.2ab8559287a8c9605edb46c41e1ea159.jpg,aloomasala,True,aloomasala,0.9611,False,spicy fried potatoes,miss,,potato,exact,Potato,True,1,1,0,0,1,1,False
+bread-poha_jpg.rf.5a4ac9f11ee0fe97c1d7adf173d4e1d8.jpg,aloomasala,True,aloomasala,0.9162,False,potato,exact,Potato,potato,exact,Potato,True,1,1,0,0,1,1,False
+imgp51931_jpg.rf.93c6139412a72fe4ede63a2411d9fac6.jpg,aloomasala,True,aloomasala,0.8506,False,potato,exact,Potato,potato,exact,Potato,True,1,1,0,0,1,1,False
+20240328_ad61f4d1-5de3-4bc0-9ca1-5739e6c27b93_2_png.rf.82f16ce253fc53ce0ac685553e603e6c.jpg,apple,False,apple,0.8134,False,plum,miss,,plum,miss,,True,1,1,0,0,1,1,False
+20240326_8fab6e58-c1a7-4ea3-9309-26c1aa3ceb99_1_png.rf.08fd4fac544fbea093b7242362a8287f.jpg,apple,False,none,0.0,False,apple,exact,Apple,apple,exact,Apple,True,0,0,1,1,1,1,True
+20240327_ad61f4d1-5de3-4bc0-9ca1-5739e6c27b93_1_png.rf.7017b54c35ca962c18e1983de2352b99.jpg,apple,False,apple,0.5813,False,apple,exact,Apple,apple,exact,Apple,True,1,1,1,1,1,1,False
+images-1-_jpg.rf.3863ba9b332532823530cecc2fe04309.jpg,artichoke,False,brussels sprouts,0.3354,False,artichoke,exact,Artichoke,artichoke,exact,Artichoke,True,0,0,1,1,1,1,True
+images-4-_jpg.rf.1c573f28b7ee3f5558bf7572ffb972f2.jpg,ash gourd -kubhindo-,False,cucumber,0.3914,False,bottle gourd,exact,Bottle Gourd,bottle gourd,exact,Bottle Gourd,True,0,0,0,0,0,0,True
+20240329_9e8be4cc-058a-4c5f-8a6c-28370d18f7d7_3_png.rf.f7da70fdabca52a67a0135965e2d0e86.jpg,asparagus,False,cauliflower,0.3836,False,fish,exact,Fish,fish,exact,Fish,True,0,0,0,0,0,0,True
+-26_jpg.rf.30cffed39614075a69cae0ffe15ddf90.jpg,avocado,False,avocado,0.9273,False,avocado,exact,Avocado,avocado,exact,Avocado,False,1,1,1,1,1,1,False
+-26_jpg.rf.273c9bc0943a830732e1921814fa4e50.jpg,avocado,False,avocado,0.8723,False,avocado,exact,Avocado,avocado,exact,Avocado,False,1,1,1,1,1,1,False
+-64_jpg.rf.10642e05f786211709e86f5132e3257d.jpg,avocado,False,avocado,0.8646,False,avocado,exact,Avocado,avocado,exact,Avocado,False,1,1,1,1,1,1,False
+20240328_ad61f4d1-5de3-4bc0-9ca1-5739e6c27b93_1_png.rf.06b1a8f37dcaa0a44b03e083f2634796.jpg,banana,False,banana,0.8635,False,banana,exact,Banana,banana,exact,Banana,True,1,1,1,1,1,1,False
+20240329_ad61f4d1-5de3-4bc0-9ca1-5739e6c27b93_3_png.rf.5c98ffb23bb7227bf6429c6c1a5f6d40.jpg,banana,False,banana,0.7942,False,banana,exact,Banana,banana,exact,Banana,True,1,1,1,1,1,1,False
+20240326_d2e6cc91-5c10-4f25-9a29-924f7c25a5ad_5_png.rf.d8c3f8d00597c555016e050729b3380b.jpg,banana,False,banana,0.8365,False,banana,exact,Banana,banana,exact,Banana,True,1,1,1,1,1,1,False
+-48_jpg.rf.acf788dbce9e9d43d3c024b58493f6a3.jpg,beans,False,beans,0.7799,False,kava cherry in sauce,miss,,canned kidney beans,miss,,False,1,1,0,0,1,1,False
+img10_jpg.rf.28ad58e6603a4fc8fd4d101472f6a6fc.jpg,beans,False,none,0.0,False,green peas,exact,Green Peas,green peas,exact,Green Peas,True,0,0,0,0,0,0,True
+-19_jpg.rf.c2e85f00acf8a0858472832101813f34.jpg,beans,False,beans,0.869,False,edamame,miss,,edamame,miss,,False,1,1,0,0,1,1,False
+-66_jpg.rf.b0dd945a267aba0159d8a5e2a455eb3c.jpg,beet,False,beet,0.8959,False,beetroot,miss,,beet,exact,Beet,False,1,1,0,0,1,1,False
+-44_jpg.rf.0bbf08c846f08a814f9b40a2d7cf9e62.jpg,beet,False,beet,0.9101,False,black mushrooms,miss,,beet,exact,Beet,False,1,1,0,0,1,1,False
+-73_jpg.rf.de10e9637346256a681bd79264e7246e.jpg,beet,False,beet,0.8993,False,beetroot,miss,,beet,exact,Beet,False,1,1,0,0,1,1,False
+-16_jpg.rf.0e68e3f960ec5b9b85844e0c57e59ca3.jpg,bell pepper,False,bell pepper,0.8762,False,red bell pepper,miss,,red bell pepper,miss,,False,1,1,0,0,1,1,False
+-51_jpg.rf.a402f293cff6a8e43ed943c851bf3a73.jpg,bell pepper,False,bell pepper,0.8327,False,pepper,miss,,bell pepper,exact,Bell Pepper,False,1,1,0,0,1,1,False
+20240326_3c8f4813-06ae-4d71-8dd3-d6f5d2e41c9a_1_png.rf.d7f039387747ff142794e7ff8c3d6cd2.jpg,bell pepper,False,carrot,0.5736,False,chicken tikka,exact,Chicken Tikka,chicken,exact,Chicken,True,0,0,0,0,0,0,False
+Ahmed-Indian-Restaurant-OBT_jpg.rf.ef1b311a218e260678819aa4ab83300c.jpg,bhatura,True,bhatura,0.8653,False,puri,exact,Puri,bhatura,exact,Bhatura,True,1,1,0,0,1,1,False
+OIP-4-_jpg.rf.4b11c1c67efd04cbe1f14b341c3d4d38.jpg,bhatura,True,bhatura,0.6759,False,puri,exact,Puri,bhatura,exact,Bhatura,True,1,1,0,0,1,1,False
+okra-fry_jpg.rf.c5dde81a632b889cc90d2f48af86c595.jpg,bhindimasala,True,bhindimasala,0.9094,False,okra,miss,,okra,miss,,True,1,1,0,0,1,1,False
+kadai-bhindi-M_jpg.rf.d6d1c0eece469eccd1518751b7da8ec4.jpg,bhindimasala,True,bhindimasala,0.7237,False,kale,miss,,okra masala,miss,,True,1,1,0,0,1,1,False
+R-40-_jpg.rf.254985fbe705a5301c36045a2975096c.jpg,bhindimasala,True,bhindimasala,0.3882,False,okra,miss,,okra,miss,,True,1,0,0,0,0,0,True
+maxresdefault-1-_jpg.rf.dc3c115c201a1f0173c3a5f099d47714.jpg,biryani,True,biryani,0.6732,False,biriyani,miss,,biriyani,miss,,True,1,1,0,0,1,1,False
+chicken-biryani-1_jpg.rf.36a9c8a5ec26efdc3b927e63ea306d6a.jpg,biryani,True,biryani,0.9587,False,chicken biryani,exact,Chicken Biryani,biriyani,miss,,True,1,1,0,0,1,1,False
+Vegetable-Biryani-FQ-2-1-of-1_jpg.rf.6e51acf33414f0ed6350923b4ee07c03.jpg,biryani,True,poha,0.7566,False,yellow rice,miss,,poha,exact,Poha,True,0,0,0,0,0,0,False
+img11_jpg.rf.2ed6a52f9191793c6a43ccbf2ada1e6b.jpg,bitter gourd,False,bitter gourd,0.7521,False,bitter gourd,exact,Bitter Gourd,bitter gourd,exact,Bitter Gourd,True,1,1,1,1,1,1,False
+img20_jpg.rf.0f287edf0557f73240789879e4671179.jpg,bitter gourd,False,bitter gourd,0.8609,False,bitter gourd,exact,Bitter Gourd,bitter gourd,exact,Bitter Gourd,True,1,1,1,1,1,1,False
+img19_jpg.rf.086e0116b86ff930a5ae538c6b087b70.jpg,bitter gourd,False,none,0.0,False,bitter gourd,exact,Bitter Gourd,bitter gourd,exact,Bitter Gourd,True,0,0,1,1,1,1,True
+20240327_d86a11ae-6de8-4b3b-972b-f25e28d958d8_1_png.rf.8ee927e17b4a7ee0b63d84724e6634ad.jpg,blackberry,False,none,0.0,False,yogurt,miss,,yogurt,miss,,True,0,0,0,0,0,0,True
+20240402_d2e6cc91-5c10-4f25-9a29-924f7c25a5ad_4_png.rf.b36df62dba1ff8efbbeb990577d343f1.jpg,blueberry,False,blueberry,0.898,False,blueberries,exact,Blueberries,blueberry,exact,Blueberry,True,1,1,0,0,1,1,False
+20240328_bc63fc6f-9ce2-4ca1-9310-dfd20c8888a2_2_png.rf.2cd427cd29d4e020021f4a49c94f3acd.jpg,blueberry,False,blueberry,0.6644,False,blueberries,exact,Blueberries,blueberry,exact,Blueberry,True,1,1,0,0,1,1,False
+20240402_d04fed0f-61f2-4d0d-b802-f57001362a45_3_png.rf.b9b68908693e91ec0dd9d5d2a6ccf2cd.jpg,blueberry,False,blueberry,0.348,False,blueberries,exact,Blueberries,blueberry,exact,Blueberry,True,1,0,0,0,1,1,True
+img23_jpg.rf.5c4f6969c8bf6f20a78bedeea283b100.jpg,bottle gourd -lauka-,False,greenchutney,0.4418,False,bottle gourd,exact,Bottle Gourd,bottle gourd,exact,Bottle Gourd,True,0,0,1,1,1,1,True
+img22_jpg.rf.315566f6629859e9b502158ec428f3b9.jpg,bottle gourd -lauka-,False,green brinjal,0.4716,False,bottle gourd,exact,Bottle Gourd,bottle gourd,exact,Bottle Gourd,True,0,0,1,1,1,1,True
+img22_jpg.rf.62291c079e24016b1ab44e18d6665965.jpg,bottle gourd -lauka-,False,green brinjal,0.4716,False,bottle gourd,exact,Bottle Gourd,bottle gourd,exact,Bottle Gourd,True,0,0,1,1,1,1,True
+download-8-_jpg.rf.23d156c9bc72ba41a23652f5b7a2eeaa.jpg,broad beans -bakullo-,False,pea,0.8757,False,fava bean,miss,,fava bean,miss,,True,0,0,0,0,0,0,False
+-1-51_jpg.rf.29b4e996d92c735da295b662a31613b3.jpg,broccoli,False,broccoli,0.9407,False,broccoli,exact,Broccoli,broccoli,exact,Broccoli,True,1,1,1,1,1,1,False
+-1-23_jpg.rf.f0a199c07769182ff15feda8dd564e1a.jpg,broccoli,False,broccoli,0.7335,False,broccoli,exact,Broccoli,broccoli,exact,Broccoli,True,1,1,1,1,1,1,False
+-1-19_jpg.rf.9d083ea69a20845017000990dd2d58b6.jpg,broccoli,False,broccoli,0.8179,False,broccoli,exact,Broccoli,broccoli,exact,Broccoli,True,1,1,1,1,1,1,False
+-40_jpg.rf.2ef4b19369cb398865f5b67148995197.jpg,brussels sprouts,False,brussels sprouts,0.4523,False,kumkum,miss,,kale,miss,,True,1,0,0,0,0,0,True
+-10_jpg.rf.621cd495d313776aea2ed5c22cb4a562.jpg,brussels sprouts,False,brussels sprouts,0.4519,False,brussels sprouts,exact,Brussels Sprouts,brussels sprouts,exact,Brussels Sprouts,True,1,0,1,1,1,1,True
+-12_jpg.rf.80bcc5d7a5fc03f75b8d5c3096dccc2a.jpg,brussels sprouts,False,brussels sprouts,0.8929,False,brussels sprouts,exact,Brussels Sprouts,brussels sprouts,exact,Brussels Sprouts,False,1,1,1,1,1,1,False
+buff-raw_jpg.rf.aa95ddf65373e7970f66fbc437aa29fa.jpg,buff meat,False,gulabjamun,0.287,False,beef chunks,miss,,beef chunks,miss,,True,0,0,0,0,0,0,True
+-41_jpg.rf.fb7379450c04901b60d590e4089a0580.jpg,cabbage,False,cabbage,0.8322,False,cabbage,exact,Cabbage,cabbage,exact,Cabbage,True,1,1,1,1,1,1,False
+-38_jpg.rf.03e2606abe654578841decc44b3afb10.jpg,cabbage,False,cabbage,0.7956,False,cabbage,exact,Cabbage,cabbage,exact,Cabbage,False,1,1,1,1,1,1,False
+-13_jpg.rf.e46c0c8e6af275843a57bd2b5e33f131.jpg,cabbage,False,cabbage,0.6733,False,cabbage,exact,Cabbage,cabbage,exact,Cabbage,True,1,1,1,1,1,1,False
+img69_jpg.rf.1d745b9efb9acd0ceedb19dd033028f7.jpg,capsicum,False,bell pepper,0.5686,False,yellow bell pepper,miss,,yellow bell pepper,miss,,True,1,1,0,0,1,1,False
+img69_jpg.rf.f5ceff785c1f7e8f326cdd58e2654308.jpg,capsicum,False,bell pepper,0.5686,False,yellow bell pepper,miss,,yellow bell pepper,miss,,True,1,1,0,0,1,1,False
+img65_jpg.rf.cf5ae998abadd5a58a602b1ec7738d6b.jpg,capsicum,False,pattypan squash,0.5901,False,yellow bell pepper,miss,,yellow bell pepper,miss,,True,0,0,0,0,0,0,False
+-5_jpg.rf.d3e6dd0eefbf045e0624ae21f7e4e453.jpg,carrot,False,carrot,0.8218,False,carrot,exact,Carrot,carrot,exact,Carrot,False,1,1,1,1,1,1,False
+-60_jpg.rf.1d0309d0ccd66691bca540ceaa1c18e3.jpg,carrot,False,carrot,0.8354,False,carrot,exact,Carrot,carrot,exact,Carrot,False,1,1,1,1,1,1,False
+img74_jpg.rf.c77a4beac8beed3fb0fb24ff1d9be5be.jpg,carrot,False,carrot,0.665,False,carrot,exact,Carrot,carrot,exact,Carrot,True,1,1,1,1,1,1,False
+img86_jpg.rf.3c735c3f24ef5b42528b70f44ad15a97.jpg,cauliflower,False,cauliflower,0.9104,False,cauliflower,exact,Cauliflower,cauliflower,exact,Cauliflower,True,1,1,1,1,1,1,False
+-6_jpg.rf.52e900949fdacde200102f24cee518cb.jpg,cauliflower,False,cauliflower,0.8759,False,cauliflower,exact,Cauliflower,cauliflower,exact,Cauliflower,False,1,1,1,1,1,1,False
+-24_jpg.rf.6b132c9bb58ed9c727bae1e2407e1ec4.jpg,cauliflower,False,cauliflower,0.8969,False,cauliflower,exact,Cauliflower,cauliflower,exact,Cauliflower,False,1,1,1,1,1,1,False
+-19_jpg.rf.988c5ca249ced0cff158daed156bfc7b.jpg,celery,False,celery,0.8824,False,celery,exact,Celery,celery,exact,Celery,False,1,1,1,1,1,1,False
+-20_jpg.rf.1d39cb2d77e8875cb1a6e35d89b30628.jpg,celery,False,celery,0.845,False,celery,exact,Celery,celery,exact,Celery,False,1,1,1,1,1,1,False
+-51_jpg.rf.15fdd646a98f9742bbd456e82f4b98a6.jpg,celery,False,celery,0.8332,False,celery,exact,Celery,celery,exact,Celery,False,1,1,1,1,1,1,False
+OIP-1-_jpg.rf.8f10db8a484c9e8f5f41e927bc70dc46.jpg,chai,True,chai,0.8794,False,tea,miss,,chai,exact,Chai,True,1,1,0,0,1,1,False
+p58477-15605080895d0376b983b94_jpg.rf.4d9944c0ca2815683d4e9d29bac6d188.jpg,chai,True,chai,0.8572,False,chai,exact,Chai,chai,exact,Chai,True,1,1,1,1,1,1,False
+8928fe039a665b2e76296ac3876bc389_jpg.rf.6ce31964ab3d253a38b788dfe24d670d.jpg,chai,True,chai,0.3354,False,ladyfinger,miss,,chai,exact,Chai,True,1,0,0,0,1,1,True
+gizzards-chicken_jpg.rf.2c1f1ee60689c5c78739aa6ace45c384.jpg,chicken,False,chicken,0.3012,False,chicken gizzards,exact,Chicken Gizzards,chicken,exact,Chicken,True,1,0,0,0,1,1,True
+chickengixxard_jpg.rf.2b87d893ab31942bad02a73bee8b168e.jpg,chicken,False,chicken,0.3937,False,gizzard,miss,,gizzard,miss,,True,1,0,0,0,0,0,True
+raw-chicken-gizaed_jpg.rf.0a9c92f0eab7edd5d8f03f49a65568a8.jpg,chicken,False,chicken,0.8636,False,gizzard,miss,,gizzard,miss,,False,1,1,0,0,1,1,False
+images-4-_jpg.rf.d0c0adb16c85fa8e355243e702db4d2c.jpg,chickpeas,False,beans,0.3817,False,chickpeas,exact,Chickpeas,chickpeas,exact,Chickpeas,True,0,0,1,1,1,1,True
+15-40-960x720_jpg.rf.806d535743d393ec54a18a2b9570bd14.jpg,chole,True,chole,0.8404,False,chickpea curry,miss,,chickpea curry,miss,,True,1,1,0,0,1,1,False
+R-69-_jpg.rf.77b16f68eae4ea6c2a4d0f5a7d23b662.jpg,chole,True,chole,0.9417,False,chickpea curry,miss,,chickpea curry,miss,,True,1,1,0,0,1,1,False
+dhal-1-_jpg.rf.0b915479f318d6772dc618f357c0cc0c.jpg,chole,True,chole,0.8185,False,lentil curry,miss,,lentil curry,miss,,True,1,1,0,0,1,1,False
+IMG_20170909_091046_jpg.rf.508e22d9157425690f93d46f0c45690e.jpg,coconutchutney,True,coconutchutney,0.7421,False,chutney,miss,,chutney,miss,,True,1,1,0,0,1,1,False
+coconut-chutney-recipe_jpg.rf.d1c46826d9064f61260c0848469ddeae.jpg,coconutchutney,True,coconutchutney,0.8951,False,rava chutney,miss,,rava chutney,miss,,True,1,1,0,0,1,1,False
+nquqit88_coconut-chutney_625x300_02_December_20_jpg.rf.9b45486650ff35786e657b93dc0282bc.jpg,coconutchutney,True,coconutchutney,0.9092,False,chutney,miss,,chutney,miss,,True,1,1,0,0,1,1,False
+-55_jpg.rf.eea23909a0f0a05c0f8879a76d092d6f.jpg,corn,False,corn,0.665,False,corn,exact,Corn,corn,exact,Corn,True,1,1,1,1,1,1,False
+-7_jpg.rf.28870ede9f4436537a6e61d0c7e2fd22.jpg,corn,False,corn,0.858,False,corn,exact,Corn,corn,exact,Corn,True,1,1,1,1,1,1,False
+-28_jpg.rf.9095268e1eb5ae1ac0fdccd739e64303.jpg,corn,False,corn,0.8438,False,corn,exact,Corn,corn,exact,Corn,True,1,1,1,1,1,1,False
+-38_jpg.rf.995a0fdf7fc13344a61c10bddca97c83.jpg,cucumber,False,cucumber,0.8259,False,cucumber,exact,Cucumber,cucumber,exact,Cucumber,False,1,1,1,1,1,1,False
+-24_jpg.rf.ba394ccfa0aeaaa85aa50a47e106c8c7.jpg,cucumber,False,cucumber,0.9378,False,cucumber,exact,Cucumber,cucumber,exact,Cucumber,False,1,1,1,1,1,1,False
+-27_jpg.rf.35a3e508c78cb0b85cde58074a69fd53.jpg,cucumber,False,cucumber,0.7151,False,cucumber,exact,Cucumber,cucumber,exact,Cucumber,False,1,1,1,1,1,1,False
+R-43-_jpg.rf.716a62443d185a22c5461e4456288dba.jpg,dal,True,dal,0.8651,False,dal,exact,Dal,dal,exact,Dal,True,1,1,1,1,1,1,False
+R-51-_jpg.rf.f8a59aad43a27888e51203207abad76d.jpg,dal,True,dal,0.436,False,dal,exact,Dal,dal,exact,Dal,True,1,0,1,1,1,1,True
+OIP-6-_jpg.rf.318184ae756513dc5deeef440e8333c3.jpg,dal,True,dal,0.8876,False,dal makhni,miss,,dal,exact,Dal,True,1,1,0,0,1,1,False
+masala-dosa-recipe-a_jpg.rf.f711b282fe8bbb1326371cb243c0a511.jpg,dosa,True,dosa,0.7828,False,dosai,miss,,dosa,exact,Dosa,True,1,1,0,0,1,1,False
+R-46-_jpg.rf.1055e629e938d666b5d4f4a30e38d595.jpg,dosa,True,dosa,0.8137,False,dosa,exact,Dosa,dosa,exact,Dosa,True,1,1,1,1,1,1,False
+1-IMG_2425_jpg.rf.23951a24269ba83d36cb3dc7d3398057.jpg,dosa,True,samosa,0.5055,False,dosa,exact,Dosa,dosa,exact,Dosa,True,0,0,1,1,0,0,False
+R-30-_jpg.rf.189869910e909568749516567e1593aa.jpg,dumaloo,True,fishcurry,0.5308,False,korma,miss,,potato curry,miss,,True,0,0,0,0,0,0,False
+13964468008_3815c65059_z_jpg.rf.e72e77544cde9883586c219294795d20.jpg,dumaloo,True,gulabjamun,0.7428,False,chicken tikka,exact,Chicken Tikka,meatballs,miss,,True,0,0,0,0,0,0,False
+OIP-8-_jpg.rf.34095a7909523d9a3daf4795af7338ce.jpg,dumaloo,True,dumaloo,0.8203,False,potato curry,miss,,potato curry,miss,,True,1,1,0,0,1,1,False
+images-16-_jpg.rf.e8863699af8fce78ad164fbf7189d845.jpg,egg,False,onion,0.5393,False,egg,exact,Egg,egg,exact,Egg,True,0,0,1,1,0,0,False
+images-6-_jpg.rf.7fd03b2e2c7e0a816b9b3cd2cbd6491d.jpg,egg,False,none,0.0,False,egg,exact,Egg,egg,exact,Egg,True,0,0,1,1,1,1,True
+images-12-_jpg.rf.cef44c90401dd77a5d8cc6e24af9a0fb.jpg,egg,False,potato,0.5809,False,eggs,miss,,eggs,miss,,True,0,0,1,1,0,0,False
+-28_jpg.rf.5c2b397f67a5f19d106fd5851f5281a9.jpg,eggplant,False,eggplant,0.7802,False,eggplant,exact,Eggplant,eggplant,exact,Eggplant,False,1,1,1,1,1,1,False
+-24_jpg.rf.9207d632ed7cd51f621700c360d1c92d.jpg,eggplant,False,eggplant,0.9119,False,eggplant,exact,Eggplant,eggplant,exact,Eggplant,False,1,1,1,1,1,1,False
+-71_jpg.rf.54cc528b962d5b905d797986993b7c88.jpg,eggplant,False,eggplant,0.6771,False,eggplant,exact,Eggplant,eggplant,exact,Eggplant,False,1,1,1,1,1,1,False
+photo-86-_jpg.rf.da206f1bd6c1b4d5655e07f41e0ec231.jpg,fishcurry,True,fishcurry,0.8247,False,chicken curry,exact,Chicken Curry,fish curry,miss,,True,1,1,0,0,1,1,False
+malay-style-fish-curry_jpg.rf.ce1b6f65630a3a464286452fa4a3bba0.jpg,fishcurry,True,tomato,0.5593,False,tomato curry,miss,,tomato curry,miss,,True,0,0,0,0,0,0,False
+fishChennai_jpg.rf.80864032ef1cc0bd609cb07f3398e949.jpg,fishcurry,True,fishcurry,0.3603,False,chicken curry,exact,Chicken Curry,fish curry,miss,,True,1,0,0,0,1,1,True
+-45_jpg.rf.bd45281caf4e60a1fff0a54e857890fc.jpg,garlic,False,onion,0.6235,False,mashed yam,miss,,mushroom,exact,Mushroom,True,0,0,0,0,0,0,False
+-29_jpg.rf.5aed233040b8162a38ebb18feee481d4.jpg,garlic,False,garlic,0.7599,False,garlic,exact,garlic,garlic,exact,garlic,True,1,1,1,1,1,1,False
+-25_jpg.rf.b06b05d1aba0c42a0d10b32967be4e6b.jpg,garlic,False,garlic,0.8128,False,garlic,exact,garlic,garlic,exact,garlic,False,1,1,1,1,1,1,False
+R-18-_jpg.rf.55d7fcf35551a43485800b73df1ae7c6.jpg,ghevar,True,ghevar,0.7021,False,chickpea crisp,miss,,chickpea crisp,miss,,True,1,1,0,0,1,1,False
+AdobeStock_492961178_Preview_jpg.rf.84eecb231d0533e5a2d19fee797ff54f.jpg,ghevar,True,ghevar,0.6762,False,kheer,exact,Kheer,ghevar,exact,Ghevar,True,1,1,0,0,1,1,False
+maxresdefault-4-_jpg.rf.1ab471947da82efdc4328e0273f20b5d.jpg,ghevar,True,ghevar,0.8953,False,kheer,exact,Kheer,ghevar,exact,Ghevar,True,1,1,0,0,1,1,False
+20240328_1398788c-670d-452b-b7b9-e8ee76b225f3_4_png.rf.1db018e4f35d564f3176c41d7e9ed293.jpg,grape,False,lassi,0.5212,True,cashew nuts,miss,,cashew nuts,miss,,True,0,0,0,0,0,0,True
+20240327_1398788c-670d-452b-b7b9-e8ee76b225f3_1_png.rf.09c1fd2c2a7c2e63e46d5b0e4d48fed4.jpg,grape,False,grape,0.8513,False,rice,miss,,rice,miss,,True,1,1,0,0,1,1,False
+20240329_8fab6e58-c1a7-4ea3-9309-26c1aa3ceb99_1_png.rf.4d7465a3752fcb095b9fb488334a363b.jpg,grape,False,grape,0.7148,False,grapes,miss,,grape,exact,Grape,True,1,1,1,1,1,1,False
+img32_jpg.rf.b8d814b4293f88ec2f1a07208ba746b8.jpg,green brinjal,False,green brinjal,0.8889,False,green eggplant,miss,,green eggplant,miss,,True,1,1,0,0,1,1,False
+img32_jpg.rf.1adb319f123389ee6005bda3726d6e26.jpg,green brinjal,False,green brinjal,0.8889,False,green eggplant,miss,,green eggplant,miss,,True,1,1,0,0,1,1,False
+green-lentils_jpg.rf.6f87535e4be73b29313e01c45786b0d4.jpg,green lentils,False,beans,0.3825,False,mung beans,miss,,mung beans,miss,,False,0,0,0,0,0,0,True
+20240402_cf3f38d0-7783-4ced-9409-1619c54978f2_3_png.rf.2c3ab005112629b2fcf571dee5f7bae6.jpg,green onion,False,none,0.0,False,soup,miss,,soup,miss,,True,0,0,0,0,0,0,True
+R-16-_jpg.rf.1f409fb2180cfcb0ed642d5ccf43feda.jpg,greenchutney,True,greenchutney,0.9446,False,green chutney,miss,,green chutney,miss,,True,1,1,1,1,1,1,False
+green-chutney-recipe-main-photo_jpg.rf.b8399b523ed3c75fbb3ccb91fc6b19c6.jpg,greenchutney,True,greenchutney,0.8573,False,chutney,miss,,green chutney,miss,,True,1,1,0,0,1,1,False
+big_green_chutney__-__faraal_recipe-10131_jpg.rf.71378f75f2c75c63e4b669aed4b757fa.jpg,greenchutney,True,greenchutney,0.8557,False,green chutney,miss,,green chutney,miss,,True,1,1,1,1,1,1,False
+9FF9B7ED-64A9-447F-A534-BB11812D4DE0_jpg.rf.d732b0812b9bf38556e786ac9deffd43.jpg,gulabjamun,True,gulabjamun,0.8739,False,gulab jamun,exact,Gulab Jamun,gulabjamun,exact,Gulabjamun,True,1,1,1,1,1,1,False
+20191006_142022_jpg.rf.ef8190cb1ff08c6336a40049f1fa296f.jpg,gulabjamun,True,gulabjamun,0.9439,False,gulab jamun,exact,Gulab Jamun,gulabjamun,exact,Gulabjamun,True,1,1,1,1,1,1,False
+Gulab-Jamun-2_jpg.rf.0f72357e5ee027f2d44aed1593b4bbfc.jpg,gulabjamun,True,gulabjamun,0.9713,False,jalebi,exact,Jalebi,gulabjamun,exact,Gulabjamun,True,1,1,0,0,1,1,False
+download-1-_jpg.rf.2a3c327f21aff89c42d715f1c4b55a8f.jpg,gundruk,False,onion,0.3603,False,dried fish,miss,,dried seaweed,miss,,False,0,0,0,0,0,0,True
+-9_jpg.rf.ec4b05070a4a3e090aafcc2bd2c42433.jpg,hot pepper,False,hot pepper,0.7722,False,pepper,miss,,pepper,miss,,False,1,1,0,0,1,1,False
+-8_jpg.rf.c1dbd458e57a7127797861277344c18f.jpg,hot pepper,False,hot pepper,0.6289,False,chili,miss,,chili,miss,,False,1,1,1,1,1,1,False
+-51_jpg.rf.255a4908e93b09d95efba8e8c9ac1c81.jpg,hot pepper,False,hot pepper,0.8498,False,chili,miss,,chili,miss,,False,1,1,1,1,1,1,False
+DSC_1473_jpg.rf.8c32908de56ceb76c79e968dc789351c.jpg,idli,True,idli,0.9122,False,idli,exact,Idli,idli,exact,Idli,True,1,1,1,1,1,1,False
+aval-idli_jpg.rf.75d78ba2a935b9f08aa907173ca09c2b.jpg,idli,True,idli,0.9127,False,idli,exact,Idli,idli,exact,Idli,True,1,1,1,1,1,1,False
+R-15-_jpg.rf.be8cec17e579aa552c62d1465212198f.jpg,idli,True,bhatura,0.4145,False,idli,exact,Idli,idli,exact,Idli,True,0,0,1,1,1,1,True
+Jalebi-Recipe-3_jpg.rf.bd080a1f9f01f4fb93b274d6d6691c64.jpg,jalebi,True,jalebi,0.8143,False,jalebi,exact,Jalebi,jalebi,exact,Jalebi,True,1,1,1,1,1,1,False
+IMG_4120123-copy-1_jpg.rf.28cfba04b6dd8975dc4073bed1c663e3.jpg,jalebi,True,jalebi,0.9593,False,jalebi,exact,Jalebi,jalebi,exact,Jalebi,False,1,1,1,1,1,1,False
+OIP-4-_jpg.rf.c7ef37eae1239e79395be6c798f8527b.jpg,jalebi,True,jalebi,0.8942,False,jalebi,exact,Jalebi,jalebi,exact,Jalebi,True,1,1,1,1,1,1,False
+seekhkebabtopplatterbig_jpg.rf.6435bfb0dc46f7e08c3180f7637a7eff.jpg,kebab,True,kebab,0.8019,False,chicken kofta,miss,,kebab,exact,Kebab,True,1,1,0,0,1,1,False
+seekh-kebabs-FT-BLOG0920-2c085cd0b3664091898073b51c86c6ef_jpg.rf.6aa296c08735f6e9cb4e8cae802ba2a6.jpg,kebab,True,carrot,0.4542,False,grilled lamb kebab,miss,,grilled meat,miss,,True,0,0,0,0,0,0,True
+CHICKEN-SEEKH-kabab-recipe-27-1-_jpg.rf.69edcf667a281c2f14c4a44698462ae4.jpg,kebab,True,kebab,0.8285,False,chicken skewers,miss,,kebab,exact,Kebab,True,1,1,0,0,1,1,False
+thandai-kheer-1536x1024_jpg.rf.f20847ffff0ff353a7a89a04b66d0883.jpg,kheer,True,kheer,0.9508,False,kheer,exact,Kheer,kheer,exact,Kheer,True,1,1,1,1,1,1,False
+OIP-1-_jpg.rf.2c006a4f6ab941445e94a2feeeb9400a.jpg,kheer,True,kheer,0.7103,False,laddu,miss,,kheer,exact,Kheer,True,1,1,0,0,1,1,False
+KHEER-MAISON_jpg.rf.82661c8df150ffffdfef48b2937460bb.jpg,kheer,True,kheer,0.8962,False,kheer,exact,Kheer,kheer,exact,Kheer,True,1,1,1,1,1,1,False
+malai-kulfi-ice-cream-500x500-1-_jpg.rf.64b18785000e6ff13be0550ab2780ec6.jpg,kulfi,True,kulfi,0.9269,True,chocolate ice cream,miss,,chocolate ice cream,miss,,True,1,0,0,0,0,0,True
+3-500x500_jpg.rf.c3b884ebe30feaba32ff07ce4d64a1cb.jpg,kulfi,True,kulfi,0.8144,True,ice cream,miss,,ice cream,miss,,True,1,0,0,0,0,0,True
+indian-stick-kulfi_jpg.rf.78ed8e5c23d5e2e3a84e491890706723.jpg,kulfi,True,kulfi,0.5482,True,kheer ice cream,miss,,kheer ice cream,miss,,True,1,0,0,0,0,0,True
+Lassi-Recipe-1-_jpg.rf.e321517cdcccc12f308e6cbcd37a43ac.jpg,lassi,True,lassi,0.7097,True,ladyfinger milkshake,miss,,ladyfinger milkshake,miss,,True,1,0,0,0,0,0,True
+Sweet-lassi_jpg.rf.9e21fd0747ec9b694907440a6ca21fb3.jpg,lassi,True,lassi,0.747,True,lukewarm milk,miss,,lukewarm milk,miss,,True,1,0,0,0,0,0,True
+mint_lassi_horizontal_image_stml_2020-scaled_jpg.rf.d61c78ce708d83f03aba8a1dda8adb16.jpg,lassi,True,lassi,0.8241,True,smoothie,miss,,smoothie,miss,,True,1,0,0,0,0,0,True
+20240327_8fab6e58-c1a7-4ea3-9309-26c1aa3ceb99_1_png.rf.8d7e0836ab843a23ef90403651799c63.jpg,lemon,False,none,0.0,False,smoked salmon sandwich,miss,,smoked salmon sandwich,miss,,True,0,0,0,0,0,0,True
+20240402_d2e6cc91-5c10-4f25-9a29-924f7c25a5ad_3_png.rf.f3a74318136113424ca53c2243696070.jpg,lettuce,False,banana,0.7472,False,banana,exact,Banana,banana,exact,Banana,True,0,0,0,0,0,0,False
+-22_jpg.rf.4a8b0836168b8e911dd657c16d88461e.jpg,lettuce,False,lettuce,0.9269,False,lettuce,exact,Lettuce,lettuce,exact,Lettuce,False,1,1,1,1,1,1,False
+-17_jpg.rf.9744d4ee3311c645c17a6c86ecb8b917.jpg,lettuce,False,lettuce,0.9354,False,lettuce,exact,Lettuce,lettuce,exact,Lettuce,False,1,1,1,1,1,1,False
+20240402_cf3f38d0-7783-4ced-9409-1619c54978f2_1_png.rf.92712c2bde9d2ec47528b76122ca659e.jpg,mandarin,False,orange,0.8516,False,orange,exact,Orange,orange,exact,Orange,True,0,0,0,0,0,0,False
+minced-meat-3_jpg.rf.14040f6859c30af1347a9f4224640e0a.jpg,minced meat,False,cabbage,0.2512,False,ground chicken,miss,,ground chicken,miss,,True,0,0,0,0,0,0,True
+minced-meat-4_jpg.rf.e296db27fe7a86c1393cebbd8dcbeee1.jpg,minced meat,False,minced meat,0.3414,False,ground meat,miss,,minced meat,exact,Minced Meat,True,1,0,0,0,1,1,True
+minced-meat-4_jpg.rf.5704cae23b1fa8011b5dd6f4567a1b82.jpg,minced meat,False,minced meat,0.3414,False,ground meat,miss,,minced meat,exact,Minced Meat,True,1,0,0,0,1,1,True
+images-1-_jpg.rf.8c21c503e6632ea427bdba51b423ad67.jpg,mushroom,False,garlic,0.6079,False,oyster mushroom,miss,,oyster mushroom,miss,,True,0,0,0,0,0,0,False
+raw-mutton-2_jpg.rf.a028c86522a76764b7416a3081da2ed7.jpg,mutton,False,chicken,0.4154,False,chicken,exact,Chicken,chicken,exact,Chicken,True,0,0,0,0,0,0,True
+raw-muttonsdfghjk-_jpg.rf.567f7dfafe31ca7104e94d7845254143.jpg,mutton,False,none,0.0,False,chicken,exact,Chicken,chicken,exact,Chicken,True,0,0,0,0,0,0,True
+raw-mutton-2_jpg.rf.bce3d0099e704596e961e36abd7b9c2c.jpg,mutton,False,chicken,0.4154,False,chicken,exact,Chicken,chicken,exact,Chicken,True,0,0,0,0,0,0,True
+Mughlai-Mutton-Masala-jpg-crdownload_jpg.rf.ac8432752bb2dd8e57b5eb5a72345e6a.jpg,muttoncurry,True,muttoncurry,0.8728,False,mutton curry,exact,Mutton Curry,mutton curry,exact,Mutton Curry,True,1,1,1,1,1,1,False
+muttonchettinad_jpg.rf.10d654514bea9210db00ee7d0414d9c0.jpg,muttoncurry,True,muttoncurry,0.9208,False,chicken curry,exact,Chicken Curry,mutton curry,exact,Mutton Curry,True,1,1,0,0,1,1,False
+Indian-Goat-Curry-or-Mutton-Curry20_jpg.rf.260b4ff8024c99c3b8868a75fc7acc64.jpg,muttoncurry,True,muttoncurry,0.8553,False,chicken curry,exact,Chicken Curry,mutton curry,exact,Mutton Curry,True,1,1,0,0,1,1,False
+-1_jpg.rf.f9dd7ff56b231fa4f5703cd9b118e597.jpg,onion,False,onion,0.8406,False,onion,exact,Onion,onion,exact,Onion,False,1,1,1,1,1,1,False
+images-14-_jpg.rf.51ea0eb97dea234f3e91a67da4b5e87f.jpg,onion,False,onion,0.7774,False,onion,exact,Onion,onion,exact,Onion,True,1,1,1,1,1,1,False
+-29_jpg.rf.0554f90518559679365f20276ba0deb1.jpg,onion,False,onion,0.853,False,onion,exact,Onion,onion,exact,Onion,False,1,1,1,1,1,1,False
+Onion-Pakoda-3-_jpg.rf.22cfd6b4a67356deb095dedf26914077.jpg,onionpakoda,True,onionpakoda,0.9262,False,chicken fritters,miss,,onion pakoda,miss,,True,1,1,0,0,1,1,False
+Onion-Bhaji-square-FS-23_jpg.rf.22285e19210e9814291db0d49fb9d0c2.jpg,onionpakoda,True,onionpakoda,0.8889,False,bhaji,miss,,onion pakoda,miss,,True,1,1,0,0,1,1,False
+6ab0a5554a8d127ebf37af044851e21c_jpg.rf.7a866bf76e9266ba51ae0805868b684b.jpg,onionpakoda,True,onionpakoda,0.9373,False,potato fritters,miss,,onion pakoda,miss,,True,1,1,0,0,1,1,False
+20240329_6f2c8e4e-302b-4053-bc4f-87f96a6b3004_1_png.rf.ddfb5f904979142d869b9724ed6144ce.jpg,orange,False,orange,0.8548,False,kumquat,miss,,kumquat,miss,,True,1,1,0,0,1,1,False
+20240328_9e8be4cc-058a-4c5f-8a6c-28370d18f7d7_3_png.rf.9726176174ebd7c0fc7e47cb969d5780.jpg,orange,False,orange,0.9161,False,orange,exact,Orange,orange,exact,Orange,True,1,1,1,1,1,1,False
+20240328_cf3f38d0-7783-4ced-9409-1619c54978f2_3_png.rf.e41cc28529d95765ba566fb0a607b2bf.jpg,orange,False,orange,0.8263,False,orange,exact,Orange,orange,exact,Orange,True,1,1,1,1,1,1,False
+Palak-Paneer-6_jpg.rf.6d520cfe05e6e19f4f6cf53abe873eb9.jpg,palakpaneer,True,palakpaneer,0.9494,False,palak paneer,exact,Palak Paneer,palak paneer,exact,Palak Paneer,True,1,1,1,1,1,1,False
+Saag-Paneer-1_jpg.rf.a1127e5eaba21f73ba362b6b49316e9e.jpg,palakpaneer,True,palakpaneer,0.8735,False,paneer,miss,,palak paneer,exact,Palak Paneer,True,1,1,0,0,1,1,False
+Vegan_Palak_Paneer_FromMyBowl_3-e1491532293758_jpg.rf.b63f6101a509e7dc51242c1d6f82a7e4.jpg,palakpaneer,True,palakpaneer,0.91,False,dal,exact,Dal,palak paneer,exact,Palak Paneer,True,1,1,0,0,1,1,False
+img105_jpg.rf.5619728291d643e1690999e0f33aaed2.jpg,papaya,False,papaya,0.6076,False,guava,exact,Guava,guava,exact,Guava,True,1,1,0,0,1,1,False
+img106_jpg.rf.b20fc7387f3d032e5aad255f4a4268ba.jpg,papaya,False,papaya,0.5322,False,green mango,miss,,lime,exact,Lime,True,1,1,0,0,1,1,False
+img106_jpg.rf.6f9897ae6d09e68697aec53090a7ce97.jpg,papaya,False,papaya,0.5322,False,green mango,miss,,lime,exact,Lime,True,1,1,0,0,1,1,False
+-37_jpg.rf.ba3f2286aeaa5858b36f4a97e094d0f8.jpg,pattypan squash,False,pattypan squash,0.8513,False,scone,miss,,pattypan squash,exact,Pattypan Squash,False,1,1,0,0,1,1,False
+-33_jpg.rf.72460f0e8cb006c8b436b4e77f7390e4.jpg,pattypan squash,False,pattypan squash,0.9127,False,zucchini,miss,,pattypan squash,exact,Pattypan Squash,False,1,1,0,0,1,1,False
+-31_jpg.rf.f39b794c2fa74f3c04defd1d3a0b8e0e.jpg,pattypan squash,False,pattypan squash,0.9223,False,white squash,miss,,pattypan squash,exact,Pattypan Squash,False,1,1,0,0,1,1,False
+-6_jpg.rf.4d585355bd7e31c73d67f64dadce1d3c.jpg,pea,False,pea,0.6595,False,green peas,exact,Green Peas,pea,exact,Pea,False,1,1,1,1,1,1,False
+-53_jpg.rf.8d39944d02cfd77bfa47109d30dc64a9.jpg,pea,False,pea,0.9173,False,green peas,exact,Green Peas,pea,exact,Pea,False,1,1,1,1,1,1,False
+-34_jpg.rf.1e49231dcb6e85d1c8781d5235970104.jpg,pea,False,pea,0.5405,False,green peas,exact,Green Peas,pea,exact,Pea,False,1,1,1,1,1,1,False
+20240329_ad61f4d1-5de3-4bc0-9ca1-5739e6c27b93_1_png.rf.e86bdb17ce95859987268e552b7e4b00.jpg,peach,False,none,0.0,False,peach,exact,Peach,peach,exact,Peach,True,0,0,1,1,1,1,True
+20240402_d2e6cc91-5c10-4f25-9a29-924f7c25a5ad_1_png.rf.eef50b6d31e4a6126729c2a8e2f0e1ca.jpg,pear,False,banana,0.3709,False,pear,exact,Pear,pear,exact,Pear,True,0,0,1,1,1,1,True
+20240326_d86a11ae-6de8-4b3b-972b-f25e28d958d8_3_png.rf.0ceacd4a9335828fd163a7b90d2c20d5.jpg,pineapple,False,none,0.0,False,pineapple,exact,Pineapple,pineapple,exact,Pineapple,True,0,0,1,1,1,1,True
+20240328_8fab6e58-c1a7-4ea3-9309-26c1aa3ceb99_1_png.rf.a1e59a3601910abd2c807b693f206807.jpg,pineapple,False,none,0.0,False,pineapple,exact,Pineapple,pineapple,exact,Pineapple,True,0,0,1,1,1,1,True
+maxresdefault-3-_jpg.rf.3fb1fea60badc54e8ba9ef91d54f2960.jpg,poha,True,poha,0.9577,False,sambhar,miss,,poha,exact,Poha,True,1,1,0,0,1,1,False
+fc15f98eeddbe60fa46d107e1270ea06_jpg.rf.dbf7175189922d1420acce99bbbf1ae2.jpg,poha,True,poha,0.8428,False,dal makhni,miss,,poha,exact,Poha,True,1,1,0,0,1,1,False
+poha-7-_jpg.rf.b5722099e575a6849a5046f1506a4714.jpg,poha,True,poha,0.9665,False,yellow rice,miss,,poha,exact,Poha,True,1,1,0,0,1,1,False
+-14_jpg.rf.e55e7b50be6e38e6038bbfbad7c1eb85.jpg,potato,False,potato,0.7651,False,potato,exact,Potato,potato,exact,Potato,True,1,1,1,1,1,1,False
+images-17-_jpg.rf.c41ef8d30d54331f3f385012286008be.jpg,potato,False,potato,0.5888,False,potato,exact,Potato,potato,exact,Potato,True,1,1,1,1,1,1,False
+-8_jpg.rf.123231c34136a1c195b38068936f19f7.jpg,potato,False,potato,0.8266,False,potato wedges,miss,,potato,exact,Potato,False,1,1,0,0,1,1,False
+-65_jpg.rf.a8e514c505ce20e0191d65d01d4690e8.jpg,pumpkin,False,pumpkin,0.8518,False,sweet potato,exact,Sweet Potato,sweet potato,exact,Sweet Potato,False,1,1,0,0,1,1,False
+-32_jpg.rf.514c5f5801e207c5e355436df6071240.jpg,pumpkin,False,pumpkin,0.9001,False,cubed pumpkin,miss,,pumpkin,exact,Pumpkin,False,1,1,0,0,1,1,False
+-55_jpg.rf.251094b92cf8109971c0e01920c40748.jpg,pumpkin,False,pumpkin,0.8812,False,pumpkin,exact,Pumpkin,pumpkin,exact,Pumpkin,False,1,1,1,1,1,1,False
+-6_jpg.rf.dc770a5d6269c18a50ad6f1ba81c32c5.jpg,radish,False,radish,0.9069,False,black radish,miss,,black radish,miss,,False,1,1,0,0,1,1,False
+-41_jpg.rf.8c69e392f9e84474ac8544e36cf9a073.jpg,radish,False,radish,0.9073,False,pickled radish,miss,,radish,exact,Radish,False,1,1,0,0,1,1,False
+-62_jpg.rf.bb8671777953c153dedd741e4a3d5110.jpg,radish,False,radish,0.8948,False,radish,exact,Radish,radish,exact,Radish,False,1,1,1,1,1,1,False
+RA09KC6XV_jpg.rf.06137f2c4d5570dbe12e6452c81e488e.jpg,rajmacurry,True,rajmacurry,0.9472,False,chickpea curry,miss,,chickpea curry,miss,,True,1,1,0,0,1,1,False
+a9283754182db595552b22077238f42f_jpg.rf.efdb59e6d0d4b2d6c12d1da08804bb4f.jpg,rajmacurry,True,chole,0.3149,False,dal makhni,miss,,dal,exact,Dal,True,0,0,0,0,0,0,True
+pressure-cooker-pinto-beans-390x390_jpg.rf.db5210ba8e820a6319950237b0908b7b.jpg,rajmacurry,True,chole,0.5858,False,chili,miss,,chickpea stew,miss,,True,0,0,0,0,0,0,False
+ras-bowl-g-1-_jpg.rf.7bc3bb6bed6c9d00bb6e29108071848f.jpg,rasmalai,True,rasmalai,0.9405,False,saffron milk pudding,miss,,rasmalai,exact,Rasmalai,True,1,1,0,0,1,1,False
+R-17-_jpg.rf.8233961f15647db2631a0541cb0740d7.jpg,rasmalai,True,rasmalai,0.9229,False,saffron halwa,miss,,rasmalai,exact,Rasmalai,True,1,1,0,0,1,1,False
+ddbc4a15c80e3bc898e17237897d6b06_jpg.rf.0bd0a006b837b485ebe8700fd44f6011.jpg,rasmalai,True,rasmalai,0.9684,False,saffron rice pudding,miss,,saffron kheer,miss,,True,1,1,0,0,1,1,False
+20240328_d2e6cc91-5c10-4f25-9a29-924f7c25a5ad_5_png.rf.deddb63a77c03b53fe2deb94e128c3d7.jpg,raspberry,False,raspberry,0.8645,False,raspberry,exact,Raspberry,raspberry,exact,Raspberry,True,1,1,1,1,1,1,False
+gettyimages-1404552170-1024x1024_jpg.rf.04e3d69dafb675b2573ff24a6b818fdf.jpg,red beans,False,beans,0.4316,False,kidney beans,miss,,kidney beans,miss,,True,0,0,0,0,0,0,True
+gettyimages-1404552170-1024x1024_jpg.rf.22a540e7eb5fba4c465bfa7c52b21926.jpg,red beans,False,beans,0.4316,False,kidney beans,miss,,kidney beans,miss,,True,0,0,0,0,0,0,True
+download-7-_jpg.rf.161990d831524642fd0fcafb5af246d6.jpg,red lentils,False,none,0.0,False,lentils,miss,,lentils,miss,,True,0,0,0,0,0,0,True
+download-1-_jpg.rf.5c7b11f3d722eb679704615169f412f3.jpg,rice -chamal-,False,potato,0.5118,False,rice,miss,,rice,miss,,True,0,0,1,1,0,0,False
+delicious-and-authentic-aloo-samosas-1-_jpg.rf.d592f16491411bd620aea9721bd33e63.jpg,samosa,True,samosa,0.506,False,samosa,exact,Samosa,samosa,exact,Samosa,True,1,1,1,1,1,1,False
+maxresdefault_jpg.rf.75733d0b6e45050643754fddd7aec5e8.jpg,samosa,True,samosa,0.6637,False,samosa,exact,Samosa,samosa,exact,Samosa,True,1,1,1,1,1,1,False
+1219-Go-Live-Ammas-Samosas_jpg.rf.78537b42ff5b0f0794c7f065a8e32ed5.jpg,samosa,True,samosa,0.8519,False,samosa,exact,Samosa,samosa,exact,Samosa,True,1,1,1,1,1,1,False
+OIPOCY30JLZ_jpg.rf.5dc46255bd8599be7484dc257c87ae04.jpg,shahipaneer,True,onionpakoda,0.5808,False,chicken tikka,exact,Chicken Tikka,chicken tikka,exact,Chicken Tikka,True,0,0,0,0,0,0,False
+748828_jpg.rf.79ceeed22987b9a3a8728e018832b956.jpg,shahipaneer,True,shahipaneer,0.7342,False,dal makhni,miss,,paneer,miss,,True,1,1,0,0,1,1,False
+6481950361_9b2cae7aea_o_jpg.rf.d5d298baabef8c28433e03d0a562e130.jpg,shahipaneer,True,shahipaneer,0.798,False,dal makhni,miss,,paneer,miss,,True,1,1,0,0,1,1,False
+download_jpg.rf.c8b4ee92098d118df14f858e0692aaf1.jpg,sponge gourd -ghiraula-,False,cucumber,0.4525,False,bottle gourd,exact,Bottle Gourd,bottle gourd,exact,Bottle Gourd,True,0,0,0,0,0,0,True
+20240327_7989554e-b0f3-4532-917c-c1305c19126a_1_png.rf.41dead33ec23b422caf8feebdb4ed090.jpg,strawberry,False,apple,0.5399,False,strawberry,exact,Strawberry,strawberry,exact,Strawberry,True,0,0,1,1,0,0,False
+20240327_f2dceff6-416c-4f9e-ba0f-a203e561e963_1_png.rf.0be0729cfb533d97c00788f18049a8da.jpg,strawberry,False,strawberry,0.606,False,strawberry,exact,Strawberry,strawberry,exact,Strawberry,True,1,1,1,1,1,1,False
+-74_jpg.rf.3c173eea4dc6cd7d8aa8bd2b9107bd06.jpg,tomato,False,tomato,0.9002,False,grilled tomato,miss,,grilled tomato,miss,,False,1,1,0,0,1,1,False
+-15_jpg.rf.f08f0b3bd2080e7637516f1b6ca4e706.jpg,tomato,False,tomato,0.8702,False,tomato,exact,Tomato,tomato,exact,Tomato,False,1,1,1,1,1,1,False
+-1_jpg.rf.e61a60a35c0e005fba0c8f011f9a8da4.jpg,tomato,False,tomato,0.8916,False,tomato,exact,Tomato,tomato,exact,Tomato,False,1,1,1,1,1,1,False
+images-7-_jpg.rf.4fa007c58d862fa9432693ef675cc05e.jpg,turnip,False,garlic,0.6055,False,purple turnip,miss,,turnip,exact,Turnip,True,0,0,0,0,0,0,False
+-10_jpg.rf.268dc2cac3858fcd4d5e9a3649ab36a7.jpg,vegetable marrow,False,cabbage,0.748,False,zucchini,miss,,cabbage,exact,Cabbage,True,0,0,0,0,0,0,False
+-47_jpg.rf.8b0e9aa1e8b5738a22b1213fb182d073.jpg,vegetable marrow,False,vegetable marrow,0.748,False,apple slices,miss,,apple slices,miss,,True,1,1,0,0,1,1,False
+-33_jpg.rf.4b82363ec4e2ae15e2cdbfc84426c42d.jpg,vegetable marrow,False,vegetable marrow,0.8857,False,cucumber,exact,Cucumber,zucchini,miss,,False,1,1,0,0,1,1,False
+OIP_jpg.rf.582cb5f99a8efb9a953fbc7ea6fc69b3.jpg,whiterice,True,whiterice,0.8388,False,rice,miss,,white rice,miss,,True,1,1,1,1,1,1,False
+rice-white-4684206-1-_jpg.rf.94228a14d0488b5b6968fda0212968bc.jpg,whiterice,True,whiterice,0.8908,False,rice,miss,,white rice,miss,,True,1,1,1,1,1,1,False
+how_to_make_sticky_rice_jpg.rf.bc4c07687f65c590c4cf9c350efaff76.jpg,whiterice,True,whiterice,0.631,False,rice,miss,,rice,miss,,True,1,1,1,1,1,1,False

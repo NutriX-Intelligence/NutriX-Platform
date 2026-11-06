@@ -1,0 +1,82 @@
+{
+  "n_foods": 61,
+  "n_indian_indb": 15,
+  "n_raw_other_usda": 46,
+  "suspect_indb_rows": [
+    "bhatura",
+    "onionpakoda",
+    "samosa"
+  ],
+  "db_rows_equal_to_usda_ref": [
+    "apple",
+    "artichoke",
+    "avocado",
+    "banana",
+    "beans",
+    "beet",
+    "bitter gourd",
+    "blueberry",
+    "bottle gourd",
+    "broccoli",
+    "brussels sprouts",
+    "cabbage",
+    "capsicum",
+    "carrot",
+    "cauliflower",
+    "celery",
+    "chickpeas",
+    "corn",
+    "cucumber",
+    "egg",
+    "eggplant",
+    "grape",
+    "green brinjal",
+    "lettuce",
+    "onion",
+    "orange",
+    "papaya",
+    "pattypan squash",
+    "pea",
+    "peach",
+    "pear",
+    "pineapple",
+    "potato",
+    "pumpkin",
+    "radish",
+    "raspberry",
+    "strawberry",
+    "sweet potato",
+    "tomato",
+    "watermelon"
+  ],
+  "db_tier_counts": {
+    "exact": 61,
+    "alias": 0,
+    "partial": 0,
+    "miss": 0
+  },
+  "db_missing": [],
+  "n_flagged": 7,
+  "guardrail_confusion_atwater_kcal": {
+    "all": {
+      "wrong_flagged": 6,
+      "wrong_not_flagged": 32,
+      "correct_flagged": 1,
+      "correct_not_flagged": 22
+    },
+    "indian_indb": {
+      "wrong_flagged": 0,
+      "wrong_not_flagged": 13,
+      "correct_flagged": 0,
+      "correct_not_flagged": 2
+    },
+    "raw_other_usda": {
+      "wrong_flagged": 6,
+      "wrong_not_flagged": 19,
+      "correct_flagged": 1,
+      "correct_not_flagged": 20
+    }
+  },
+  "wrong_definition": "Qwen kcal (after Atwater) APE > 20.0% vs reference",
+  "indian_foods_with_same_qwen_kcal_as_v1": "15 of 15"
+}

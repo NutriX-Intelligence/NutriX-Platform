@@ -1,0 +1,126 @@
+{
+  "chosen_c": 0.4,
+  "rule_file_sha256": "c3a048ba123d52cfb2622b263c2ef5202dea8b4755f385456753fa305344db38",
+  "test_input": "S2_per_image_test_pc3_s0.csv",
+  "test_input_sha256": "52c12f8a86cc86f51b3583a1356f2cf682208d4253fcadcdb0a5bf5fe9cde804",
+  "evaluated_at": "2026-11-06T10:01:26",
+  "subsets": {
+    "leak_free": {
+      "n": 175,
+      "n_overridden": 3,
+      "hybrid_resolved_routed": {
+        "acc": 0.7086,
+        "ci95": [
+          0.64,
+          0.7771
+        ]
+      },
+      "hybrid_resolved": {
+        "acc": 0.72,
+        "ci95": [
+          0.6571,
+          0.7886
+        ]
+      },
+      "yolo_raw": {
+        "acc": 0.6971,
+        "ci95": [
+          0.6286,
+          0.7657
+        ]
+      },
+      "routed_minus_hybrid_resolved": {
+        "diff": -0.0114,
+        "ci95": [
+          -0.0286,
+          0.0
+        ]
+      },
+      "routed_minus_yolo_raw": {
+        "diff": 0.0114,
+        "ci95": [
+          -0.04,
+          0.0629
+        ]
+      }
+    },
+    "leak_free_indian": {
+      "n": 88,
+      "n_overridden": 2,
+      "hybrid_resolved_routed": {
+        "acc": 0.7955,
+        "ci95": [
+          0.7045,
+          0.875
+        ]
+      },
+      "hybrid_resolved": {
+        "acc": 0.8068,
+        "ci95": [
+          0.7273,
+          0.8864
+        ]
+      },
+      "yolo_raw": {
+        "acc": 0.875,
+        "ci95": [
+          0.8068,
+          0.9432
+        ]
+      },
+      "routed_minus_hybrid_resolved": {
+        "diff": -0.0114,
+        "ci95": [
+          -0.0341,
+          0.0
+        ]
+      },
+      "routed_minus_yolo_raw": {
+        "diff": -0.0795,
+        "ci95": [
+          -0.1364,
+          -0.0227
+        ]
+      }
+    },
+    "leak_free_other": {
+      "n": 87,
+      "n_overridden": 1,
+      "hybrid_resolved_routed": {
+        "acc": 0.6207,
+        "ci95": [
+          0.5172,
+          0.7241
+        ]
+      },
+      "hybrid_resolved": {
+        "acc": 0.6322,
+        "ci95": [
+          0.5287,
+          0.7356
+        ]
+      },
+      "yolo_raw": {
+        "acc": 0.5172,
+        "ci95": [
+          0.4138,
+          0.6207
+        ]
+      },
+      "routed_minus_hybrid_resolved": {
+        "diff": -0.0115,
+        "ci95": [
+          -0.0345,
+          0.0
+        ]
+      },
+      "routed_minus_yolo_raw": {
+        "diff": 0.1034,
+        "ci95": [
+          0.023,
+          0.1839
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+food,fdc_id,data_type,description,rule,search_query,has_all_4
+apple,171688,SR Legacy,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",exact (generic raw entry); with skin,apples raw with skin,True
+artichoke,169205,SR Legacy,"Artichokes, (globe or french), raw",exact (generic raw entry),artichokes globe raw,True
+avocado,171705,SR Legacy,"Avocados, raw, all commercial varieties",exact (generic raw entry),avocados raw all commercial varieties,True
+banana,173944,SR Legacy,"Bananas, raw",exact (generic raw entry),bananas raw,True
+beans,169961,SR Legacy,"Beans, snap, green, raw",judgement: class 'beans' taken as green snap beans,beans snap green raw,True
+beet,169145,SR Legacy,"Beets, raw",exact (generic raw entry),beets raw,True
+bell pepper,170108,SR Legacy,"Peppers, sweet, red, raw",judgement: red (capsicum class is mapped to green),peppers sweet red raw,True
+bitter gourd,168393,SR Legacy,"Balsam-pear (bitter gourd), pods, raw",exact (generic raw entry); pods,balsam-pear bitter gourd pods raw,True
+blueberry,171711,SR Legacy,"Blueberries, raw",exact (generic raw entry),blueberries raw,True
+bottle gourd,169232,SR Legacy,"Gourd, white-flowered (calabash), raw",exact (generic raw entry); calabash = bottle gourd,gourd white-flowered calabash raw,True
+broccoli,170379,SR Legacy,"Broccoli, raw",exact (generic raw entry),broccoli raw,True
+brussels sprouts,170383,SR Legacy,"Brussels sprouts, raw",exact (generic raw entry),brussels sprouts raw,True
+cabbage,169975,SR Legacy,"Cabbage, raw",exact (generic raw entry),cabbage raw,True
+capsicum,170427,SR Legacy,"Peppers, sweet, green, raw",judgement: green,peppers sweet green raw,True
+carrot,170393,SR Legacy,"Carrots, raw",exact (generic raw entry),carrots raw,True
+cauliflower,169986,SR Legacy,"Cauliflower, raw",exact (generic raw entry),cauliflower raw,True
+celery,169988,SR Legacy,"Celery, raw",exact (generic raw entry),celery raw,True
+chicken,171052,SR Legacy,"Chicken, broilers or fryers, meat only, raw",judgement: raw meat only (cooked state unknown),chicken broilers or fryers meat only raw,True
+chickpeas,173757,SR Legacy,"Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt","judgement: cooked, boiled (as served); dry seeds would be ~364 kcal",chickpeas mature seeds cooked boiled without salt,True
+corn,169998,SR Legacy,"Corn, sweet, yellow, raw",exact (generic raw entry); sweet yellow,corn sweet yellow raw,True
+cucumber,168409,SR Legacy,"Cucumber, with peel, raw",exact (generic raw entry); with peel,cucumber with peel raw,True
+egg,171287,SR Legacy,"Egg, whole, raw, fresh",judgement: whole raw (boiled egg is close),egg whole raw fresh,True
+eggplant,169228,SR Legacy,"Eggplant, raw",exact (generic raw entry),eggplant raw,True
+garlic,169230,SR Legacy,"Garlic, raw",exact (generic raw entry),garlic raw,True
+grape,174683,SR Legacy,"Grapes, red or green (European type, such as Thompson seedless), raw",exact (generic raw entry),grapes red or green raw,True
+green brinjal,169228,SR Legacy,"Eggplant, raw","judgement: eggplant, raw",eggplant raw,True
+hot pepper,170497,SR Legacy,"Peppers, hot chili, green, raw",judgement: green chili,peppers hot chili green raw,True
+lettuce,169249,SR Legacy,"Lettuce, green leaf, raw",judgement: green leaf,lettuce green leaf raw,True
+minced meat,174036,SR Legacy,"Beef, ground, 80% lean meat / 20% fat, raw",judgement: beef 80/20 raw; mutton/chicken mince would differ,beef ground 80% lean meat 20% fat raw,True
+onion,170000,SR Legacy,"Onions, raw",exact (generic raw entry),onions raw,True
+orange,169097,SR Legacy,"Oranges, raw, all commercial varieties",exact (generic raw entry),oranges raw all commercial varieties,True
+papaya,169926,SR Legacy,"Papayas, raw",exact (generic raw entry),papayas raw,True
+pattypan squash,169289,SR Legacy,"Squash, summer, scallop, raw",exact (generic raw entry); scallop squash = pattypan,squash summer scallop raw,True
+pea,170419,SR Legacy,"Peas, green, raw",exact (generic raw entry); green peas,peas green raw,True
+peach,169928,SR Legacy,"Peaches, yellow, raw",exact (generic raw entry),peaches yellow raw,True
+pear,169118,SR Legacy,"Pears, raw",exact (generic raw entry),pears raw,True
+pineapple,169124,SR Legacy,"Pineapple, raw, all varieties",exact (generic raw entry),pineapple raw all varieties,True
+potato,170026,SR Legacy,"Potatoes, flesh and skin, raw",exact (generic raw entry); flesh and skin,potatoes flesh and skin raw,True
+pumpkin,168448,SR Legacy,"Pumpkin, raw",exact (generic raw entry),pumpkin raw,True
+radish,169276,SR Legacy,"Radishes, raw",exact (generic raw entry),radishes raw,True
+raspberry,167755,SR Legacy,"Raspberries, raw",exact (generic raw entry),raspberries raw,True
+strawberry,167762,SR Legacy,"Strawberries, raw",exact (generic raw entry),strawberries raw,True
+sweet potato,168482,SR Legacy,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",exact (generic raw entry),sweet potato raw unprepared,True
+tomato,170457,SR Legacy,"Tomatoes, red, ripe, raw, year round average",exact (generic raw entry),tomatoes red ripe raw year round average,True
+vegetable marrow,169291,SR Legacy,"Squash, summer, zucchini, includes skin, raw",judgement: zucchini (summer squash),squash summer zucchini includes skin raw,True
+watermelon,167765,SR Legacy,"Watermelon, raw",exact (generic raw entry),watermelon raw,True

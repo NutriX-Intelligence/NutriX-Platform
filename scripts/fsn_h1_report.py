@@ -1,0 +1,117 @@
+"""
+FSN C2: H1 scale-accuracy report from v2/H1_scale.csv (rows with status=ok).
+
+Error = nutrix_g - ref_g. Per object: n, reference, mean error, SD of error. Overall: bias (mean error), MAE, MAPE,
+Bland-Altman bias and 95 % limits of agreement (bias +/- 1.96 SD of the differences; x = mean of the two methods),
+within-object SD (pooled over objects: sqrt(sum((n_i - 1) s_i^2) / sum(n_i - 1))) and the repeatability coefficient
+1.96 * sqrt(2) * within-object SD. Note: trials are repeated measurements of the same object, so the plain LoA
+treat them as independent and are slightly narrow; the pooled within-object SD is reported next to them.
+
+  PYTHONPATH=. python scripts/fsn_h1_report.py [--csv path] [--out-dir dir]
+Writes <out-dir>/H1_summary.md, H1_summary.json, H1_bland_altman.png.
+"""
+import argparse
+import csv
+import json
+import math
+import statistics as st
+from collections import defaultdict
+from pathlib import Path
+
+OUT = Path(__file__).resolve().parent.parent / "docs" / "paper-upgrade" / "results" / "fsn" / "v2"
+
+
+def load(path):
+    rows = [r for r in csv.DictReader(open(path, newline="")) if r.get("status", "ok") == "ok"]
+    return [dict(object_id=r["object_id"], ref=float(r["ref_g"]), nx=float(r["nutrix_g"]), trial=r["trial"],
+                 meal_log_id=r["meal_log_id"]) for r in rows]
+
+
+def analyse(rows):
+    if len(rows) < 2:
+        raise SystemExit(f"need at least 2 ok rows, got {len(rows)}")
+    err = [r["nx"] - r["ref"] for r in rows]
+    by = defaultdict(list)
+    for r in rows:
+        by[r["object_id"]].append(r)
+    objs = []
+    num = den = 0.0
+    for oid, rs in sorted(by.items(), key=lambda kv: st.mean(r["ref"] for r in kv[1])):
+        e = [r["nx"] - r["ref"] for r in rs]
+        sd = st.stdev(e) if len(e) > 1 else None
+        if sd is not None:
+            num += (len(e) - 1) * sd ** 2
+            den += len(e) - 1
+        objs.append(dict(object_id=oid, n=len(e), ref_g=round(st.mean(r["ref"] for r in rs), 2),
+                         mean_error_g=round(st.mean(e), 2), sd_error_g=round(sd, 2) if sd is not None else None,
+                         mean_abs_pct_error=round(st.mean(abs(x) / r["ref"] * 100 for x, r in zip(e, rs) if r["ref"] > 0), 2)))
+    bias, sd = st.mean(err), st.stdev(err)
+    wsd = math.sqrt(num / den) if den else None
+    return dict(n_measurements=len(rows), n_objects=len(by), bias_g=round(bias, 2), MAE_g=round(st.mean(map(abs, err)), 2),
+                MAPE_pct=round(st.mean(abs(e) / r["ref"] * 100 for e, r in zip(err, rows) if r["ref"] > 0), 2),
+                sd_diff_g=round(sd, 2), loa_g=[round(bias - 1.96 * sd, 2), round(bias + 1.96 * sd, 2)],
+                within_object_sd_g=round(wsd, 3) if wsd is not None else None,
+                repeatability_coefficient_g=round(1.96 * math.sqrt(2) * wsd, 2) if wsd is not None else None,
+                ref_range_g=[min(r["ref"] for r in rows), max(r["ref"] for r in rows)], per_object=objs)
+
+
+def plot(rows, s, path):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    x = [(r["nx"] + r["ref"]) / 2 for r in rows]
+    y = [r["nx"] - r["ref"] for r in rows]
+    fig, ax = plt.subplots(figsize=(6.4, 4.2), dpi=200)
+    ink, muted = "#1f2328", "#6e7781"
+    ax.axhline(0, color="#d0d7de", lw=1, zorder=1)
+    ax.axhline(s["bias_g"], color=ink, lw=1.5, zorder=2)
+    for v in s["loa_g"]:
+        ax.axhline(v, color=muted, lw=1.2, ls=(0, (4, 3)), zorder=2)
+    ax.scatter(x, y, s=22, color="#2b59c3", edgecolor="white", linewidth=0.8, zorder=3)
+    xr = max(x)
+    ax.text(xr, s["bias_g"], f"  bias {s['bias_g']:+.2f} g", va="bottom", ha="right", color=ink, fontsize=8)
+    ax.text(xr, s["loa_g"][1], f"  +1.96 SD {s['loa_g'][1]:+.2f} g", va="bottom", ha="right", color=muted, fontsize=8)
+    ax.text(xr, s["loa_g"][0], f"  -1.96 SD {s['loa_g'][0]:+.2f} g", va="top", ha="right", color=muted, fontsize=8)
+    ax.set_xlabel("Mean of NutriX and reference weight (g)", fontsize=9, color=ink)
+    ax.set_ylabel("NutriX - reference (g)", fontsize=9, color=ink)
+    ax.set_title(f"Scale agreement (Bland-Altman), n = {s['n_measurements']} weighings of {s['n_objects']} objects",
+                 fontsize=9, color=ink, loc="left")
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+    for sp in ("left", "bottom"):
+        ax.spines[sp].set_color("#d0d7de")
+    ax.tick_params(colors=muted, labelsize=8)
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--csv", default=str(OUT / "H1_scale.csv"))
+    ap.add_argument("--out-dir", default=str(OUT))
+    a = ap.parse_args(argv)
+    out = Path(a.out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    rows = load(a.csv)
+    s = analyse(rows)
+    (out / "H1_summary.json").write_text(json.dumps(s, indent=2))
+    plot(rows, s, out / "H1_bland_altman.png")
+    L = ["# H1: scale weight accuracy (generated by scripts/fsn_h1_report.py)", "",
+         f"Input: {Path(a.csv).name}, {s['n_measurements']} weighings (status ok) of {s['n_objects']} objects, "
+         f"reference {s['ref_range_g'][0]:g}-{s['ref_range_g'][1]:g} g. Error = NutriX - reference.", "",
+         "| measure | value |", "|---|---|",
+         f"| bias (mean error) | {s['bias_g']} g |", f"| MAE | {s['MAE_g']} g |", f"| MAPE | {s['MAPE_pct']} % |",
+         f"| SD of differences | {s['sd_diff_g']} g |", f"| Bland-Altman 95 % LoA | [{s['loa_g'][0]}, {s['loa_g'][1]}] g |",
+         f"| within-object SD (pooled) | {s['within_object_sd_g']} g |",
+         f"| repeatability coefficient (1.96 x sqrt 2 x within-object SD) | {s['repeatability_coefficient_g']} g |", "",
+         "Trials of the same object are not independent; the LoA above treat them as independent (slightly narrow).", "",
+         "## Per object", "", "| object | n | reference g | mean error g | SD error g | mean abs % error |", "|---|---|---|---|---|---|"]
+    L += [f"| {o['object_id']} | {o['n']} | {o['ref_g']} | {o['mean_error_g']} | {o['sd_error_g']} | {o['mean_abs_pct_error']} |" for o in s["per_object"]]
+    L += ["", "![Bland-Altman](H1_bland_altman.png)", ""]
+    (out / "H1_summary.md").write_text("\n".join(L))
+    print("\n".join(L))
+
+
+if __name__ == "__main__":
+    main()
