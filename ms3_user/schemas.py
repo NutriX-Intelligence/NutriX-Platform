@@ -261,7 +261,7 @@ class HomelyMealCalculateResponse(BaseModel):
 class HomelyMealCreateRequest(BaseModel):
     name: str
     creator_id: Optional[int] = None
-    is_community: Optional[bool] = False
+    is_community: Optional[bool] = True  # accepted for old clients but ignored: every created recipe is shared
     cuisine: Optional[str] = None
     region: Optional[str] = None
     ingredients: List[HomelyMealIngredientSchema]
@@ -284,7 +284,9 @@ class HomelyMealResponse(BaseModel):
     name: str
     creator_id: Optional[int] = None
     is_community: bool
-    status: str
+    status: str  # as the CALLING user sees it: pending | approved | rejected (their own recipes read "approved")
+    is_mine: bool = False  # the caller created it: it belongs in My Recipes, never in their Pending
+    my_decision: Optional[str] = None  # the caller's own approve/reject ("approved" | "rejected"), None if undecided
     popularity: int
     cuisine: Optional[str] = None
     region: Optional[str] = None
@@ -433,6 +435,7 @@ class AlternativesRequest(BaseModel):
     sugar_g: Optional[float] = 0.0
     fat_g: Optional[float] = 0.0
     estimated_price: Optional[float] = 20.0
+    diet_type: Optional[str] = None  # defaults to the signed-in user's diet
 
 
 class WaterLogCreate(BaseModel):

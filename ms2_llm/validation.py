@@ -91,8 +91,18 @@ def parse_nutrition(text: str) -> Optional[Dict[str, Any]]:
                 "flag_reason": "missing macro fields"}
 
     reason = check_macros(*vals)
+    note = None
+    if reason and reason.startswith("kcal"):
+        # The model's calorie figure disagrees with its own protein/carb/fat. When the gap is moderate (or kcal was left at 0),
+        # the macro grams are the more reliable part of a small model's answer: keep them and recompute kcal (Atwater).
+        # A wild gap is still flagged, so nonsense is not accepted.
+        expected = 4 * vals[1] + 4 * vals[2] + 9 * vals[3]
+        if vals[0] == 0 or (expected > 0 and 0.5 <= vals[0] / expected <= 2.0):
+            note = f"kcal recomputed from macros (model said {vals[0]:g})"
+            vals[0] = round(expected, 1)
+            reason = None
     per_100g = None if reason and reason == "negative value" else NutritionPer100g(
         calories=vals[0], protein_g=vals[1], carbs_g=vals[2], fat_g=vals[3]
     )
     return {"food_name": label, "confidence": conf, "per_100g": per_100g,
-            "flagged": reason is not None, "flag_reason": reason}
+            "flagged": reason is not None, "flag_reason": reason or note}

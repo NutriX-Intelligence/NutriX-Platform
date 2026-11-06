@@ -255,6 +255,35 @@ A free `trycloudflare.com` URL is new each time `cloudflared` starts. Every time
 
 ---
 
+### 6.4 Fallback tunnel: ngrok (if Cloudflare is blocked on the network)
+
+Cloudflare's tunnel needs outbound port 7844, which many campus firewalls block. ngrok connects over ordinary HTTPS (443), so it is the fallback. A free ngrok account gets **one fixed address**, so you enter it in the app once and it never changes.
+
+One-time setup (PowerShell on Windows, do this on a normal network the day before):
+```powershell
+winget install ngrok.ngrok
+# open a NEW PowerShell window, then:
+ngrok config add-authtoken <YOUR_AUTHTOKEN>      # dashboard.ngrok.com -> Your Authtoken
+```
+In the ngrok dashboard open **Domains** and create your free domain (it ends in `.ngrok-free.dev` or `.ngrok-free.app`; use the exact name shown).
+
+Start it (after the gateway on :8000 is up; replaces the Cloudflare command, you do not need both):
+```powershell
+ngrok http --domain=<your-domain> 8000
+# <your-domain> is exactly what the dashboard shows, e.g. patronage-unscathed-prototype.ngrok-free.dev (no extra suffix)
+```
+In the app, enter `https://<your-domain>.ngrok-free.app` in the server-link field. Test it from the phone browser: `https://<your-domain>.ngrok-free.app/health/all` (the free plan may show a one-time "Visit Site" warning page in a browser; the app's API calls are normally not affected. If the app does get HTML instead of JSON, add the request header `ngrok-skip-browser-warning: any`).
+
+### 6.5 No internet tunnel at all: share the laptop's Wi-Fi as a hotspot
+If the venue blocks tunnels, or the ESP32 cannot join the venue Wi-Fi, let the laptop be the network. Connect the laptop to the venue Wi-Fi, then: **Settings → Network & internet → Mobile hotspot → Share my internet connection from: Wi-Fi, share over: Wi-Fi → Edit: set a name, password and band 2.4 GHz → turn on**.
+
+- Connect the **ESP32 and the phone** to that hotspot.
+- The laptop is normally `192.168.137.1` on its own hotspot (confirm with `ipconfig`). Set `SERVER_HOST = "192.168.137.1"` in the firmware, and in the app enter `http://192.168.137.1:8000`.
+- The port forwarding in Section 7 still applies (it listens on all interfaces). The venue only needs to give the laptop internet for the Gemini features; Qwen and scale scans work without it.
+- The app must allow plain `http://` links. Test this at home first.
+
+---
+
 ## 7. Find the Windows LAN IP and forward port 8000 (one-time per PC restart or Wi-Fi change)
 
 The scale reaches the gateway at the **laptop's Wi-Fi IP**. Windows forwards that to WSL2, which has its own internal IP.

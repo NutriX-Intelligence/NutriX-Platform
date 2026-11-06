@@ -5,6 +5,7 @@ from ortools.linear_solver import pywraplp
 from shared.models import Recipe, User, HomelyMeal
 from ms3_user.services.recommendation_engine import RecommendationEngine
 from ms3_user.services.meal_candidates import is_plan_candidate
+from ms3_user.services.homely_visibility import is_usable_by
 
 def categorize_meal(name):
     name_lower = name.lower()
@@ -153,12 +154,7 @@ class OptimizationEngine:
             homely_query = db.query(HomelyMeal).options(
                 joinedload(HomelyMeal.nutrition),
                 joinedload(HomelyMeal.ingredients)
-            ).filter(
-                or_(
-                    HomelyMeal.status == "approved",
-                    HomelyMeal.creator_id == user.id
-                )
-            )
+            ).filter(is_usable_by(user.id))  # my own + what I approved (per-user, see homely_visibility.py)
             for hm in homely_query.limit(40).all():
                 matched_recipes.append(HomelyMealRecipeWrapper(hm))
 

@@ -1,7 +1,8 @@
 import re
+from datetime import datetime
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
-from shared.models import Food, FoodNutrient, UnitConversion, HomelyMeal, HomelyMealIngredient, HomelyMealNutrition, HomelyMealReview, HomelyMealTag, HomelyMealVersion
+from shared.models import Food, FoodNutrient, UnitConversion, HomelyMeal, HomelyMealIngredient, HomelyMealNutrition, HomelyMealReview, HomelyMealTag, HomelyMealVersion, HomelyMealDecision
 
 def parse_gram_weight(db_session: Session, food_item: str, unit: str, amount: float) -> float:
     """
@@ -329,8 +330,8 @@ def create_homely_meal(db_session: Session, meal_data) -> HomelyMeal:
     meal = HomelyMeal(
         name=meal_data.name,
         creator_id=meal_data.creator_id,
-        is_community=meal_data.is_community,
-        status="pending" if meal_data.is_community else "approved",
+        is_community=True,  # every created recipe is shared with the community (no private option)
+        status="pending",   # pending for the OTHER users; the creator always sees it in My Recipes
         cuisine=meal_data.cuisine or "Indian",
         region=meal_data.region
     )
@@ -384,25 +385,44 @@ def create_homely_meal(db_session: Session, meal_data) -> HomelyMeal:
     db_session.refresh(meal)
     return meal
 
-def update_meal_status(db_session: Session, meal_id: int, status: str, reviewer_id: int = None, comment: str = None) -> HomelyMeal:
+class DecisionError(Exception):
+    """A user's approve/reject cannot be recorded; `code` is the HTTP status the route should answer with."""
+
+    def __init__(self, code: int, detail: str):
+        super().__init__(detail)
+        self.code = code
+        self.detail = detail
+
+
+_DECISIONS = {"approved": "approved", "approve": "approved", "rejected": "rejected", "reject": "rejected"}
+
+
+def record_decision(db_session: Session, meal_id: int, user_id: int, decision: str, comment: str = None) -> HomelyMeal:
     """
-    Updates status of a community-submitted homely meal.
+    Records ONE user's approve/reject of a community-shared homely meal. Nothing else changes: not the meal, not
+    anyone else's view of it. Deciding again replaces that user's earlier decision.
     """
+    value = _DECISIONS.get(str(decision or "").strip().lower())
+    if value is None:
+        raise DecisionError(400, "status must be 'approved' or 'rejected'.")
+
     meal = db_session.query(HomelyMeal).filter(HomelyMeal.id == meal_id).first()
-    if not meal:
-        return None
-        
-    meal.status = status
-    
-    if comment or status == "approved":
-        review = HomelyMealReview(
-            meal_id=meal_id,
-            reviewer_id=reviewer_id,
-            rating=5 if status == "approved" else 1,
-            comment=comment or f"System review: meal marked as {status}."
-        )
-        db_session.add(review)
-        
+    if not meal or not (meal.is_community or meal.creator_id == user_id):
+        # someone else's private meal is as good as absent
+        raise DecisionError(404, f"Homely meal with ID {meal_id} not found.")
+    if meal.creator_id == user_id:
+        raise DecisionError(403, "You created this recipe, so there is nothing for you to approve or reject.")
+    if not meal.is_community:
+        raise DecisionError(404, f"Homely meal with ID {meal_id} not found.")
+
+    existing = db_session.query(HomelyMealDecision).filter(
+        HomelyMealDecision.meal_id == meal_id, HomelyMealDecision.user_id == user_id
+    ).first()
+    if existing:
+        existing.decision, existing.comment = value, comment
+        existing.decided_at = datetime.utcnow()
+    else:
+        db_session.add(HomelyMealDecision(meal_id=meal_id, user_id=user_id, decision=value, comment=comment))
     db_session.commit()
     db_session.refresh(meal)
     return meal

@@ -2194,8 +2194,8 @@
                                 </div>
                                 <div class="form-group" style="justify-content:center;">
                                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:16px;">
-                                        <input type="checkbox" id="homelyIsCommunity" style="width:auto;">
-                                        <span>Share with Community</span>
+                                        <input type="checkbox" id="homelyIsCommunity" style="width:auto;" checked disabled>
+                                        <span>Shared with Community (always)</span>
                                     </label>
                                 </div>
                             </div>
@@ -5408,7 +5408,7 @@
             if (!userId) { showNotification('Please sign in first.', 'error'); return; }
             const name = document.getElementById('homelyMealName').value.trim();
             const ingredients = getHomelyIngredients();
-            const isCommunity = document.getElementById('homelyIsCommunity').checked;
+            const isCommunity = true; // every created recipe is shared with the community
 
             if (ingredients.length === 0) {
                 showNotification('Please add at least one ingredient.', 'error');
@@ -5466,7 +5466,7 @@
             container.innerHTML = '<div class="placeholder-text" style="padding:10px 0; font-size:12px;"><span class="spinner"></span> Loading meals...</div>';
 
             try {
-                let url = `/api/homely-meals/search?q=${encodeURIComponent(q)}`;
+                let url = `/api/homely-meals/approved?q=${encodeURIComponent(q)}`;
                 if (activeCommunityTab === 'pending') {
                     url = `/api/homely-meals/pending`;
                 } else if (activeCommunityTab === 'my') {
@@ -5513,7 +5513,7 @@
                                         <span class="badge badge-purple" style="padding:1px 6px; font-size:10.5px;">${m.cuisine || 'Homely'}</span>
                                         ${m.region ? `<span class="badge" style="padding:1px 6px; font-size:10.5px;">${m.region}</span>` : ''}
                                         <span class="badge ${isPending ? 'badge-orange' : 'badge-score'}" style="padding:1px 6px; font-size:10.5px;">
-                                            ${isPending ? '⏳ Pending Review' : '✅ Community Verified'}
+                                            ${m.is_mine ? '⭐ My Recipe' : (isPending ? '⏳ Pending Review' : '✅ Approved by you')}
                                         </span>
                                     </div>
                                 </div>
@@ -5592,8 +5592,8 @@
             currentReviewMealId = mealId;
             document.getElementById('modModalTitle').textContent = action === 'approve' ? `Approve "${mealName}"` : `Reject "${mealName}"`;
             document.getElementById('modModalDesc').textContent = action === 'approve' 
-                ? `Approving "${mealName}" will make it public in the Community Kitchen for all users to search, customize, and log.`
-                : `Rejecting "${mealName}" will keep it private to the creator only.`;
+                ? `Approving "${mealName}" adds it to YOUR Approved Recipes so you can search, customize and log it. Other users decide for themselves.`
+                : `Rejecting "${mealName}" removes it from YOUR Pending list only. The creator and other users are not affected.`;
             document.getElementById('modComment').value = '';
             document.getElementById('modBtnApprove').style.display = action === 'approve' ? 'inline-flex' : 'none';
             document.getElementById('modBtnReject').style.display = action === 'reject' ? 'inline-flex' : 'none';
@@ -5621,7 +5621,7 @@
                     })
                 });
                 if (!res.ok) throw new Error('Could not update review status.');
-                showNotification(`Recipe ${status === 'approved' ? 'approved and published to Community Kitchen!' : 'rejected.'}`, 'success');
+                showNotification(`Recipe ${status === 'approved' ? 'added to your Approved Recipes.' : 'rejected (for you only).'}`, 'success');
                 closeHomelyReviewModal();
                 await searchHomelyMealsList();
                 await initHomelyBuilder();

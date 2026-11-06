@@ -76,7 +76,27 @@ Public routes: `POST /api/v1/auth/register | login | google | reset-password` (a
 | POST | `/api/v1/meal-plans/generate` | `/generate-meal-plan` |
 | GET | `/api/v1/fast-food/chains` · `/fast-food/grouped?brand=&diet_filter=&q=&category=` | `/api/fast-food/...` |
 | POST | `/api/v1/classify` · `/classify/substitutions` | `/api/classify...` |
-| GET/POST | `/api/v1/homely/builder-defaults`, `/homely-meals/calculate`, `/create`, `/user/{id}`, `/search`, `/pending`, `/{id}`, `/{id}/review`, `/review/{id}` | `/api/homely...` |
+| GET/POST | `/api/v1/homely/builder-defaults`, `/homely-meals/calculate`, `/create`, `/user/{id}`, `/search`, `/pending`, `/approved`, `/rejected`, `/{id}`, `/{id}/review`, `/review/{id}` | `/api/homely...` |
+
+### Homely meals: sharing and per-user approval
+
+Every created recipe is shared with every other user (`is_community` in the create body is ignored); each user approves or rejects it **for themselves**. The
+caller is always taken from the token (`creator_id` / `reviewer_id` in a body must equal it).
+
+| Section | Call | Contains |
+|---|---|---|
+| My Recipes | `GET /homely-meals/user/{my_id}` | everything I created, whatever others decided |
+| Pending | `GET /homely-meals/pending` | recipes others shared that I have not decided on (never my own) |
+| Approved Recipes | `GET /homely-meals/approved?q=` | shared recipes I approved, plus curated ones I have not rejected |
+| Rejected | `GET /homely-meals/rejected?q=` | shared recipes I rejected (approve one to bring it back) |
+| Usable (my + approved) | `GET /homely-meals/search?q=` | My Recipes + Approved Recipes |
+
+`POST /homely-meals/review/{id}` with `{status: "approved" | "rejected", comment?}` records only the caller's decision (they can change it
+later). `403` on your own recipe, `404` for an unknown meal or someone else's private one, `400` for any other `status`.
+
+Every meal object is from the caller's point of view: `status` (`pending` | `approved` | `rejected`; own recipes read `approved`),
+`is_mine`, and `my_decision` (`approved` | `rejected` | `null`). Older private recipes (`is_community: false`, created before sharing
+became automatic) stay visible only to their creator. Recommendations, meal plans and `builder-defaults` offer only My Recipes plus what the caller approved.
 
 ### Browse Recipes: `POST /api/v1/foods/recommend` (paging)
 Body: `{user_id, limit?, offset?, query?, category?, cuisine?, brand?, diet_filter?, max_cooking_time?, exclude_fast_food?}`. The response body is a plain **list** of recipes, ranked by score. One call returns **one page**:
@@ -93,6 +113,13 @@ Body: `{user_id, limit?, offset?, query?, category?, cuisine?, brand?, diet_filt
 | POST | `/api/v1/barcode/scan-image` (+ optional `diet_type`) | `/api/barcode/scan-image` |
 | POST | `/api/v1/barcode/manual` · `/barcode/alternatives` | `/api/barcode/...` |
 | POST | `/api/v1/ocr/upload` (+ optional `meal_type`, `food_name` to log it) | `/api/ocr` |
+
+**Healthier alternatives.** `GET /barcode/{code}` returns `alternatives` already; `POST /barcode/alternatives` (body: `product_name`, `meal_type`,
+`protein_g`, `energy_kcal`, optional `sugar_g`, `fat_g`, `estimated_price`, `diet_type`; the diet defaults to the user's) returns the same list.
+Both are category- and diet-aware: a drink only gets drinks, food never gets a drink. Each swap: `name`, `price`, `reason`, `comparison`,
+`diet_badge`, and **`link`** (a working search URL to buy it online; the POST also sends `buy_label` = "View / Buy Online"). Show a
+"View / Buy Online" button under every swap that opens `link`. In the POST response `protein_g` and `energy_kcal` are now `null` (nullable in the app model).
+`nutrition_grade` is always a letter `a`-`e` (it used to come back as `u`/`h`/`m` for products the source had not graded).
 
 ### AI (Gemini, then the local model, then canned text)
 | Method | Path | Response |

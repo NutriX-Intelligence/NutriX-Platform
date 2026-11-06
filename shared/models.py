@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime, Date, Text, BigInteger, func
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime, Date, Text, BigInteger, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -519,6 +519,7 @@ class HomelyMeal(Base):
     nutrition = relationship("HomelyMealNutrition", back_populates="meal", uselist=False, cascade="all, delete-orphan")
     versions = relationship("HomelyMealVersion", back_populates="meal", cascade="all, delete-orphan")
     reviews = relationship("HomelyMealReview", back_populates="meal", cascade="all, delete-orphan")
+    decisions = relationship("HomelyMealDecision", back_populates="meal", cascade="all, delete-orphan")
     tags = relationship("HomelyMealTag", back_populates="meal", cascade="all, delete-orphan")
 
 
@@ -580,6 +581,25 @@ class HomelyMealReview(Base):
 
     # Relationships
     meal = relationship("HomelyMeal", back_populates="reviews")
+
+
+class HomelyMealDecision(Base):
+    """One user's own approve/reject of a community-shared homely meal.
+
+    Decisions are per user: they never change the meal or what anyone else sees. A meal with no row for a user is
+    "pending" for that user (unless it was curated as globally approved, see ms3_user/services/homely_visibility.py).
+    """
+    __tablename__ = "homely_meal_decisions"
+    __table_args__ = (UniqueConstraint("meal_id", "user_id", name="uq_homely_decision_meal_user"),)
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    meal_id = Column(Integer, ForeignKey("homely_meals.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    decision = Column(String, nullable=False)  # 'approved' | 'rejected'
+    comment = Column(Text, nullable=True)
+    decided_at = Column(DateTime, default=datetime.utcnow)
+
+    meal = relationship("HomelyMeal", back_populates="decisions")
 
 
 class HomelyMealTag(Base):

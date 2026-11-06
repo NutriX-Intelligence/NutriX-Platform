@@ -33,26 +33,37 @@ def _escape_like(value: str) -> str:
     return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
+def _has_macros(food: Food) -> bool:
+    n = food.nutrients
+    return n is not None and ((n.energy_kcal or 0.0) > 0 or (n.protein_g or 0.0) + (n.carb_g or 0.0) + (n.fat_g or 0.0) > 0)
+
+
+def _first_with_macros(foods) -> Optional[Food]:
+    """Several rows can share a name; one imported with empty nutrients (all zero) must not win over a complete one."""
+    foods = list(foods)
+    return next((f for f in foods if _has_macros(f)), foods[0] if foods else None)
+
+
 def lookup_food(db: Session, name: str) -> Optional[Food]:
     """Return the matching Food (with nutrients) or None."""
     clean = normalize_name(name)
     if not clean:
         return None
 
-    food = db.query(Food).filter(Food.name.ilike(_escape_like(clean), escape="\\")).first()
+    food = _first_with_macros(db.query(Food).filter(Food.name.ilike(_escape_like(clean), escape="\\")).all())
 
     if not food:
-        alias = db.query(FoodAlias).filter(
-            FoodAlias.alias_name.ilike(_escape_like(clean), escape="\\")
-        ).first()
-        if alias:
-            food = alias.food
+        food = _first_with_macros(
+            alias.food for alias in db.query(FoodAlias).filter(
+                FoodAlias.alias_name.ilike(_escape_like(clean), escape="\\")
+            ).all()
+        )
 
     if not food:
-        food = db.query(Food).filter(
+        food = _first_with_macros(db.query(Food).filter(
             Food.name.ilike(f"%{_escape_like(clean)}%", escape="\\"),
             Food.brand.in_(TRUSTED_PARTIAL_BRANDS),
-        ).first()
+        ).all())
 
     return food
 

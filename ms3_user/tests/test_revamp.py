@@ -255,7 +255,7 @@ def test_homely_meals_creator_auto_approval():
     assert private_meal.status_code == 200
     assert private_meal.json()["status"] == "approved"
 
-    # 2. Community meal is pending
+    # 2. A shared meal is the creator's own: it reads "approved" for them (it is pending only for OTHER users)
     comm_meal = client.post("/api/homely-meals/create", json={
         "name": "Community Special Poha",
         "creator_id": creator_id,
@@ -266,14 +266,16 @@ def test_homely_meals_creator_auto_approval():
         ]
     })
     assert comm_meal.status_code == 200
-    assert comm_meal.json()["status"] == "pending"
+    assert comm_meal.json()["status"] == "approved"
+    assert comm_meal.json()["is_mine"] is True
 
-    # 3. Pending moderation list when excluding creator does not show creator's own meal
-    pending_res = client.get(f"/api/homely-meals/pending?exclude_creator_id={creator_id}")
-    assert pending_res.status_code == 200
-    pending_list = pending_res.json()
-    for item in pending_list:
-        assert item["creator_id"] != creator_id
+    # 3. The creator's Pending list never shows their own meal (with or without the legacy exclude parameter)
+    creator_auth = {"Authorization": f"Bearer {reg.json()['access_token']}"}  # Pending is "for the caller"
+    for url in ("/api/homely-meals/pending", f"/api/homely-meals/pending?exclude_creator_id={creator_id}"):
+        pending_res = client.get(url, headers=creator_auth)
+        assert pending_res.status_code == 200
+        for item in pending_res.json():
+            assert item["creator_id"] != creator_id
 
     # Teardown / cleanup created test meals
     from shared.db import SessionLocal

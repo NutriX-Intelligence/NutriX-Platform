@@ -66,3 +66,24 @@ def test_parse_name_only():
     assert parse_name_only('') == 'unknown'
     assert parse_name_only('Sorry, I cannot tell what this is') == 'unknown'
     assert parse_name_only('This looks like a fresh round green fruit on a plate') == 'unknown'
+
+
+from ms2_llm.validation import parse_nutrition as _parse
+
+
+def test_kcal_mismatch_recomputed_from_macros_not_discarded():
+    # the same numbers that were rejected in the scale log: 350 kcal vs Atwater 253
+    out = _parse('{"food_name": "chocolate bar", "confidence": 0.95, "calories_per_100g": 350, "protein_g": 1.5, "carbs_g": 28, "fat_g": 15}')
+    assert out['food_name'] == 'chocolate bar' and out['flagged'] is False
+    assert out['per_100g'].calories == 253.0 and out['per_100g'].carbs_g == 28
+    assert 'recomputed' in out['flag_reason']
+
+
+def test_zero_kcal_with_real_macros_is_recomputed():
+    out = _parse('{"food_name": "oreo", "confidence": 0.9, "calories_per_100g": 0, "protein_g": 5, "carbs_g": 70, "fat_g": 20}')
+    assert out['per_100g'].calories == 4 * 5 + 4 * 70 + 9 * 20 and out['flagged'] is False
+
+
+def test_negative_macros_still_rejected():
+    out = _parse('{"food_name": "x", "confidence": 0.9, "calories_per_100g": 100, "protein_g": -5, "carbs_g": 10, "fat_g": 2}')
+    assert out['flagged'] is True and out['per_100g'] is None

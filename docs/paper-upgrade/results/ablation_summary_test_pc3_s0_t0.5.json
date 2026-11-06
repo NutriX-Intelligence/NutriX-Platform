@@ -1,0 +1,134 @@
+{
+  "n_images": 10,
+  "threshold": 0.5,
+  "match": "exact+synonyms",
+  "fallback_rate": 0.2,
+  "accuracy": {
+    "all": {
+      "n": 10,
+      "yolo_raw": {
+        "acc": 0.7,
+        "ci95": [
+          0.4,
+          1.0
+        ]
+      },
+      "yolo_abstain": {
+        "acc": 0.7,
+        "ci95": [
+          0.4,
+          1.0
+        ]
+      },
+      "vlm_only": {
+        "acc": 0.2,
+        "ci95": [
+          0.0,
+          0.5
+        ]
+      },
+      "hybrid": {
+        "acc": 0.8,
+        "ci95": [
+          0.5,
+          1.0
+        ]
+      },
+      "hybrid_minus_yolo_abstain": {
+        "diff": 0.1,
+        "ci95": [
+          0.0,
+          0.3
+        ]
+      }
+    },
+    "indian_dishes": {
+      "n": 6,
+      "yolo_raw": {
+        "acc": 0.8333,
+        "ci95": [
+          0.5,
+          1.0
+        ]
+      },
+      "yolo_abstain": {
+        "acc": 0.8333,
+        "ci95": [
+          0.5,
+          1.0
+        ]
+      },
+      "vlm_only": {
+        "acc": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "hybrid": {
+        "acc": 0.8333,
+        "ci95": [
+          0.5,
+          1.0
+        ]
+      },
+      "hybrid_minus_yolo_abstain": {
+        "diff": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "other_foods": {
+      "n": 4,
+      "yolo_raw": {
+        "acc": 0.5,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "yolo_abstain": {
+        "acc": 0.5,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "vlm_only": {
+        "acc": 0.5,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "hybrid": {
+        "acc": 0.75,
+        "ci95": [
+          0.25,
+          1.0
+        ]
+      },
+      "hybrid_minus_yolo_abstain": {
+        "diff": 0.25,
+        "ci95": [
+          0.0,
+          0.75
+        ]
+      }
+    }
+  },
+  "latency_ms": {
+    "yolo_p50": 21.0,
+    "yolo_p95": 3352.9,
+    "vlm_p50": 2482.6,
+    "vlm_p95": 2482.6
+  },
+  "on_fallback_images": {
+    "n": 2,
+    "yolo_raw_acc": 0.0,
+    "hybrid_acc": 0.5
+  },
+  "yolo_accepted_precision": 0.875
+}

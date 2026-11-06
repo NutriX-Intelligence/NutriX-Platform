@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session, joinedload
 from shared.models import Recipe, RecipeIngredient, RecipeNutrition, UserPreference, User, HomelyMeal
 from ms3_user.services.classification_engine import ClassificationEngine
 from ms3_user.services.meal_candidates import is_condiment_or_mix
+from ms3_user.services.homely_visibility import is_usable_by
 
 class RecommendationEngine:
     _RECIPE_TAG_CACHE: Dict[str, Dict[str, Any]] = {}
@@ -470,12 +471,7 @@ class RecommendationEngine:
             homely_query = db.query(HomelyMeal).options(
                 joinedload(HomelyMeal.nutrition),
                 joinedload(HomelyMeal.ingredients)
-            ).filter(
-                or_(
-                    HomelyMeal.status == "approved",
-                    HomelyMeal.creator_id == user_id
-                )
-            )
+            ).filter(is_usable_by(user_id))  # my own + what I approved (per-user, see homely_visibility.py)
             all_homely = homely_query.all()
             if has_search:
                 s_low = search_clean.lower()

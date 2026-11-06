@@ -458,6 +458,67 @@ Return ONLY a valid JSON object matching this exact schema:
 
         return None
 
+    _DRINK_RE = re.compile(
+        r"\b(cola|coke|coca|pepsi|sprite|fanta|7\s?up|limca|thums\s?up|thumbs\s?up|mountain\s?dew|soda|drink|drinks|beverage|"
+        r"juice|frooti|maaza|slice|appy|fizz|lassi|buttermilk|chaas|milkshake|shake|smoothie|red\s?bull|monster|gatorade|"
+        r"tea|coffee|latte|mocha|frappuccino|kombucha|squash|sharbat|lemonade|nimbu|coconut\s?water|energy\s?drink|"
+        r"cold\s?brew|iced\s?tea|ice\s?tea)\b",
+        re.IGNORECASE,
+    )
+
+    @classmethod
+    def is_drink(cls, product_name: Optional[str]) -> bool:
+        """True when the product name says it is something you drink (so its swaps must be drinks too)."""
+        return bool(cls._DRINK_RE.search(product_name or ""))
+
+    @classmethod
+    def _drink_alternatives(cls, is_vegan: bool = False, is_jain: bool = False, is_keto: bool = False) -> List[Dict[str, Any]]:
+        """Healthier DRINKS only, matched to the diet."""
+        q = urllib.parse.quote
+        coconut = {
+            "name": "Fresh Tender Coconut Water (Nariyal Pani)",
+            "price": 50,
+            "reason": "Nature's isotonic electrolyte drink packed with potassium & magnesium",
+            "comparison": "Zero added sugar, zero phosphoric acid or caramel colour, 100% natural hydration",
+            "link": f"https://www.bigbasket.com/ps/?q={q('tender coconut')}",
+        }
+        if is_keto:
+            return [
+                {**coconut, "name": "Unsweetened Green Tea (Iced or Hot)", "price": 30, "diet_badge": "🥑 Keto / Low-Carb",
+                 "reason": "Zero-calorie, antioxidant-rich tea with no sugar or sweetener",
+                 "comparison": "0 g sugar and 0 g net carbs vs 10 g carbs in a soda",
+                 "link": f"https://www.amazon.in/s?k={q('unsweetened green tea')}"},
+                {**coconut, "name": "Sparkling Water with Lemon (No Sugar)", "price": 40, "diet_badge": "🥑 Keto / Low-Carb",
+                 "reason": "Fizzy and refreshing with no sugar, sweetener or colour",
+                 "comparison": "0 kcal and 0 g sugar, the closest swap for a fizzy drink",
+                 "link": f"https://www.amazon.in/s?k={q('sparkling water lemon')}"},
+            ]
+        if is_vegan or is_jain:
+            return [
+                {**coconut, "diet_badge": "🌱 100% Plant-Based"},
+                {"name": "Raw Sparkling Ginger & Lemon Kombucha", "price": 80, "diet_badge": "🌱 Probiotic Refreshment",
+                 "reason": "Naturally fermented bubbly tea with live digestive cultures",
+                 "comparison": "Only 3 g natural sugar vs 38 g in soda, 100% vegan probiotics",
+                 "link": f"https://www.amazon.in/s?k={q('raw kombucha ginger')}"},
+            ]
+        return [
+            {**coconut, "diet_badge": "🥗 Natural Hydration"},
+            {"name": "Chilled Spiced Buttermilk (Masala Chaas)", "price": 15, "diet_badge": "🥛 Probiotic Superdrink",
+             "reason": "Traditional probiotic digestive drink with roasted jeera & rock salt",
+             "comparison": "Rich in natural lactobacillus probiotics, under 30 kcal",
+             "link": f"https://www.bigbasket.com/ps/?q={q('amul buttermilk')}"},
+        ]
+
+    @classmethod
+    def resolve_grade(cls, grade: Optional[str], health_score: Optional[float]) -> str:
+        """A Nutri-Score letter a-e. Uses the source's own grade when it is one; otherwise derives it from the health
+        score. (It used to store the first letter of the health category: "Unhealthy" became grade "u".)"""
+        g = str(grade or "").strip().lower()
+        if g in ("a", "b", "c", "d", "e"):
+            return g
+        s = float(health_score or 0.0)
+        return "a" if s >= 75 else "b" if s >= 60 else "c" if s >= 45 else "d" if s >= 30 else "e"
+
     @classmethod
     def get_healthier_alternatives(
         cls,
@@ -479,8 +540,12 @@ Return ONLY a valid JSON object matching this exact schema:
 
         alts = []
 
+        # 0. Drinks only ever get drinks (and food never gets a drink as its "healthier" swap)
+        if cls.is_drink(p_name):
+            alts = cls._drink_alternatives(is_vegan=is_vegan, is_jain=is_jain, is_keto=is_keto)
+
         # 1. Noodles / Pasta / Instant Meals
-        if any(w in p_name for w in ["noodle", "noodles", "maggi", "ramen", "pasta", "macaroni", "spaghetti", "chowmein", "cup"]):
+        elif any(w in p_name for w in ["noodle", "noodles", "maggi", "ramen", "pasta", "macaroni", "spaghetti", "chowmein", "cup"]):
             if is_jain:
                 alts = [
                     {
@@ -718,47 +783,6 @@ Return ONLY a valid JSON object matching this exact schema:
                     }
                 ]
 
-        # 4. Soft Drinks / Sodas / Sugary Beverages
-        elif any(w in p_name for w in ["cola", "coca", "pepsi", "soda", "fanta", "sprite", "drink", "beverage", "juice", "frooti", "maaza"]):
-            if is_vegan or is_jain:
-                alts = [
-                    {
-                        "name": "Fresh Tender Coconut Water (Nariyal Pani)",
-                        "price": 50,
-                        "diet_badge": "🌱 100% Plant-Based",
-                        "reason": "Nature's isotonic electrolyte drink packed with potassium & magnesium",
-                        "comparison": "Zero added sugar, 100% natural hydration, zero chemicals",
-                        "link": f"https://www.bigbasket.com/ps/?q={urllib.parse.quote('tender coconut')}"
-                    },
-                    {
-                        "name": "Raw Sparkling Ginger & Lemon Kombucha",
-                        "price": 80,
-                        "diet_badge": "🌱 Probiotic Refreshment",
-                        "reason": "Naturally fermented bubbly tea with live digestive cultures",
-                        "comparison": "Only 3g natural sugar vs 38g in soda, 100% vegan probiotics",
-                        "link": f"https://www.amazon.in/s?k={urllib.parse.quote('raw kombucha ginger')}"
-                    }
-                ]
-            else:
-                alts = [
-                    {
-                        "name": "Fresh Tender Coconut Water (Nariyal Pani)",
-                        "price": 50,
-                        "diet_badge": "🥗 Natural Hydration",
-                        "reason": "Nature's isotonic electrolyte drink packed with potassium",
-                        "comparison": "Zero added sugar, zero phosphoric acid or caramel color",
-                        "link": f"https://www.bigbasket.com/ps/?q={urllib.parse.quote('tender coconut')}"
-                    },
-                    {
-                        "name": "Chilled Spiced Buttermilk (Masala Chaas)",
-                        "price": 15,
-                        "diet_badge": "🥛 Probiotic Superdrink",
-                        "reason": "Traditional probiotic digestive drink with roasted jeera & rock salt",
-                        "comparison": "Rich in natural lactobacillus probiotics, under 30 kcal",
-                        "link": f"https://www.bigbasket.com/ps/?q={urllib.parse.quote('amul buttermilk')}"
-                    }
-                ]
-
         # 5. Default General Healthy Packaged Food Alternatives
         if not alts:
             if is_jain:
@@ -856,7 +880,7 @@ Return ONLY a valid JSON object matching this exact schema:
                         "product_name": cached.product_name,
                         "brand": cached.brand,
                         "ingredients_text": cached.ingredients_text,
-                        "nutrition_grade": cached.nutrition_grade,
+                        "nutrition_grade": cls.resolve_grade(cached.nutrition_grade, cached.health_score),
                         "health_score": cached.health_score,
                         "health_category": cached.health_category,
                         "nutriments": cached_nut,
@@ -909,7 +933,7 @@ Return ONLY a valid JSON object matching this exact schema:
                 "product_name": item["product_name"],
                 "brand": item["brand"],
                 "ingredients_text": item["ingredients_text"],
-                "nutrition_grade": item["nutrition_grade"],
+                "nutrition_grade": cls.resolve_grade(item["nutrition_grade"], score),
                 "health_score": score,
                 "health_category": category,
                 "explanation": explanation,
@@ -1006,7 +1030,7 @@ Return ONLY a valid JSON object matching this exact schema:
                 product_name=product_name,
                 brand=brand,
                 ingredients_text=ingredients_text,
-                nutrition_grade=nutrition_grade if nutrition_grade != "unknown" else (category[0].lower() if category else "c"),
+                nutrition_grade=cls.resolve_grade(nutrition_grade, score),
                 nutriments_json=json.dumps(nutrients_100g),
                 health_score=score,
                 health_category=category,
@@ -1028,7 +1052,7 @@ Return ONLY a valid JSON object matching this exact schema:
             "product_name": product_name,
             "brand": brand,
             "ingredients_text": ingredients_text,
-            "nutrition_grade": nutrition_grade,
+            "nutrition_grade": cls.resolve_grade(nutrition_grade, score),
             "health_score": score,
             "health_category": category,
             "explanation": explanation,

@@ -42,6 +42,7 @@ from ms3_user.services import homely_meals_engine
 from ms3_user.services import gemini_client
 from ms3_user.services import ai_text
 from ms3_user.services import recipe_nutrition
+from ms3_user.services import homely_visibility
 from ms3_user.services import live_stream
 
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -49,6 +50,9 @@ from pathlib import Path
 
 from ms3_user.deps import get_current_user, enforce_ownership
 from ms3_user.routing import DualRouter
+
+import logging
+logger = logging.getLogger("ms3.routes")
 
 public_router = APIRouter()
 api_router = APIRouter(dependencies=[Depends(enforce_ownership)])
@@ -1793,161 +1797,35 @@ def save_manual_barcode(req: schemas.ManualBarcodeRequest, db: Session = Depends
     }
 
 
-ALTERNATIVES_LIST = [
-    {
-        "keywords": ["chips", "kurkure", "lays", "bingo", "fried", "namkeen", "crisps", "snack"],
-        "category": "Snack",
-        "name": "Tata Sampann Roasted Chana (Spiced)",
-        "price": 30,
-        "protein_g": 20.0,
-        "energy_kcal": 360,
-        "link": "https://www.amazon.in/dp/B09D3R5WYS",
-        "reason": "100% roasted, high-protein snack (20g protein per 100g), low fat, and extremely budget-friendly!"
-    },
-    {
-        "keywords": ["coke", "cola", "pepsi", "sprite", "fanta", "maaza", "frooti", "soda", "drink", "juice", "beverage", "nimbu"],
-        "category": "Snack",
-        "name": "Amul Masti Spiced Buttermilk (Chaas)",
-        "price": 15,
-        "protein_g": 1.5,
-        "energy_kcal": 28,
-        "link": "https://www.amazon.in/dp/B084G2W3R8",
-        "reason": "Refreshing, low calorie (only 28 kcal), completely sugar-free natural probiotic drink for the same cost as soda!"
-    },
-    {
-        "keywords": ["biscuit", "parle", "marie", "cookies", "good day", "cracker"],
-        "category": "Snack",
-        "name": "Yoga Bar Oats (Instant)",
-        "price": 45,
-        "protein_g": 13.6,
-        "energy_kcal": 390,
-        "link": "https://www.amazon.in/dp/B08PBDZYZK",
-        "reason": "100% whole grain oats, high fibre, low glycemic index, and significantly higher protein than refined flour biscuits."
-    },
-    {
-        "keywords": ["chips", "kurkure", "lays", "bingo", "fried", "namkeen", "crisps", "snack"],
-        "category": "Snack",
-        "name": "Happilo Premium Roasted Makhana (Salt & Pepper)",
-        "price": 120,
-        "protein_g": 9.0,
-        "energy_kcal": 350,
-        "link": "https://www.amazon.in/dp/B07NPHSP8N",
-        "reason": "Baked and roasted instead of deep fried, lower in saturated fats and contains 9g protein!"
-    },
-    {
-        "keywords": ["coke", "cola", "pepsi", "sprite", "fanta", "maaza", "frooti", "soda", "drink", "juice", "beverage", "nimbu"],
-        "category": "Snack",
-        "name": "Paper Boat Tender Coconut Water",
-        "price": 40,
-        "protein_g": 0.0,
-        "energy_kcal": 20,
-        "link": "https://www.amazon.in/dp/B01H7B7T58",
-        "reason": "100% natural, no added white sugar, high in potassium and hydration compared to sugary sodas."
-    },
-    {
-        "keywords": ["bar", "chocolate", "cadbury", "dairymilk", "snickers", "kitkat", "candy", "sweet", "protein bar"],
-        "category": "Snack",
-        "name": "The Whole Truth Protein Bars (Double Cocoa)",
-        "price": 100,
-        "protein_g": 25.0,
-        "energy_kcal": 366,
-        "link": "https://www.amazon.in/dp/B08L84Q1V2",
-        "reason": "Clean ingredients (only dates, whey protein, cocoa, almonds), no added sugar, and gives 15g protein per bar!"
-    },
-    {
-        "keywords": ["yogabar", "protein bar", "muesli bar", "granola bar"],
-        "category": "Snack",
-        "name": "MuscleBlaze Protein Bar (Choco Delight)",
-        "price": 90,
-        "protein_g": 22.0,
-        "energy_kcal": 380,
-        "link": "https://www.amazon.in/dp/B07K48C9M4",
-        "reason": "Higher protein content (22g protein vs 10g in standard bars) for the same price point."
-    },
-    {
-        "keywords": ["noodles", "maggi", "yippee", "ramen", "pasta"],
-        "category": "Lunch/Dinner",
-        "name": "Slurrp Farm Millet Noodles",
-        "price": 80,
-        "protein_g": 12.0,
-        "energy_kcal": 360,
-        "link": "https://www.amazon.in/dp/B08P8LFSQ7",
-        "reason": "Made from foxtail millet and wheat, not maida, and provides 12g protein per 100g."
-    },
-    {
-        "keywords": ["biscuit", "parle", "marie", "cookies", "good day", "cracker"],
-        "category": "Snack",
-        "name": "NutroActive Keto Cookies (High Protein & Low Carb)",
-        "price": 150,
-        "protein_g": 20.0,
-        "energy_kcal": 450,
-        "link": "https://www.amazon.in/dp/B07GD4Z8K3",
-        "reason": "Low glycemic load, only 3g net carbs per cookie and extremely high protein (20g per 100g)."
-    }
-]
-
-
 @api.post("/api/barcode/alternatives")
-def get_barcode_alternatives(req: schemas.AlternativesRequest):
-    """Recommend healthier alternative products based on meal type, nutrients, and price range."""
-    name_lower = req.product_name.lower()
-    
-    # 1. Try keyword matching on alternative database
-    matched_alts = []
-    for alt in ALTERNATIVES_LIST:
-        if any(kw in name_lower for kw in alt["keywords"]):
-            matched_alts.append(alt)
-            
-    # 2. Fallback to category/macro matching if no keywords match
-    if not matched_alts:
-        if req.sugar_g > 10.0 or req.energy_kcal > 250:
-            matched_alts.append(ALTERNATIVES_LIST[0]) # Chana
-            matched_alts.append(ALTERNATIVES_LIST[1]) # Chaas
-            matched_alts.append(ALTERNATIVES_LIST[5]) # Whole Truth Bar
-        else:
-            if req.meal_type == "Snack":
-                matched_alts.append(ALTERNATIVES_LIST[0])
-                matched_alts.append(ALTERNATIVES_LIST[1])
-            else:
-                matched_alts.append(ALTERNATIVES_LIST[7]) # Millet Noodles
+def get_barcode_alternatives(req: schemas.AlternativesRequest, current_user: models.User = Depends(get_current_user)):
+    """
+    Healthier swaps for a scanned product: the same category- and diet-aware logic as the "alternatives" the barcode
+    lookup returns (a drink only gets drinks, a chocolate spread gets clean sweets, ...). Every swap carries a "link"
+    to buy it online ("buy_label" is the button text), ranked by closeness to the scanned product's price.
+    """
+    diet = (req.diet_type or getattr(current_user, "diet_type", None) or "all")
+    nutrients = {
+        "energy_kcal": req.energy_kcal, "protein_g": req.protein_g,
+        "sugar_g": req.sugar_g or 0.0, "fat_g": req.fat_g or 0.0,
+    }
+    found = BarcodeService.get_healthier_alternatives(req.product_name, req.meal_type, nutrients, diet_type=diet)
+
+    budget = req.estimated_price if req.estimated_price is not None else 20.0
+
+    def rank(alt):
+        # a premium swap for a budget product is pushed down
+        return abs(alt["price"] - budget) + (200.0 if budget <= 40.0 and alt["price"] > 70.0 else 0.0)
 
     results = []
-    for alt in matched_alts:
-        # Distance calculation for budget matching
-        price_diff = abs(alt["price"] - req.estimated_price)
-        
-        # Heavy penalty on premium products if scanned product was budget (<= 40 INR)
-        penalty = 0.0
-        if req.estimated_price <= 40.0 and alt["price"] > 70.0:
-            penalty = 200.0  # pushes them down the rank
-            
-        protein_diff = alt["protein_g"] - req.protein_g
-        kcal_diff = req.energy_kcal - alt["energy_kcal"]
-        
-        comparison = ""
-        if protein_diff > 0:
-            comparison += f"Provides {protein_diff:.1f}g MORE protein per 100g. "
-        if kcal_diff > 0:
-            comparison += f"Saves {kcal_diff:.0f} kcal per 100g. "
-            
+    for alt in sorted(found, key=rank):
         results.append({
-            "name": alt["name"],
-            "price": alt["price"],
-            "protein_g": alt["protein_g"],
-            "energy_kcal": alt["energy_kcal"],
-            "link": alt["link"],
-            "reason": alt["reason"],
-            "comparison": comparison or "Higher nutritional density.",
-            "rank_score": price_diff + penalty
+            **alt,
+            "buy_label": "View / Buy Online",
+            # the old list carried these two per swap; the category-aware swaps do not publish them, so they are null
+            "protein_g": alt.get("protein_g"),
+            "energy_kcal": alt.get("energy_kcal"),
         })
-        
-    # Sort results by price/budget rank score
-    results.sort(key=lambda x: x["rank_score"])
-    
-    # Remove rank_score from final response to keep clean contract
-    for r in results:
-        r.pop("rank_score", None)
-        
     return {"alternatives": results}
 
 
@@ -2013,13 +1891,17 @@ def get_user_analytics_history(
     return AnalyticsEngine.get_historical_metrics(db, user_id, metric_name, limit)
 
 
-def format_homely_meal_response(m):
+def format_homely_meal_response(m, viewer_id=None, decisions=None):
+    """`status`, `is_mine` and `my_decision` are relative to the calling user (viewer_id): approvals are per user."""
+    decisions = decisions or {}
     return {
         "id": m.id,
         "name": m.name,
         "creator_id": m.creator_id,
         "is_community": m.is_community,
-        "status": m.status,
+        "status": homely_visibility.viewer_status(m, viewer_id, decisions),
+        "is_mine": viewer_id is not None and m.creator_id == viewer_id,
+        "my_decision": decisions.get(m.id),
         "popularity": m.popularity,
         "cuisine": m.cuisine,
         "region": m.region,
@@ -2046,8 +1928,26 @@ def format_homely_meal_response(m):
     }
 
 
+def _homely_query(db: Session):
+    from sqlalchemy.orm import joinedload
+    return db.query(models.HomelyMeal).options(
+        joinedload(models.HomelyMeal.nutrition),
+        joinedload(models.HomelyMeal.ingredients),
+        joinedload(models.HomelyMeal.tags),
+    )
+
+
+def _homely_list(db: Session, query, viewer_id: int, q: str = ""):
+    """Run a homely-meal query and format every row from `viewer_id`'s point of view."""
+    if q and q.strip():
+        query = query.filter(models.HomelyMeal.name.ilike(f"%{q.strip()}%"))
+    meals = query.order_by(models.HomelyMeal.id.desc()).all()
+    decisions = homely_visibility.decisions_for(db, viewer_id, [m.id for m in meals])
+    return [format_homely_meal_response(m, viewer_id, decisions) for m in meals]
+
+
 @api.get("/api/homely/builder-defaults")
-def get_homely_builder_defaults(db: Session = Depends(get_db)):
+def get_homely_builder_defaults(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     """Get defaults for homely meal builder including base items and condiments."""
     from sqlalchemy.orm import joinedload
     
@@ -2167,7 +2067,7 @@ def get_homely_builder_defaults(db: Session = Depends(get_db)):
     # Query approved Community Homely Meals to include in base selections
     try:
         comm_meals = db.query(models.HomelyMeal).options(joinedload(models.HomelyMeal.nutrition)).filter(
-            models.HomelyMeal.status == "approved"
+            homely_visibility.is_approved_for(current_user.id)  # what THIS user approved (or curated), not everyone's
         ).order_by(models.HomelyMeal.id.desc()).limit(20).all()
         for cm in comm_meals:
             nut = cm.nutrition
@@ -2340,80 +2240,66 @@ def calculate_homely_meal(req: schemas.HomelyMealCalculateRequest, db: Session =
     return res
 
 @api.post("/api/homely-meals/create", response_model=schemas.HomelyMealResponse)
-def create_custom_homely_meal(req: schemas.HomelyMealCreateRequest, db: Session = Depends(get_db)):
-    """Adds a homely meal to the database (defaults to status='pending')."""
+def create_custom_homely_meal(req: schemas.HomelyMealCreateRequest, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """
+    Adds a homely meal. The caller is always its creator: it goes straight to their My Recipes, never to their own
+    Pending. With is_community=true it is also offered to every other user, who each approve or reject it on their own.
+    """
+    req.creator_id = current_user.id
     meal = homely_meals_engine.create_homely_meal(db, req)
-    return format_homely_meal_response(meal)
+    return format_homely_meal_response(meal, current_user.id)
 
 @api.get("/api/homely-meals/user/{user_id}", response_model=List[schemas.HomelyMealResponse])
 def get_user_homely_meals(user_id: int, db: Session = Depends(get_db)):
-    """Retrieve all homely meals created by a specific user."""
-    from sqlalchemy.orm import joinedload
-    meals = db.query(models.HomelyMeal).options(
-        joinedload(models.HomelyMeal.nutrition),
-        joinedload(models.HomelyMeal.ingredients),
-        joinedload(models.HomelyMeal.tags)
-    ).filter(models.HomelyMeal.creator_id == user_id).order_by(models.HomelyMeal.created_at.desc()).all()
-    return [format_homely_meal_response(m) for m in meals]
+    """My Recipes: every homely meal the user created, whatever other users decided about it."""
+    return _homely_list(db, _homely_query(db).filter(homely_visibility.is_mine(user_id)), user_id)
 
 @api.get("/api/homely-meals/pending", response_model=List[schemas.HomelyMealResponse])
-def get_pending_homely_meals(exclude_creator_id: Optional[int] = None, db: Session = Depends(get_db)):
-    """Retrieve all pending homely meals for community kitchen moderation."""
-    from sqlalchemy.orm import joinedload
-    query = db.query(models.HomelyMeal).options(
-        joinedload(models.HomelyMeal.nutrition),
-        joinedload(models.HomelyMeal.ingredients),
-        joinedload(models.HomelyMeal.tags)
-    ).filter(models.HomelyMeal.status == "pending")
-    if exclude_creator_id:
-        query = query.filter(models.HomelyMeal.creator_id != exclude_creator_id)
-    meals = query.all()
-    return [format_homely_meal_response(m) for m in meals]
+def get_pending_homely_meals(
+    exclude_creator_id: Optional[int] = None,  # kept for old clients: the caller's own recipes are always excluded
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """Pending: recipes other users shared that the caller has not approved or rejected yet."""
+    return _homely_list(db, _homely_query(db).filter(homely_visibility.is_pending_for(current_user.id)), current_user.id)
+
+@api.get("/api/homely-meals/approved", response_model=List[schemas.HomelyMealResponse])
+def get_approved_homely_meals(q: str = "", db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """Approved Recipes: shared recipes the caller approved (plus the curated ones they have not rejected)."""
+    return _homely_list(db, _homely_query(db).filter(homely_visibility.is_approved_for(current_user.id)), current_user.id, q)
+
+@api.get("/api/homely-meals/rejected", response_model=List[schemas.HomelyMealResponse])
+def get_rejected_homely_meals(q: str = "", db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """Recipes the caller rejected (only they are affected). Approve one from here to bring it back."""
+    return _homely_list(db, _homely_query(db).filter(homely_visibility.is_rejected_for(current_user.id)), current_user.id, q)
 
 @api.post("/api/homely-meals/review/{meal_id}", response_model=schemas.HomelyMealResponse)
-def review_homely_meal(meal_id: int, req: schemas.HomelyMealStatusUpdateRequest, db: Session = Depends(get_db)):
-    """Approves or rejects a user-submitted meal for community use."""
-    meal = homely_meals_engine.update_meal_status(db, meal_id, req.status, req.reviewer_id, req.comment)
-    if not meal:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Homely meal with ID {meal_id} not found."
-        )
-    return format_homely_meal_response(meal)
+def review_homely_meal(meal_id: int, req: schemas.HomelyMealStatusUpdateRequest, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """The caller approves or rejects a shared recipe. Only the caller's own view changes."""
+    try:
+        meal = homely_meals_engine.record_decision(db, meal_id, current_user.id, req.status, req.comment)
+    except homely_meals_engine.DecisionError as e:
+        raise HTTPException(status_code=e.code, detail=e.detail)
+    return format_homely_meal_response(meal, current_user.id, homely_visibility.decisions_for(db, current_user.id, [meal.id]))
 
 @api.get("/api/homely-meals/search", response_model=List[schemas.HomelyMealResponse])
-def search_homely_meals(q: str = "", db: Session = Depends(get_db)):
-    """Fuzzy searches approved community homely meals."""
-    from sqlalchemy.orm import joinedload
-    query = db.query(models.HomelyMeal).options(
-        joinedload(models.HomelyMeal.nutrition),
-        joinedload(models.HomelyMeal.ingredients),
-        joinedload(models.HomelyMeal.tags)
-    ).filter(models.HomelyMeal.status == "approved")
-    
-    if q.strip():
-        query = query.filter(models.HomelyMeal.name.ilike(f"%{q}%"))
-        
-    meals = query.all()
-    return [format_homely_meal_response(m) for m in meals]
+def search_homely_meals(q: str = "", db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """Searches the homely meals the caller can use: their own plus the ones they approved."""
+    return _homely_list(db, _homely_query(db).filter(homely_visibility.is_usable_by(current_user.id)), current_user.id, q)
 
 @api.get("/api/homely-meals/{meal_id}", response_model=schemas.HomelyMealResponse)
-def get_homely_meal_detail(meal_id: int, scale: float = 1.0, db: Session = Depends(get_db)):
+def get_homely_meal_detail(meal_id: int, scale: float = 1.0, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     """Retrieves meal components and allows custom quantity scaling."""
-    from sqlalchemy.orm import joinedload
-    meal = db.query(models.HomelyMeal).options(
-        joinedload(models.HomelyMeal.nutrition),
-        joinedload(models.HomelyMeal.ingredients),
-        joinedload(models.HomelyMeal.tags)
-    ).filter(models.HomelyMeal.id == meal_id).first()
-    
-    if not meal:
+    meal = _homely_query(db).filter(models.HomelyMeal.id == meal_id).first()
+
+    # someone else's private recipe is as good as absent
+    if not meal or not (meal.is_community or meal.creator_id == current_user.id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Homely meal with ID {meal_id} not found."
         )
-        
-    res = format_homely_meal_response(meal)
+
+    res = format_homely_meal_response(meal, current_user.id, homely_visibility.decisions_for(db, current_user.id, [meal.id]))
     
     if scale != 1.0:
         for ing in res["ingredients"]:

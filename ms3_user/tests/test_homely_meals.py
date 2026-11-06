@@ -166,10 +166,18 @@ class TestHomelyMeals(unittest.TestCase):
         self.assertEqual(len(meal.versions), 1)
         self.assertEqual(meal.versions[0].version_number, 1)
 
-        # Moderate Approve
-        homely_meals_engine.update_meal_status(self.db, meal.id, "approved", reviewer_id=1, comment="Looks tasty!")
-        self.assertEqual(meal.status, "approved")
-        self.assertEqual(len(meal.reviews), 1)
+        # Another user approves: only THEIR decision is stored, the meal itself is untouched
+        other = models.User(name="Bob", email="bob@example.com")
+        self.db.add(other)
+        self.db.flush()
+        homely_meals_engine.record_decision(self.db, meal.id, other.id, "approved", comment="Looks tasty!")
+        self.assertEqual(meal.status, "pending")
+        self.assertEqual([(d.user_id, d.decision) for d in meal.decisions], [(other.id, "approved")])
+
+        # The creator has nothing to approve
+        with self.assertRaises(homely_meals_engine.DecisionError) as ctx:
+            homely_meals_engine.record_decision(self.db, meal.id, 1, "approved")
+        self.assertEqual(ctx.exception.code, 403)
 
         # Review commenting
         homely_meals_engine.add_review(self.db, meal.id, reviewer_id=1, rating=5, comment="Amazing traditional snack.")
@@ -194,9 +202,8 @@ class TestHomelyMeals(unittest.TestCase):
             ]
             tags = []
 
-        # Create and approve
+        # Create: the creator uses their own recipe straight away (no approval step for them)
         meal = homely_meals_engine.create_homely_meal(self.db, MealInput)
-        homely_meals_engine.update_meal_status(self.db, meal.id, "approved")
 
         # Get recommendations
         recs = RecommendationEngine.get_recommendations(self.db, self.user.id)
